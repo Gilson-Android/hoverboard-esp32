@@ -3,1448 +3,947 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guia de Montagem — ESP32 + BTS7960 + Dewert 24V</title>
+<title>Guia de Montagem — ESP32 Hoverboard + Xbox</title>
 <style>
 :root {
-  --bg:       #0f172a;
-  --surface:  #1e293b;
-  --surface2: #273449;
-  --border:   #334155;
-  --text:     #e2e8f0;
-  --muted:    #64748b;
-  --green:    #22c55e;
-  --blue:     #3b82f6;
-  --ver1:     #f59e0b;
-  --ver2:     #3b82f6;
+  --bg:#0f172a; --surface:#1e293b; --surface2:#273449; --border:#334155;
+  --text:#e2e8f0; --muted:#64748b; --green:#22c55e; --blue:#3b82f6;
+  --ver1:#f59e0b; --ver2:#3b82f6;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;}
 
-/* ── HEADER ── */
-.header { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); border-bottom: 1px solid var(--border); padding: 24px 32px 20px; text-align: center; }
-.header h1 { font-size: 22px; color: #e0f2fe; letter-spacing: 0.5px; }
-.header p  { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.header{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);border-bottom:1px solid var(--border);padding:24px 32px 20px;text-align:center;}
+.header h1{font-size:22px;color:#e0f2fe;letter-spacing:.5px;}
+.header p{color:var(--muted);font-size:13px;margin-top:4px;}
 
-/* ── VERSION SELECTOR ── */
-.version-selector { max-width: 860px; margin: 24px auto 0; padding: 0 20px; }
-.version-selector-title { text-align: center; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; }
-.version-cards { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: stretch; }
-@media (max-width: 600px) { .version-cards { grid-template-columns: 1fr; } .ver-divider { display: none; } }
-.ver-card {
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: 14px;
-  padding: 16px 18px;
-  cursor: pointer;
-  transition: all .25s;
-  user-select: none;
-  position: relative;
-}
-.ver-card:hover { transform: translateY(-2px); }
-.ver-card.active.v1 { border-color: var(--ver1); background: #1c1600; box-shadow: 0 0 0 1px #f59e0b30, 0 8px 24px #f59e0b18; }
-.ver-card.active.v2 { border-color: var(--ver2); background: #0c1628; box-shadow: 0 0 0 1px #3b82f630, 0 8px 24px #3b82f618; }
-.ver-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.ver-badge { font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 6px; letter-spacing: 0.5px; }
-.ver-badge.v1 { background: #78350f; color: #fde68a; }
-.ver-badge.v2 { background: #1e3a8a; color: #93c5fd; }
-.ver-title { font-size: 16px; font-weight: 700; color: #e2e8f0; }
-.ver-sub { font-size: 11px; color: var(--muted); margin-bottom: 10px; font-style: italic; }
-.ver-items { list-style: none; font-size: 12px; display: flex; flex-direction: column; gap: 3px; }
-.ver-pro { color: #86efac; }
-.ver-pro::before { content: '✓  '; font-weight: 700; }
-.ver-con { color: #94a3b8; }
-.ver-con::before { content: '○  '; }
-.ver-active-pill {
-  display: none;
-  position: absolute;
-  top: -10px; right: 12px;
-  font-size: 10px; font-weight: 800;
-  padding: 2px 10px; border-radius: 999px;
-  letter-spacing: 0.5px;
-}
-.ver-card.active .ver-active-pill { display: block; }
-.ver-card.active.v1 .ver-active-pill { background: var(--ver1); color: #0f172a; }
-.ver-card.active.v2 .ver-active-pill { background: var(--ver2); color: #fff; }
-.ver-divider {
-  font-size: 11px; font-weight: 700; color: var(--muted);
-  width: 36px; height: 36px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--border); background: var(--surface2);
-  align-self: center;
-}
+.version-selector{max-width:860px;margin:24px auto 0;padding:0 20px;}
+.version-selector-title{text-align:center;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;}
+.version-cards{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:stretch;}
+@media(max-width:600px){.version-cards{grid-template-columns:1fr;}.ver-divider{display:none;}}
+.ver-card{background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:16px 18px;cursor:pointer;transition:all .25s;user-select:none;position:relative;}
+.ver-card:hover{transform:translateY(-2px);}
+.ver-card.active.v1{border-color:var(--ver1);background:#1c1600;box-shadow:0 0 0 1px #f59e0b30,0 8px 24px #f59e0b18;}
+.ver-card.active.v2{border-color:var(--ver2);background:#0c1628;box-shadow:0 0 0 1px #3b82f630,0 8px 24px #3b82f618;}
+.ver-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.ver-badge{font-size:12px;font-weight:800;padding:3px 10px;border-radius:6px;letter-spacing:.5px;}
+.ver-badge.v1{background:#78350f;color:#fde68a;} .ver-badge.v2{background:#1e3a8a;color:#93c5fd;}
+.ver-title{font-size:16px;font-weight:700;color:#e2e8f0;}
+.ver-sub{font-size:11px;color:var(--muted);margin-bottom:10px;font-style:italic;}
+.ver-items{list-style:none;font-size:12px;display:flex;flex-direction:column;gap:3px;}
+.ver-pro{color:#86efac;} .ver-pro::before{content:'✓  ';font-weight:700;}
+.ver-con{color:#94a3b8;} .ver-con::before{content:'○  ';}
+.ver-active-pill{display:none;position:absolute;top:-10px;right:12px;font-size:10px;font-weight:800;padding:2px 10px;border-radius:999px;letter-spacing:.5px;}
+.ver-card.active .ver-active-pill{display:block;}
+.ver-card.active.v1 .ver-active-pill{background:var(--ver1);color:#0f172a;}
+.ver-card.active.v2 .ver-active-pill{background:var(--ver2);color:#fff;}
+.ver-divider{font-size:11px;font-weight:700;color:var(--muted);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);background:var(--surface2);align-self:center;}
 
-/* ── COMPARISON DIAGRAM ── */
-.compare-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  margin: 16px 0;
-}
-.compare-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 14px; text-align: center; }
-.compare-rows { display: flex; flex-direction: column; gap: 10px; }
-.compare-row { display: flex; align-items: center; gap: 0; }
-.compare-label {
-  font-size: 11px; font-weight: 700; min-width: 110px; flex-shrink: 0;
-  padding: 0 8px 0 0;
-}
-.compare-label.v1 { color: #fde68a; }
-.compare-label.v2 { color: #93c5fd; }
-.compare-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 0; }
-.cf-node {
-  display: flex; align-items: center; gap: 5px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 600;
-  white-space: nowrap;
-}
-.cf-node.bat  { border-color: #dc2626; color: #fca5a5; }
-.cf-node.buck { border-color: #ea580c; color: #fdba74; }
-.cf-node.esp  { border-color: #3b82f6; color: #93c5fd; }
-.cf-node.diode { border-color: #a855f7; color: #d8b4fe; background: #1e0a2e; }
-.cf-node.cap   { border-color: #06b6d4; color: #67e8f9; background: #0a1e28; }
-.cf-node.highlight-v1 { box-shadow: 0 0 0 2px #f59e0b60; }
-.cf-node.highlight-v2 { box-shadow: 0 0 0 2px #3b82f660; }
-.cf-arrow { color: var(--muted); font-size: 14px; padding: 0 4px; flex-shrink: 0; }
-.compare-note { font-size: 11px; color: var(--muted); margin-top: 4px; margin-left: 110px; font-style: italic; }
-.compare-sep { border: none; border-top: 1px solid var(--border); margin: 2px 0; }
+.compare-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin:14px 0;}
+.compare-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:14px;text-align:center;}
+.compare-row{display:flex;align-items:center;gap:0;margin-bottom:4px;}
+.compare-label{font-size:11px;font-weight:700;min-width:110px;flex-shrink:0;padding-right:8px;}
+.compare-label.v1{color:#fde68a;} .compare-label.v2{color:#93c5fd;}
+.compare-flow{display:flex;align-items:center;flex-wrap:wrap;gap:0;}
+.cf-node{display:flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:600;white-space:nowrap;}
+.cf-node.bat{border-color:#dc2626;color:#fca5a5;} .cf-node.buck{border-color:#ea580c;color:#fdba74;}
+.cf-node.esp{border-color:#3b82f6;color:#93c5fd;} .cf-node.diode{border-color:#a855f7;color:#d8b4fe;background:#1e0a2e;}
+.cf-node.cap{border-color:#06b6d4;color:#67e8f9;background:#0a1e28;}
+.cf-arrow{color:var(--muted);font-size:14px;padding:0 4px;flex-shrink:0;}
+.compare-note{font-size:11px;color:var(--muted);margin-left:110px;margin-bottom:8px;font-style:italic;}
+.compare-sep{border:none;border-top:1px solid var(--border);margin:8px 0;}
 
-/* ── STEPPER ── */
-.stepper-wrap { display: flex; justify-content: center; align-items: center; gap: 0; padding: 24px 32px 0; max-width: 900px; margin: 0 auto; }
-.step-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; padding: 0 8px; background: none; border: none; color: var(--muted); font-size: 12px; transition: color .2s; min-width: 90px; }
-.step-btn:hover .step-circle { border-color: var(--blue); }
-.step-btn.active .step-circle  { background: var(--blue); border-color: var(--blue); color: #fff; }
-.step-btn.done   .step-circle  { background: var(--green); border-color: var(--green); color: #fff; }
-.step-btn.active { color: #e0f2fe; }
-.step-btn.done   { color: var(--green); }
-.step-circle { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; transition: all .3s; background: var(--surface); }
-.step-line { flex: 1; height: 2px; background: var(--border); margin-top: -22px; min-width: 40px; max-width: 120px; transition: background .3s; }
-.step-line.done { background: var(--green); }
-.step-label { text-align: center; line-height: 1.3; max-width: 80px; }
+.stepper-wrap{display:flex;justify-content:center;align-items:center;gap:0;padding:24px 32px 0;max-width:960px;margin:0 auto;flex-wrap:wrap;}
+.step-btn{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:0 4px;background:none;border:none;color:var(--muted);font-size:11px;transition:color .2s;min-width:80px;}
+.step-btn:hover .step-circle{border-color:var(--blue);}
+.step-btn.active .step-circle{background:var(--blue);border-color:var(--blue);color:#fff;}
+.step-btn.done .step-circle{background:var(--green);border-color:var(--green);color:#fff;}
+.step-btn.active{color:#e0f2fe;} .step-btn.done{color:var(--green);}
+.step-circle{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;transition:all .3s;background:var(--surface);}
+.step-line{flex:1;height:2px;background:var(--border);margin-top:-20px;min-width:20px;max-width:80px;transition:background .3s;}
+.step-line.done{background:var(--green);}
+.step-label{text-align:center;line-height:1.3;max-width:72px;}
 
-/* ── PROGRESS BAR ── */
-.progress-bar { max-width: 860px; margin: 16px auto 0; padding: 0 32px; }
-.progress-track { background: var(--surface2); border-radius: 999px; height: 6px; overflow: hidden; }
-.progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--green)); border-radius: 999px; transition: width .4s ease; }
-.progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
+.progress-bar{max-width:860px;margin:16px auto 0;padding:0 32px;}
+.progress-track{background:var(--surface2);border-radius:999px;height:6px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:999px;transition:width .4s ease;}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px;}
 
-/* ── MAIN CONTENT ── */
-.content { max-width: 900px; margin: 24px auto 40px; padding: 0 20px; }
+.content{max-width:900px;margin:24px auto 40px;padding:0 20px;}
+.step-panel{display:none;} .step-panel.active{display:block;}
+.step-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.step-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.step-header h2{font-size:20px;color:#e0f2fe;}
+.step-header p{font-size:13px;color:var(--muted);margin-top:3px;}
 
-/* ── VERSION STRIP (shown inside steps) ── */
-.ver-strip {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 14px; border-radius: 8px; margin-bottom: 14px;
-  font-size: 12px; font-weight: 600;
-}
-.ver-strip.v1 { background: #1c1600; border: 1px solid #78350f; color: #fde68a; }
-.ver-strip.v2 { background: #0c1628; border: 1px solid #1e3a8a; color: #93c5fd; }
-.ver-strip-badge { font-weight: 800; padding: 1px 7px; border-radius: 4px; font-size: 11px; }
-.ver-strip.v1 .ver-strip-badge { background: #78350f; color: #fde68a; }
-.ver-strip.v2 .ver-strip-badge { background: #1e3a8a; color: #93c5fd; }
+.ver-strip{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;margin-bottom:14px;font-size:12px;font-weight:600;}
+.ver-strip.v1{background:#1c1600;border:1px solid #78350f;color:#fde68a;}
+.ver-strip.v2{background:#0c1628;border:1px solid #1e3a8a;color:#93c5fd;}
+.ver-strip-badge{font-weight:800;padding:1px 7px;border-radius:4px;font-size:11px;}
+.ver-strip.v1 .ver-strip-badge{background:#78350f;color:#fde68a;}
+.ver-strip.v2 .ver-strip-badge{background:#1e3a8a;color:#93c5fd;}
 
-/* ── STEP PANEL ── */
-.step-panel { display: none; }
-.step-panel.active { display: block; }
-.step-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
-.step-icon { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
-.step-header h2 { font-size: 20px; color: #e0f2fe; }
-.step-header p  { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.two-col{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start;}
+@media(max-width:700px){.two-col{grid-template-columns:1fr;}}
 
-/* ── LAYOUT 2 COLS ── */
-.two-col { display: grid; grid-template-columns: 1fr 340px; gap: 16px; align-items: start; }
-@media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+.checklist-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.checklist-header{padding:12px 16px;background:var(--surface2);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--border);}
+.check-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid #1a2535;cursor:pointer;transition:background .15s;user-select:none;}
+.check-item:last-child{border-bottom:none;}
+.check-item:hover{background:var(--surface2);}
+.check-item.checked{opacity:.6;}
+.checkbox{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:12px;}
+.check-item.checked .checkbox{background:var(--green);border-color:var(--green);color:#fff;}
+.check-item.checked .checkbox::after{content:'✓';}
+.check-body{flex:1;}
+.check-title{font-size:13px;font-weight:600;line-height:1.4;}
+.check-item.checked .check-title{text-decoration:line-through;opacity:.6;}
+.check-desc{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.5;}
+.wire-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:5px;}
 
-/* ── CHECKLIST ── */
-.checklist-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-.checklist-header { padding: 12px 16px; background: var(--surface2); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); border-bottom: 1px solid var(--border); }
-.check-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #1a2535; cursor: pointer; transition: background .15s; user-select: none; }
-.check-item:last-child { border-bottom: none; }
-.check-item:hover { background: var(--surface2); }
-.check-item.checked { opacity: 0.6; }
-.checkbox { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--border); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all .2s; font-size: 12px; }
-.check-item.checked .checkbox { background: var(--green); border-color: var(--green); color: #fff; }
-.check-body { flex: 1; }
-.check-title { font-size: 13px; font-weight: 600; line-height: 1.4; }
-.check-item.checked .check-title { text-decoration: line-through; opacity: .6; }
-.check-desc { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
-.wire-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.img-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;position:sticky;top:16px;}
+.img-card img{width:100%;display:block;background:#fff;}
+.img-tabs{display:flex;border-bottom:1px solid var(--border);}
+.img-tab{flex:1;padding:8px 6px;font-size:11px;cursor:pointer;text-align:center;background:none;border:none;color:var(--muted);transition:all .2s;font-weight:600;}
+.img-tab.active{color:#e0f2fe;background:var(--surface);border-bottom:2px solid var(--blue);}
+.img-panel{display:none;} .img-panel.active{display:block;}
 
-/* ── IMAGE CARD ── */
-.img-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: sticky; top: 16px; }
-.img-card-header { padding: 10px 14px; background: var(--surface2); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); border-bottom: 1px solid var(--border); }
-.img-card img { width: 100%; display: block; background: #fff; }
-.img-tabs { display: flex; border-bottom: 1px solid var(--border); }
-.img-tab { flex: 1; padding: 8px 10px; font-size: 11px; cursor: pointer; text-align: center; background: none; border: none; color: var(--muted); transition: all .2s; font-weight: 600; }
-.img-tab.active { color: #e0f2fe; background: var(--surface); border-bottom: 2px solid var(--blue); }
-.img-panel { display: none; }
-.img-panel.active { display: block; }
+.info-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.info-card-header{padding:10px 14px;background:var(--surface2);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--border);}
+.info-row{padding:10px 14px;border-bottom:1px solid #1a2535;font-size:12px;}
+.info-row:last-child{border-bottom:none;}
+.info-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:3px;}
+.info-value{color:#e2e8f0;word-break:break-all;}
+.info-copy{display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:10px;cursor:pointer;margin-top:4px;color:var(--muted);transition:all .2s;}
+.info-copy:hover{background:var(--blue);border-color:var(--blue);color:#fff;}
 
-/* ── ALERTAS ── */
-.alert { border-radius: 8px; padding: 12px 14px; font-size: 12px; line-height: 1.7; margin-bottom: 12px; display: flex; gap: 10px; }
-.alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-.alert.warn   { background: #422006; border: 1px solid #92400e; color: #fde68a; }
-.alert.info   { background: #0c2340; border: 1px solid #1e40af; color: #bfdbfe; }
-.alert.ok     { background: #052e16; border: 1px solid #166534; color: #bbf7d0; }
-.alert.danger { background: #450a0a; border: 1px solid #991b1b; color: #fecaca; }
+.alert{border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.7;margin-bottom:12px;display:flex;gap:10px;}
+.alert-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.alert.warn{background:#422006;border:1px solid #92400e;color:#fde68a;}
+.alert.info{background:#0c2340;border:1px solid #1e40af;color:#bfdbfe;}
+.alert.ok{background:#052e16;border:1px solid #166534;color:#bbf7d0;}
+.alert.danger{background:#450a0a;border:1px solid #991b1b;color:#fecaca;}
 
-/* ── CÓDIGO ── */
-.code-block { background: #0a0f1a; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 12px 0; }
-.code-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; background: var(--surface2); font-size: 11px; color: var(--muted); font-weight: 600; }
-.copy-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 5px; padding: 3px 10px; font-size: 11px; color: var(--text); cursor: pointer; transition: all .2s; }
-.copy-btn:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
-.copy-btn.copied { background: var(--green); border-color: var(--green); color: #fff; }
-pre { padding: 16px; font-size: 12px; line-height: 1.7; overflow-x: auto; color: #a5f3fc; font-family: 'Consolas', 'Courier New', monospace; white-space: pre; }
-.kw  { color: #c084fc; }
-.cm  { color: #4b5563; font-style: italic; }
-.nm  { color: #fbbf24; }
-.fn  { color: #34d399; }
-.str { color: #f87171; }
-.num { color: #fb923c; }
+.code-block{background:#0a0f1a;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:12px 0;}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:var(--surface2);font-size:11px;color:var(--muted);font-weight:600;}
+.copy-btn{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:3px 10px;font-size:11px;color:var(--text);cursor:pointer;transition:all .2s;}
+.copy-btn:hover{background:var(--blue);border-color:var(--blue);color:#fff;}
+.copy-btn.copied{background:var(--green);border-color:var(--green);color:#fff;}
+pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;font-family:'Consolas','Courier New',monospace;white-space:pre;}
+.kw{color:#c084fc;} .cm{color:#4b5563;font-style:italic;} .nm{color:#fbbf24;} .fn{color:#34d399;} .str{color:#f87171;} .num{color:#fb923c;}
 
-/* ── SCHEMA VISUAL ── */
-.schema { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 12px 0; font-size: 12px; }
-.schema-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 12px; }
-.wire-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid #1a2535; }
-.wire-row:last-child { border-bottom: none; }
-.wire-line { height: 3px; width: 32px; border-radius: 2px; flex-shrink: 0; }
-.wire-from { font-weight: 700; min-width: 120px; color: #e2e8f0; }
-.wire-arrow { color: var(--muted); }
-.wire-to { color: #94a3b8; }
+.schema{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin:12px 0;font-size:12px;}
+.schema-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:12px;}
+.wire-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1a2535;}
+.wire-row:last-child{border-bottom:none;}
+.wire-line{height:3px;width:32px;border-radius:2px;flex-shrink:0;}
+.wire-from{font-weight:700;min-width:120px;color:#e2e8f0;}
+.wire-arrow{color:var(--muted);}
+.wire-to{color:#94a3b8;}
 
-/* ── NAV BOTÕES ── */
-.nav-bar { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto 40px; padding: 0 20px; gap: 12px; }
-.nav-btn { padding: 10px 28px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 8px; }
-.nav-btn:hover { background: var(--surface2); border-color: var(--blue); }
-.nav-btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
-.nav-btn.primary:hover { background: #1d4ed8; }
-.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-.nav-center { font-size: 13px; color: var(--muted); text-align: center; }
-
-/* ── VERSÃO OCULTA ── */
-.v2-only { display: none; }
+.nav-bar{display:flex;justify-content:space-between;align-items:center;max-width:900px;margin:0 auto 40px;padding:0 20px;gap:12px;}
+.nav-btn{padding:10px 28px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.nav-btn:hover{background:var(--surface2);border-color:var(--blue);}
+.nav-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+.nav-btn.primary:hover{background:#1d4ed8;}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed;}
+.nav-center{font-size:13px;color:var(--muted);text-align:center;}
+.v2-only{display:none;}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
-  <h1>Guia de Montagem Passo a Passo</h1>
-  <p>NodeMCU ESP-32S v1.1 &nbsp;·&nbsp; 2× BTS7960 IBT-2 &nbsp;·&nbsp; 2× Motor Dewert 24V &nbsp;·&nbsp; MP1584 Buck</p>
+  <h1>Guia de Montagem — ESP32 Hoverboard + Xbox Controller</h1>
+  <p>NodeMCU ESP-32S v1.1 &nbsp;·&nbsp; 2× BTS7960 IBT-2 &nbsp;·&nbsp; Motores Dewert 24V &nbsp;·&nbsp; Xbox Series X via Bluetooth</p>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- SELETOR DE VERSÃO                           -->
-<!-- ═══════════════════════════════════════════ -->
 <div class="version-selector">
-  <div class="version-selector-title">Escolha a versão do seu circuito</div>
+  <div class="version-selector-title">Escolha a versão do circuito de alimentação</div>
   <div class="version-cards">
-
-    <!-- V1 -->
     <div class="ver-card v1 active" id="verCard1" onclick="switchVersion(1)">
       <div class="ver-active-pill">● ATIVA AGORA</div>
-      <div class="ver-top">
-        <span class="ver-badge v1">V1</span>
-        <span class="ver-title">Simples</span>
-      </div>
-      <div class="ver-sub">Sem diodo &nbsp;·&nbsp; Sem capacitor</div>
+      <div class="ver-top"><span class="ver-badge v1">V1</span><span class="ver-title">Simples</span></div>
+      <div class="ver-sub">Sem diodo · Sem capacitor</div>
       <ul class="ver-items">
         <li class="ver-pro">Menos componentes</li>
         <li class="ver-pro">Mais rápido de montar</li>
-        <li class="ver-pro">Ótimo para testes iniciais</li>
-        <li class="ver-con">Sem proteção de polaridade invertida</li>
-        <li class="ver-con">Pode ter ruído elétrico dos motores</li>
+        <li class="ver-con">Sem proteção de polaridade</li>
+        <li class="ver-con">Sem filtro de ruído</li>
       </ul>
     </div>
-
     <div class="ver-divider">ou</div>
-
-    <!-- V2 -->
     <div class="ver-card v2" id="verCard2" onclick="switchVersion(2)">
       <div class="ver-active-pill">● ATIVA AGORA</div>
-      <div class="ver-top">
-        <span class="ver-badge v2">V2</span>
-        <span class="ver-title">Protegido</span>
-      </div>
-      <div class="ver-sub">Com diodo N04 &nbsp;·&nbsp; Com capacitor 1000µF</div>
+      <div class="ver-top"><span class="ver-badge v2">V2</span><span class="ver-title">Protegido</span></div>
+      <div class="ver-sub">Com diodo N04 · Com capacitor 1000µF</div>
       <ul class="ver-items">
         <li class="ver-pro">Protegido contra polaridade invertida</li>
-        <li class="ver-pro">Capacitor filtra ruído elétrico dos motores</li>
-        <li class="ver-pro">Mais estável para uso final</li>
-        <li class="ver-con">2 componentes extras (diodo + capacitor)</li>
-        <li class="ver-con">Ligeiramente mais complexo</li>
+        <li class="ver-pro">Capacitor filtra ruído dos motores</li>
+        <li class="ver-con">2 componentes extras</li>
       </ul>
     </div>
   </div>
-
-  <!-- DIAGRAMA COMPARATIVO -->
   <div class="compare-box" style="margin-top:14px;">
-    <div class="compare-title">Como a energia chega ao ESP32 em cada versão</div>
-    <div class="compare-rows">
-      <!-- V1 -->
-      <div>
-        <div class="compare-row">
-          <div class="compare-label v1">V1 — Simples</div>
-          <div class="compare-flow">
-            <div class="cf-node bat">🔋 Bat 24V</div>
-            <div class="cf-arrow">──►</div>
-            <div class="cf-node buck">⚙️ MP1584 → 5V</div>
-            <div class="cf-arrow">──►</div>
-            <div class="cf-node esp">💻 ESP32 VIN</div>
-          </div>
-        </div>
-        <div class="compare-note">4 conexões no Passo 1 · Direto e simples</div>
-      </div>
-      <hr class="compare-sep">
-      <!-- V2 -->
-      <div>
-        <div class="compare-row">
-          <div class="compare-label v2">V2 — Protegido</div>
-          <div class="compare-flow">
-            <div class="cf-node bat">🔋 Bat 24V</div>
-            <div class="cf-arrow">──►</div>
-            <div class="cf-node diode">◁| Diodo N04</div>
-            <div class="cf-arrow">──►</div>
-            <div class="cf-node buck">⚙️ MP1584 → 5V</div>
-            <div class="cf-arrow">──►</div>
-            <div class="cf-node cap">⚡ Cap 1000µF</div>
-            <div class="cf-arrow">──►</div>
-            <div class="cf-node esp">💻 ESP32 VIN</div>
-          </div>
-        </div>
-        <div class="compare-note">7 conexões no Passo 1 · Mais componentes, mais seguro</div>
+    <div class="compare-title">Como a energia chega ao ESP32 (afeta apenas o Passo 2)</div>
+    <div class="compare-row">
+      <div class="compare-label v1">V1 — Simples</div>
+      <div class="compare-flow">
+        <div class="cf-node bat">🔋 Bat 24V</div><div class="cf-arrow">──►</div>
+        <div class="cf-node buck">⚙️ MP1584 5V</div><div class="cf-arrow">──►</div>
+        <div class="cf-node esp">💻 ESP32 VIN</div>
       </div>
     </div>
+    <div class="compare-note">4 conexões · Direto e simples</div>
+    <hr class="compare-sep">
+    <div class="compare-row">
+      <div class="compare-label v2">V2 — Protegido</div>
+      <div class="compare-flow">
+        <div class="cf-node bat">🔋 Bat 24V</div><div class="cf-arrow">──►</div>
+        <div class="cf-node diode">◁| Diodo</div><div class="cf-arrow">──►</div>
+        <div class="cf-node buck">⚙️ MP1584 5V</div><div class="cf-arrow">──►</div>
+        <div class="cf-node cap">⚡ Cap</div><div class="cf-arrow">──►</div>
+        <div class="cf-node esp">💻 ESP32 VIN</div>
+      </div>
+    </div>
+    <div class="compare-note">7 conexões · Mais seguro</div>
   </div>
 </div>
 
-<!-- STEPPER -->
 <div class="stepper-wrap">
-  <button class="step-btn active" onclick="goTo(0)" id="sbtn0">
-    <div class="step-circle" id="sci0">1</div>
-    <div class="step-label">Ligar<br>o ESP32</div>
-  </button>
+  <button class="step-btn active" onclick="goTo(0)" id="sbtn0"><div class="step-circle" id="sci0">1</div><div class="step-label">Instalar<br>Arduino IDE</div></button>
   <div class="step-line" id="sl0"></div>
-  <button class="step-btn" onclick="goTo(1)" id="sbtn1">
-    <div class="step-circle" id="sci1">2</div>
-    <div class="step-label">1º Motor<br>(Esquerdo)</div>
-  </button>
+  <button class="step-btn" onclick="goTo(1)" id="sbtn1"><div class="step-circle" id="sci1">2</div><div class="step-label">Ligar<br>o ESP32</div></button>
   <div class="step-line" id="sl1"></div>
-  <button class="step-btn" onclick="goTo(2)" id="sbtn2">
-    <div class="step-circle" id="sci2">3</div>
-    <div class="step-label">2º Motor<br>(Direito)</div>
-  </button>
+  <button class="step-btn" onclick="goTo(2)" id="sbtn2"><div class="step-circle" id="sci2">3</div><div class="step-label">Motor<br>Esquerdo</div></button>
   <div class="step-line" id="sl2"></div>
-  <button class="step-btn" onclick="goTo(3)" id="sbtn3">
-    <div class="step-circle" id="sci3">4</div>
-    <div class="step-label">Teste<br>Final</div>
-  </button>
+  <button class="step-btn" onclick="goTo(3)" id="sbtn3"><div class="step-circle" id="sci3">4</div><div class="step-label">Motor<br>Direito</div></button>
+  <div class="step-line" id="sl3"></div>
+  <button class="step-btn" onclick="goTo(4)" id="sbtn4"><div class="step-circle" id="sci4">5</div><div class="step-label">Código<br>Final</div></button>
 </div>
 
-<!-- PROGRESS -->
 <div class="progress-bar">
-  <div class="progress-track">
-    <div class="progress-fill" id="progressFill" style="width:0%"></div>
-  </div>
-  <div class="progress-label">
-    <span id="progressText">0 conexões feitas</span>
-    <span id="progressPct">0%</span>
-  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="progress-label"><span id="progressText">0 itens concluídos</span><span id="progressPct">0%</span></div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════ -->
-<!-- CONTENT                                               -->
-<!-- ══════════════════════════════════════════════════════ -->
 <div class="content">
 
-  <!-- ════════════════════════════════ -->
-  <!-- STEP 1 — LIGAR ESP32            -->
-  <!-- ════════════════════════════════ -->
-  <div class="step-panel active" id="panel0">
+<!-- PASSO 1 — ARDUINO IDE -->
+<div class="step-panel active" id="panel0">
+  <div class="step-header">
+    <div class="step-icon" style="background:#1e3a5f;">💻</div>
+    <div><h2>Passo 1 — Instalar e Configurar o Arduino IDE</h2>
+    <p>Configure o ambiente de desenvolvimento antes de conectar qualquer hardware.</p></div>
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="alert info"><div class="alert-icon">ℹ️</div><div>Este projeto usa <b>ledcAttach/ledcWrite</b> do ESP32 Arduino SDK 3.0+. Instale a versão <b>3.0.0 ou superior</b> — versões antigas usam API diferente e o código não compila.</div></div>
 
-    <div class="step-header">
-      <div class="step-icon" style="background:#1e3a5f;">⚡</div>
-      <div>
-        <h2>Passo 1 — Ligar apenas o ESP32</h2>
-        <p>Monte a fonte 5V antes de conectar qualquer driver ou motor. Teste e valide antes de continuar.</p>
+      <div class="checklist-card">
+        <div class="checklist-header">1/3 — Instalar Arduino IDE e pacote ESP32</div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#3b82f6"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Baixar e instalar o Arduino IDE 2.x</div>
+          <div class="check-desc">Acesse arduino.cc/en/software → baixe a versão 2.x para Windows → execute o instalador.</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#3b82f6"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">File → Preferences → colar a URL do ESP32 em "Additional boards manager URLs"</div>
+          <div class="check-desc">URL no painel direito. Cole e clique OK.</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#3b82f6"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Tools → Board → Boards Manager → pesquisar "esp32" → instalar "esp32 by Espressif Systems"</div>
+          <div class="check-desc">Selecione versão ≥ 3.0.0 antes de instalar. A instalação demora alguns minutos.</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#3b82f6"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Tools → Board → esp32 → selecionar "NodeMCU-32S"</div>
+          <div class="check-desc">Alternativa: "ESP32 Dev Module". Funciona igualmente para este projeto.</div></div>
+        </div>
       </div>
+
+      <div class="checklist-card" style="margin-top:10px;">
+        <div class="checklist-header">2/3 — Instalar biblioteca do controle Xbox</div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#a855f7"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Tools → Manage Libraries (Ctrl+Shift+I) → pesquisar "XboxSeriesX"</div>
+          <div class="check-desc">O Library Manager abre na lateral esquerda do IDE 2.x.</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#a855f7"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Instalar "XboxSeriesXControllerESP32_asukiaaa" (autor: asukiaaa)</div>
+          <div class="check-desc">Se pedir para instalar dependências, clique "Install All".</div></div>
+        </div>
+      </div>
+
+      <div class="checklist-card" style="margin-top:10px;">
+        <div class="checklist-header">3/3 — Carregar o sketch e testar</div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#22c55e"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">File → Open → abrir hovercomesp32D0WDQ6.ino</div>
+          <div class="check-desc">Navegue até a pasta do projeto e abra o arquivo .ino.</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#22c55e"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Conectar o ESP32 via USB e selecionar a porta: Tools → Port → COM?</div>
+          <div class="check-desc">Se a porta não aparecer, instale o driver CP210x ou CH340 conforme o chip USB do seu NodeMCU.</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#22c55e"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Clicar em Verify (✓) para compilar — deve aparecer "Done compiling"</div>
+          <div class="check-desc">Erros de compilação geralmente indicam versão errada do SDK. Confirme que está usando esp32 ≥ 3.0.0.</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#22c55e"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Clicar em Upload (→) e aguardar — LED do ESP32 pisca durante o upload</div>
+          <div class="check-desc">Após upload, o ESP32 reinicia automaticamente e executa o código.</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#22c55e"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Abrir Monitor Serial (Tools → Serial Monitor) → selecionar 115200 baud</div>
+          <div class="check-desc">Deve aparecer "--- CONFIGURANDO SENTIDO: CIMA = FRENTE ---". Ambiente OK!</div></div>
+        </div>
+      </div>
+
+      <div class="alert ok"><div class="alert-icon">✅</div><div><b>Compilou e o Monitor Serial mostrou a mensagem?</b> Ambiente configurado! Monte o hardware nos próximos passos.</div></div>
     </div>
 
-    <div class="two-col">
-      <div>
-        <!-- ─── V1 CONTENT ─── -->
-        <div class="v1-only">
-          <div class="ver-strip v1">
-            <span class="ver-strip-badge v1">V1</span>
-            Versão Simples — conexão direta sem diodo nem capacitor
-          </div>
-
-          <div class="alert danger">
-            <div class="alert-icon">🚫</div>
-            <div><b>NÃO conecte</b> a bateria de 24V diretamente ao ESP32 — vai queimá-lo. Use sempre o conversor buck MP1584 para reduzir para 5V.</div>
-          </div>
-          <div class="alert warn">
-            <div class="alert-icon">⚠️</div>
-            <div><b>Ajuste o MP1584 primeiro</b>, com voltímetro, <b>sem o ESP32 conectado</b>. Gire o trimpot até marcar exatamente <b>5.0V</b> entre OUT+ e OUT−.</div>
-          </div>
-          <div class="alert warn">
-            <div class="alert-icon">⚠️</div>
-            <div><b>Atenção na polaridade!</b> Na V1, sem o diodo de proteção, se ligar a bateria ao contrário o circuito pode ser danificado. Sempre confira o positivo (+) e negativo (−) antes de energizar.</div>
-          </div>
-
-          <div class="checklist-card">
-            <div class="checklist-header">Lista de conexões V1 — Fonte 5V para o ESP32 (4 ligações)</div>
-
-            <div class="check-item" onclick="toggle(this)">
-              <div class="wire-dot" style="background:#dc2626"></div>
-              <div class="checkbox"></div>
-              <div class="check-body">
-                <div class="check-title">Bateria 24V B+ → MP1584 INPUT+</div>
-                <div class="check-desc">Fio vermelho. Conecta diretamente o positivo da bateria à entrada do conversor buck. Confira a polaridade!</div>
-              </div>
-            </div>
-
-            <div class="check-item" onclick="toggle(this)">
-              <div class="wire-dot" style="background:#374151; border: 1px solid #6b7280"></div>
-              <div class="checkbox"></div>
-              <div class="check-body">
-                <div class="check-title">Bateria 24V B− → MP1584 INPUT−</div>
-                <div class="check-desc">Fio preto. Este é o ponto do GND unificado — todos os GNDs do sistema se unem aqui.</div>
-              </div>
-            </div>
-
-            <div class="check-item" onclick="toggle(this)">
-              <div class="wire-dot" style="background:#ea580c"></div>
-              <div class="checkbox"></div>
-              <div class="check-body">
-                <div class="check-title">MP1584 OUTPUT+ → ESP32 pino VIN</div>
-                <div class="check-desc">Fio laranja. Saída do buck (já regulada em 5V) vai direto ao pino VIN do ESP32. NÃO use o pino "5V" como entrada — ele é saída.</div>
-              </div>
-            </div>
-
-            <div class="check-item" onclick="toggle(this)">
-              <div class="wire-dot" style="background:#374151; border: 1px solid #6b7280"></div>
-              <div class="checkbox"></div>
-              <div class="check-body">
-                <div class="check-title">MP1584 OUTPUT− → ESP32 pino GND</div>
-                <div class="check-desc">Fio preto. Feche o circuito conectando o negativo do buck ao GND do ESP32. Use qualquer pino GND da placa.</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="schema" style="margin-top:12px;">
-            <div class="schema-title">Fluxo de energia — V1 (Simples)</div>
-            <div class="wire-row">
-              <div class="wire-line" style="background:#dc2626"></div>
-              <span class="wire-from">Bat+ 24V</span>
-              <span class="wire-arrow">→</span>
-              <span class="wire-to">MP1584 IN+ (direto)</span>
-            </div>
-            <div class="wire-row">
-              <div class="wire-line" style="background:#374151"></div>
-              <span class="wire-from">Bat− GND</span>
-              <span class="wire-arrow">→</span>
-              <span class="wire-to">MP1584 IN− = GND unificado</span>
-            </div>
-            <div class="wire-row">
-              <div class="wire-line" style="background:#ea580c"></div>
-              <span class="wire-from">MP1584 OUT+ (5V)</span>
-              <span class="wire-arrow">→</span>
-              <span class="wire-to">ESP32 VIN (direto)</span>
-            </div>
-            <div class="wire-row">
-              <div class="wire-line" style="background:#374151"></div>
-              <span class="wire-from">MP1584 OUT− (GND)</span>
-              <span class="wire-arrow">→</span>
-              <span class="wire-to">ESP32 GND</span>
-            </div>
-          </div>
-
-          <div class="alert ok">
-            <div class="alert-icon">✅</div>
-            <div><b>Teste de validação:</b> Após ligar a bateria, o LED do ESP32 deve acender. Meça com voltímetro: <b>5V entre VIN e GND</b>, <b>3.3V entre o pino 3V3 e GND</b>. Se ok, vá para o passo 2.</div>
-          </div>
+    <div>
+      <div class="info-card">
+        <div class="info-card-header">⚙️ Configurações do Arduino IDE</div>
+        <div class="info-row">
+          <div class="info-label">URL do Boards Manager (colar em Preferences)</div>
+          <div class="info-value" style="font-size:10px;color:#67e8f9;">https://espressif.github.io/arduino-esp32/package_esp32_index.json</div>
+          <div class="info-copy" onclick="copyText(this,'https://espressif.github.io/arduino-esp32/package_esp32_index.json')">Copiar URL</div>
         </div>
-
-        <!-- ─── V2 CONTENT ─── -->
-        <div class="v2-only">
-          <div class="ver-strip v2">
-            <span class="ver-strip-badge v2">V2</span>
-            Versão Protegida — com diodo de proteção e capacitor de filtragem
-          </div>
-
-          <div class="alert danger">
-            <div class="alert-icon">🚫</div>
-            <div><b>NÃO conecte</b> a bateria de 24V diretamente ao ESP32 — vai queimá-lo. A tensão máxima no pino VIN é 12V, no pino 5V é 5V. Use sempre o conversor buck MP1584.</div>
-          </div>
-          <div class="alert warn">
-            <div class="alert-icon">⚠️</div>
-            <div><b>Ajuste o MP1584 primeiro</b>, com voltímetro, <b>sem o ESP32 conectado</b>. Gire o trimpot até marcar exatamente <b>5.0V</b> entre OUT+ e OUT−.</div>
-          </div>
-
-          <div class="checklist-card">
-            <div class="checklist-header">Lista de conexões V2 — Fonte 5V para o ESP32 (7 ligações)</div>
-
-            <div class="check-item" onclick="toggle(this)">
-              <div class="wire-dot" style="background:#dc2626"></div>
-              <div class="checkbox"></div>
-              <div class="check-body">
-                <div class="check-title">Bateria 24V B+ → Diodo N04 (entrada, lado sem faixa — anodo)</div>
-                <div class="check-desc">Fio vermelho grosso. O lado sem marca/faixa do diodo é o anodo (entrada). A faixa cinza/prata é o catodo (saída).</div>
-              </div>
-            </div>
-
-            <div class="check-item" onclick="toggle(this)">
-              <div class="wire-dot" style="background:#dc2626"></div>
-              <div class="checkbox"></div>
-              <div class="check-body">
-                <div class="check-title">Diodo N04 (saída, lado com faixa — catodo) → MP1584 INPUT+</div>
-                <div class="check-desc">Fio vermelho. Esta é a proteção contra polaridade invertida — se ligar a bateria ao contrário, o diodo bloqueia e protege o circuito.</div>
-              </div>
-            </div>
-
-            <div class="check-item" onclick="toggle(this)">
-              <div class="wire-dot" style="background:#374151; border: 1px solid #6b7280"></div>
-              <div class="checkbox"></div>
-              <div class="check-body">
-                <div class="check-title">Bateria 24V B− → MP1584 INPUT−</div>
-                <div class="check-desc">Fio preto. Este é o ponto do GND unificado — todos os GNDs do sistema se unem aqui.</div>
-              </div>
-            </div>
-
-            <div class="check-item" onclick="toggle(this)">
-              <div class="wire-dot" style="background:#ea580c"></div>
-              <div class="checkbox"></div>
-              <div class="check-body">
-                <div class="check-title">MP1584 OUTPUT+ → polo (+) do capacitor 1000µF</div>
-                <div class="check-desc">Fio laranja. O polo positivo do capacitor tem a perna mais longa ou a marcação (+). Ele filtra ruídos dos motores e estabiliza a tensão.</div>
-              </div>
-            </div>
-
-            <div class="check-item" onclick="toggle(this)">
-              <div class="wire-dot" style="background:#374151; border: 1px solid #6b7280"></div>
-              <div class="checkbox"></div>
-              <div class="check-body">
-                <div class="check-title">MP1584 OUTPUT− → polo (−) do capacitor → GND unificado</div>
-                <div class="check-desc">Fio preto. Feche o circuito do capacitor e conecte ao barramento de GND.</div>
-              </div>
-            </div>
-
-            <div class="check-item" onclick="toggle(this)">
-              <div class="wire-dot" style="background:#ea580c"></div>
-              <div class="checkbox"></div>
-              <div class="check-body">
-                <div class="check-title">Polo (+) do capacitor → ESP32 pino VIN</div>
-                <div class="check-desc">Fio laranja. No NodeMCU ESP-32S o pino VIN aceita 5V. NÃO use o pino marcado "5V" como entrada — ele é saída.</div>
-              </div>
-            </div>
-
-            <div class="check-item" onclick="toggle(this)">
-              <div class="wire-dot" style="background:#374151; border: 1px solid #6b7280"></div>
-              <div class="checkbox"></div>
-              <div class="check-body">
-                <div class="check-title">GND unificado → ESP32 pino GND</div>
-                <div class="check-desc">Fio preto. Use qualquer pino GND do ESP32. Este terra comum é fundamental para o sistema funcionar.</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="schema" style="margin-top:12px;">
-            <div class="schema-title">Fluxo de energia — V2 (Protegido)</div>
-            <div class="wire-row">
-              <div class="wire-line" style="background:#dc2626"></div>
-              <span class="wire-from">Bat+ 24V</span>
-              <span class="wire-arrow">→</span>
-              <span class="wire-to">Diodo N04 → MP1584 IN+</span>
-            </div>
-            <div class="wire-row">
-              <div class="wire-line" style="background:#374151"></div>
-              <span class="wire-from">Bat− GND</span>
-              <span class="wire-arrow">→</span>
-              <span class="wire-to">MP1584 IN− = GND unificado</span>
-            </div>
-            <div class="wire-row">
-              <div class="wire-line" style="background:#ea580c"></div>
-              <span class="wire-from">MP1584 OUT+ (5V)</span>
-              <span class="wire-arrow">→</span>
-              <span class="wire-to">Cap 1000µF (+) → ESP32 VIN</span>
-            </div>
-            <div class="wire-row">
-              <div class="wire-line" style="background:#374151"></div>
-              <span class="wire-from">MP1584 Out− (GND)</span>
-              <span class="wire-arrow">→</span>
-              <span class="wire-to">Cap 1000µF (−) → ESP32 GND</span>
-            </div>
-          </div>
-
-          <div class="alert ok">
-            <div class="alert-icon">✅</div>
-            <div><b>Teste de validação:</b> Após ligar a bateria, o LED do ESP32 deve acender. Meça com voltímetro: <b>5V entre VIN e GND</b>, <b>3.3V entre o pino 3V3 e GND</b>. Se ok, vá para o passo 2.</div>
-          </div>
+        <div class="info-row">
+          <div class="info-label">Pacote (Boards Manager)</div>
+          <div class="info-value">esp32 by <b>Espressif Systems</b></div>
+          <div class="info-value" style="color:#86efac;font-size:11px;">Versão ≥ 3.0.0 obrigatória</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Placa selecionada</div>
+          <div class="info-value">NodeMCU-32S<br><span style="color:var(--muted);">ou ESP32 Dev Module</span></div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Biblioteca Xbox (Library Manager)</div>
+          <div class="info-value" style="font-size:11px;"><b>XboxSeriesXControllerESP32_asukiaaa</b><br><span style="color:var(--muted);">Autor: asukiaaa</span></div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Baud Rate (Serial Monitor)</div>
+          <div class="info-value" style="font-size:20px;font-weight:700;color:#fde68a;">115200</div>
         </div>
       </div>
+      <div class="info-card" style="margin-top:12px;">
+        <div class="info-card-header">📌 GPIOs do projeto</div>
+        <div class="info-row"><div class="info-label">Motor Esquerdo</div>
+          <div class="info-value"><span style="color:#93c5fd;">GPIO 12</span> = RPWM (avança)<br><span style="color:#93c5fd;">GPIO 14</span> = LPWM (recua)</div></div>
+        <div class="info-row"><div class="info-label">Motor Direito</div>
+          <div class="info-value"><span style="color:#d8b4fe;">GPIO 16</span> = RPWM (avança)<br><span style="color:#d8b4fe;">GPIO 17</span> = LPWM (recua)</div></div>
+        <div class="info-row"><div class="info-label">Motor Lâmina</div>
+          <div class="info-value"><span style="color:#86efac;">GPIO 23</span> = On/Off (relé)</div></div>
+        <div class="info-row"><div class="info-label">PWM</div>
+          <div class="info-value">5 kHz · 8 bits (0–255)<br><span style="color:var(--muted);font-size:11px;">ledcAttach + ledcWrite (SDK 3.0+)</span></div></div>
+      </div>
+      <div class="alert warn" style="margin-top:12px;"><div class="alert-icon">⚠️</div><div><b>Porta COM não aparece?</b> Instale o driver correto para o chip USB do NodeMCU (CP210x ou CH340) e reinicie o PC.</div></div>
+    </div>
+  </div>
+</div>
 
-      <!-- IMAGEM -->
-      <div class="img-card">
-        <div class="img-tabs">
-          <button class="img-tab active" onclick="showTab(this,'t1a')">ESP-32S Pinout</button>
-          <button class="img-tab" onclick="showTab(this,'t1b')">MP1584</button>
-        </div>
-        <div id="t1a" class="img-panel active">
-          <img src="esp-32s v1.1.png" alt="ESP32 Pinout">
-          <div style="padding:10px 12px; font-size:11px; color:var(--muted); background:var(--surface2);">
-            <b style="color:#e2e8f0">Pinos usados neste passo:</b><br>
-            <span style="color:#fdba74">■</span> <b>VIN</b> — entrada 5V (lado direito, 1º pino superior)<br>
-            <span style="color:#a8a29e">■</span> <b>GND</b> — terra (múltiplos pinos, ambos os lados)
+<!-- PASSO 2 — LIGAR ESP32 -->
+<div class="step-panel" id="panel1">
+  <div class="step-header">
+    <div class="step-icon" style="background:#1e3a5f;">⚡</div>
+    <div><h2>Passo 2 — Ligar apenas o ESP32</h2>
+    <p>Monte a fonte 5V antes de conectar qualquer driver. Teste e valide antes de continuar.</p></div>
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="v1-only">
+        <div class="ver-strip v1"><span class="ver-strip-badge v1">V1</span>Versão Simples — sem diodo nem capacitor</div>
+        <div class="alert danger"><div class="alert-icon">🚫</div><div><b>NÃO</b> conecte 24V diretamente ao ESP32. Use o MP1584 para converter para 5V.</div></div>
+        <div class="alert warn"><div class="alert-icon">⚠️</div><div>Ajuste o MP1584 com voltímetro <b>sem o ESP32 conectado</b> até marcar <b>5.0V</b>. Sem o diodo: confirme sempre a polaridade antes de energizar.</div></div>
+        <div class="checklist-card">
+          <div class="checklist-header">Conexões V1 — 4 ligações</div>
+          <div class="check-item" onclick="toggle(this)">
+            <div class="wire-dot" style="background:#dc2626"></div><div class="checkbox"></div>
+            <div class="check-body"><div class="check-title">Bat+ 24V → MP1584 INPUT+</div><div class="check-desc">Fio vermelho. Positivo direto no buck. Confirme a polaridade!</div></div>
+          </div>
+          <div class="check-item" onclick="toggle(this)">
+            <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
+            <div class="check-body"><div class="check-title">Bat− → MP1584 INPUT−</div><div class="check-desc">Fio preto. GND unificado de todo o sistema.</div></div>
+          </div>
+          <div class="check-item" onclick="toggle(this)">
+            <div class="wire-dot" style="background:#ea580c"></div><div class="checkbox"></div>
+            <div class="check-body"><div class="check-title">MP1584 OUTPUT+ → ESP32 pino VIN</div><div class="check-desc">Fio laranja. Saída 5V regulada vai direto ao VIN. NÃO use o pino "5V" como entrada.</div></div>
+          </div>
+          <div class="check-item" onclick="toggle(this)">
+            <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
+            <div class="check-body"><div class="check-title">MP1584 OUTPUT− → ESP32 pino GND</div><div class="check-desc">Fio preto. Qualquer pino GND da placa.</div></div>
           </div>
         </div>
-        <div id="t1b" class="img-panel">
-          <img src="MP1584-Pinout.jpg" alt="MP1584" style="background:#fff; padding:6px;">
-          <div style="padding:10px 12px; font-size:11px; color:var(--muted); background:var(--surface2);">
-            <span style="color:#fca5a5">■</span> <b>INPUT+</b> — entrada positiva (24V)<br>
-            <span style="color:#a8a29e">■</span> <b>INPUT−</b> — entrada negativa (GND)<br>
-            <span style="color:#fdba74">■</span> <b>OUTPUT+</b> — saída positiva (5V ajustado)<br>
-            <span style="color:#a8a29e">■</span> <b>OUTPUT−</b> — saída negativa (GND)<br>
-            <span style="color:#fde68a">■</span> <b>Trimpot</b> — ajuste até 5.0V no multímetro
+        <div class="schema" style="margin-top:12px;">
+          <div class="schema-title">Fluxo V1</div>
+          <div class="wire-row"><div class="wire-line" style="background:#dc2626"></div><span class="wire-from">Bat+ 24V</span><span class="wire-arrow">→</span><span class="wire-to">MP1584 IN+ (direto)</span></div>
+          <div class="wire-row"><div class="wire-line" style="background:#374151"></div><span class="wire-from">Bat− GND</span><span class="wire-arrow">→</span><span class="wire-to">MP1584 IN− = GND</span></div>
+          <div class="wire-row"><div class="wire-line" style="background:#ea580c"></div><span class="wire-from">MP1584 OUT+ 5V</span><span class="wire-arrow">→</span><span class="wire-to">ESP32 VIN</span></div>
+          <div class="wire-row"><div class="wire-line" style="background:#374151"></div><span class="wire-from">MP1584 Out− GND</span><span class="wire-arrow">→</span><span class="wire-to">ESP32 GND</span></div>
+        </div>
+      </div>
+      <div class="v2-only">
+        <div class="ver-strip v2"><span class="ver-strip-badge v2">V2</span>Versão Protegida — com diodo N04 e capacitor 1000µF</div>
+        <div class="alert danger"><div class="alert-icon">🚫</div><div><b>NÃO</b> conecte 24V diretamente ao ESP32. Use o MP1584 para converter para 5V.</div></div>
+        <div class="alert warn"><div class="alert-icon">⚠️</div><div>Ajuste o MP1584 com voltímetro <b>sem o ESP32 conectado</b> até marcar <b>5.0V</b>.</div></div>
+        <div class="checklist-card">
+          <div class="checklist-header">Conexões V2 — 7 ligações</div>
+          <div class="check-item" onclick="toggle(this)">
+            <div class="wire-dot" style="background:#dc2626"></div><div class="checkbox"></div>
+            <div class="check-body"><div class="check-title">Bat+ 24V → Diodo N04 (anodo — lado sem faixa)</div><div class="check-desc">Fio vermelho. Lado sem marca = anodo (entrada). Faixa cinza = catodo (saída).</div></div>
           </div>
+          <div class="check-item" onclick="toggle(this)">
+            <div class="wire-dot" style="background:#dc2626"></div><div class="checkbox"></div>
+            <div class="check-body"><div class="check-title">Diodo N04 (catodo — faixa) → MP1584 INPUT+</div><div class="check-desc">Proteção de polaridade: bateria ao contrário → diodo bloqueia → circuito protegido.</div></div>
+          </div>
+          <div class="check-item" onclick="toggle(this)">
+            <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
+            <div class="check-body"><div class="check-title">Bat− → MP1584 INPUT−</div><div class="check-desc">Fio preto. GND unificado.</div></div>
+          </div>
+          <div class="check-item" onclick="toggle(this)">
+            <div class="wire-dot" style="background:#ea580c"></div><div class="checkbox"></div>
+            <div class="check-body"><div class="check-title">MP1584 OUTPUT+ → polo (+) do capacitor 1000µF</div><div class="check-desc">Fio laranja. Perna mais longa = positivo. Filtra ruídos dos motores.</div></div>
+          </div>
+          <div class="check-item" onclick="toggle(this)">
+            <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
+            <div class="check-body"><div class="check-title">MP1584 OUTPUT− → polo (−) do capacitor → GND</div><div class="check-desc">Fio preto. Fecha o circuito do capacitor no GND.</div></div>
+          </div>
+          <div class="check-item" onclick="toggle(this)">
+            <div class="wire-dot" style="background:#ea580c"></div><div class="checkbox"></div>
+            <div class="check-body"><div class="check-title">Polo (+) do capacitor → ESP32 pino VIN</div><div class="check-desc">Fio laranja. NÃO use o pino "5V" como entrada.</div></div>
+          </div>
+          <div class="check-item" onclick="toggle(this)">
+            <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
+            <div class="check-body"><div class="check-title">GND unificado → ESP32 pino GND</div><div class="check-desc">Fio preto. Qualquer pino GND da placa.</div></div>
+          </div>
+        </div>
+        <div class="schema" style="margin-top:12px;">
+          <div class="schema-title">Fluxo V2</div>
+          <div class="wire-row"><div class="wire-line" style="background:#dc2626"></div><span class="wire-from">Bat+ 24V</span><span class="wire-arrow">→</span><span class="wire-to">Diodo N04 → MP1584 IN+</span></div>
+          <div class="wire-row"><div class="wire-line" style="background:#374151"></div><span class="wire-from">Bat− GND</span><span class="wire-arrow">→</span><span class="wire-to">MP1584 IN− = GND</span></div>
+          <div class="wire-row"><div class="wire-line" style="background:#ea580c"></div><span class="wire-from">MP1584 OUT+ 5V</span><span class="wire-arrow">→</span><span class="wire-to">Cap (+) → ESP32 VIN</span></div>
+          <div class="wire-row"><div class="wire-line" style="background:#374151"></div><span class="wire-from">MP1584 Out− GND</span><span class="wire-arrow">→</span><span class="wire-to">Cap (−) → ESP32 GND</span></div>
+        </div>
+      </div>
+      <div class="alert ok"><div class="alert-icon">✅</div><div><b>Teste:</b> LED do ESP32 acende. Voltímetro: <b>5V entre VIN e GND</b>, <b>3.3V entre 3V3 e GND</b>.</div></div>
+    </div>
+    <div class="img-card">
+      <div class="img-tabs">
+        <button class="img-tab active" onclick="showTab(this,'t2a')">ESP-32S Pinout</button>
+        <button class="img-tab" onclick="showTab(this,'t2b')">MP1584</button>
+      </div>
+      <div id="t2a" class="img-panel active">
+        <img src="esp-32s v1.1.png" alt="ESP32 Pinout">
+        <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
+          <b style="color:#e2e8f0">Pinos usados:</b><br>
+          <span style="color:#fdba74">■</span> <b>VIN</b> — entrada 5V (lado direito, topo)<br>
+          <span style="color:#a8a29e">■</span> <b>GND</b> — terra (múltiplos pinos)
+        </div>
+      </div>
+      <div id="t2b" class="img-panel">
+        <img src="MP1584-Pinout.jpg" alt="MP1584" style="background:#fff;padding:6px;">
+        <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
+          <span style="color:#fca5a5">■</span> <b>INPUT+</b> — 24V (via diodo em V2)<br>
+          <span style="color:#a8a29e">■</span> <b>INPUT−</b> — GND<br>
+          <span style="color:#fdba74">■</span> <b>OUTPUT+</b> — 5V ajustado<br>
+          <span style="color:#fde68a">■</span> <b>Trimpot</b> — ajustar até 5.0V
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ════════════════════════════════ -->
-  <!-- STEP 2 — 1º MOTOR               -->
-  <!-- ════════════════════════════════ -->
-  <div class="step-panel" id="panel1">
-
-    <div class="step-header">
-      <div class="step-icon" style="background:#7f1d1d;">🔴</div>
-      <div>
-        <h2>Passo 2 — Adicionar o Motor Esquerdo (Driver 1)</h2>
-        <p>Com o ESP32 já funcionando, adicione o primeiro driver BTS7960 e um motor para testar o controle.</p>
+<!-- PASSO 3 — MOTOR ESQUERDO -->
+<div class="step-panel" id="panel2">
+  <div class="step-header">
+    <div class="step-icon" style="background:#7f1d1d;">🔴</div>
+    <div><h2>Passo 3 — Motor Esquerdo (Driver 1)</h2>
+    <p>GPIO 12 (avança) e GPIO 14 (recua) controlam o motor esquerdo. Desligue a bateria antes de conectar.</p></div>
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="alert info"><div class="alert-icon">ℹ️</div><div><b>Desligue a bateria</b> antes de qualquer conexão. Religue só após verificar tudo.</div></div>
+      <div class="checklist-card">
+        <div class="checklist-header">Alimentação de potência — Driver 1 (24V)</div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#dc2626"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Bat+ 24V → Driver 1 VM+ (borne parafuso, pino 11)</div><div class="check-desc">Fio vermelho GROSSO. Use fio ≥ 1,5mm².</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">GND unificado → Driver 1 VM− (borne parafuso, pino 12)</div><div class="check-desc">Fio preto GROSSO. Mesmo barramento de GND da bateria.</div></div>
+        </div>
       </div>
-    </div>
-
-    <div class="two-col">
-      <div>
-        <div class="alert info">
-          <div class="alert-icon">ℹ️</div>
-          <div><b>Desligue a bateria</b> antes de fazer qualquer conexão nova. Só religue para testar após verificar todas as ligações do passo.</div>
+      <div class="checklist-card" style="margin-top:10px;">
+        <div class="checklist-header">Lógica de controle — Driver 1 (header 8 pinos)</div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#ea580c"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">ESP32 pino 5V → Driver 1 VCC (pino 7)</div><div class="check-desc">Fio laranja. Alimenta o circuito lógico do BTS7960.</div></div>
         </div>
-
-        <div class="checklist-card">
-          <div class="checklist-header">Alimentação de potência — Driver 1 (24V)</div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#dc2626"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">Bat+ 24V → Driver 1 VM+ (borne parafuso, pino 11)</div>
-              <div class="check-desc">Fio vermelho GROSSO. Fornece a potência de 24V para os motores. Use fio de pelo menos 1,5mm².</div>
-            </div>
-          </div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#374151; border:1px solid #6b7280"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">GND unificado → Driver 1 VM− (borne parafuso, pino 12)</div>
-              <div class="check-desc">Fio preto GROSSO. Terra da potência. Conecte ao mesmo barramento de GND da bateria.</div>
-            </div>
-          </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">ESP32 GND → Driver 1 GND (pino 8)</div><div class="check-desc">Fio preto. CRÍTICO: sem este fio o driver não recebe os sinais do ESP32.</div></div>
         </div>
-
-        <div class="checklist-card" style="margin-top:10px;">
-          <div class="checklist-header">Lógica de controle — Driver 1 (header 8 pinos)</div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#ea580c"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">ESP32 pino 5V → Driver 1 VCC (pino 7 do header)</div>
-              <div class="check-desc">Fio laranja fino. Alimenta o circuito lógico interno do BTS7960. Use o pino "5V" do ESP32 (é uma saída regulada).</div>
-            </div>
-          </div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#374151; border:1px solid #6b7280"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">ESP32 GND → Driver 1 GND (pino 8 do header)</div>
-              <div class="check-desc">Fio preto fino. CRÍTICO: sem este fio o driver ignora os sinais do ESP32.</div>
-            </div>
-          </div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#ca8a04"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">ESP32 pino 3V3 → Driver 1 R_EN (pino 3 do header)</div>
-              <div class="check-desc">Fio amarelo. Habilita permanentemente o lado direito (R) do driver.</div>
-            </div>
-          </div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#ca8a04"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">ESP32 pino 3V3 → Driver 1 L_EN (pino 4 do header)</div>
-              <div class="check-desc">Fio amarelo. Habilita permanentemente o lado esquerdo (L). Pode ramificar do mesmo fio do R_EN.</div>
-            </div>
-          </div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#2563eb"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">ESP32 GPIO 4 → Driver 1 R_PWM (pino 1 do header)</div>
-              <div class="check-desc">Fio azul. Controla a direção e velocidade para o sentido AVANÇAR.</div>
-            </div>
-          </div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#16a34a"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">ESP32 GPIO 5 → Driver 1 L_PWM (pino 2 do header)</div>
-              <div class="check-desc">Fio verde. Controla a direção e velocidade para o sentido RECUAR.</div>
-            </div>
-          </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#ca8a04"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">ESP32 pino 3V3 → Driver 1 R_EN (pino 3)</div><div class="check-desc">Fio amarelo. Enable permanente do lado R.</div></div>
         </div>
-
-        <div class="checklist-card" style="margin-top:10px;">
-          <div class="checklist-header">Motor Esquerdo → Driver 1 (bornes verdes)</div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#15803d"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">Motor Esq. Fio A → Driver 1 Motor+ (borne parafuso, pino 10)</div>
-              <div class="check-desc">Qualquer fio do motor (inverter depois se girar ao contrário).</div>
-            </div>
-          </div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#15803d"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">Motor Esq. Fio B → Driver 1 Motor− (borne parafuso, pino 9)</div>
-              <div class="check-desc">O segundo fio do motor. Se girar ao contrário do esperado, troque Motor+ com Motor−.</div>
-            </div>
-          </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#ca8a04"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">ESP32 pino 3V3 → Driver 1 L_EN (pino 4)</div><div class="check-desc">Pode ramificar do mesmo fio do R_EN.</div></div>
         </div>
-
-        <div class="code-block" style="margin-top:14px;">
-          <div class="code-header">
-            <span>💾 Sketch de teste — Motor Esquerdo</span>
-            <button class="copy-btn" onclick="copyCode(this, 'code1')">Copiar</button>
-          </div>
-          <pre id="code1"><span class="cm">// Teste Motor Esquerdo — Driver 1</span>
-<span class="cm">// GPIO 4 = R_PWM (avança) | GPIO 5 = L_PWM (recua)</span>
-
-<span class="kw">#define</span> <span class="nm">RPWM_1</span>  <span class="num">4</span>
-<span class="kw">#define</span> <span class="nm">LPWM_1</span>  <span class="num">5</span>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#2563eb"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">ESP32 GPIO <b>12</b> → Driver 1 R_PWM (pino 1)</div><div class="check-desc">Fio azul. Controla AVANÇAR. GPIO 12 fica no lado direito da placa.</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#16a34a"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">ESP32 GPIO <b>14</b> → Driver 1 L_PWM (pino 2)</div><div class="check-desc">Fio verde. Controla RECUAR. GPIO 14 fica no lado direito da placa.</div></div>
+        </div>
+      </div>
+      <div class="checklist-card" style="margin-top:10px;">
+        <div class="checklist-header">Motor Esquerdo → Driver 1</div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#15803d"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Motor Esq. Fio A → Driver 1 Motor+ (pino 10)</div><div class="check-desc">Inverter se girar ao contrário do esperado.</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#15803d"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Motor Esq. Fio B → Driver 1 Motor− (pino 9)</div></div>
+        </div>
+      </div>
+      <div class="code-block" style="margin-top:14px;">
+        <div class="code-header"><span>💾 Teste Motor Esquerdo (SDK 3.0+)</span><button class="copy-btn" onclick="copyCode(this,'code1')">Copiar</button></div>
+        <pre id="code1"><span class="cm">// Teste Motor Esquerdo — Driver 1</span>
+<span class="cm">// GPIO 12 = R_PWM (avança) | GPIO 14 = L_PWM (recua)</span>
+<span class="kw">#define</span> <span class="nm">RPWM_1</span>  <span class="num">12</span>
+<span class="kw">#define</span> <span class="nm">LPWM_1</span>  <span class="num">14</span>
 
 <span class="kw">void</span> <span class="fn">setup</span>() {
-  pinMode(<span class="nm">RPWM_1</span>, OUTPUT);
-  pinMode(<span class="nm">LPWM_1</span>, OUTPUT);
+  ledcAttach(<span class="nm">RPWM_1</span>, <span class="num">5000</span>, <span class="num">8</span>); <span class="cm">// 5 kHz, 8 bits</span>
+  ledcAttach(<span class="nm">LPWM_1</span>, <span class="num">5000</span>, <span class="num">8</span>);
   Serial.begin(<span class="num">115200</span>);
-  Serial.println(<span class="str">"Iniciando teste Motor Esquerdo..."</span>);
 }
 
 <span class="kw">void</span> <span class="fn">loop</span>() {
   Serial.println(<span class="str">"Avancando..."</span>);
-  analogWrite(<span class="nm">RPWM_1</span>, <span class="num">150</span>);
-  analogWrite(<span class="nm">LPWM_1</span>, <span class="num">0</span>);
+  ledcWrite(<span class="nm">RPWM_1</span>, <span class="num">150</span>); ledcWrite(<span class="nm">LPWM_1</span>, <span class="num">0</span>);
   delay(<span class="num">2000</span>);
-
-  Serial.println(<span class="str">"Parando..."</span>);
-  analogWrite(<span class="nm">RPWM_1</span>, <span class="num">0</span>);
-  analogWrite(<span class="nm">LPWM_1</span>, <span class="num">0</span>);
+  ledcWrite(<span class="nm">RPWM_1</span>, <span class="num">0</span>);   ledcWrite(<span class="nm">LPWM_1</span>, <span class="num">0</span>);
   delay(<span class="num">1000</span>);
-
   Serial.println(<span class="str">"Recuando..."</span>);
-  analogWrite(<span class="nm">RPWM_1</span>, <span class="num">0</span>);
-  analogWrite(<span class="nm">LPWM_1</span>, <span class="num">150</span>);
+  ledcWrite(<span class="nm">RPWM_1</span>, <span class="num">0</span>);   ledcWrite(<span class="nm">LPWM_1</span>, <span class="num">150</span>);
   delay(<span class="num">2000</span>);
-
-  Serial.println(<span class="str">"Parando..."</span>);
-  analogWrite(<span class="nm">RPWM_1</span>, <span class="num">0</span>);
-  analogWrite(<span class="nm">LPWM_1</span>, <span class="num">0</span>);
+  ledcWrite(<span class="nm">RPWM_1</span>, <span class="num">0</span>);   ledcWrite(<span class="nm">LPWM_1</span>, <span class="num">0</span>);
   delay(<span class="num">1000</span>);
 }</pre>
-        </div>
-
-        <div class="alert ok">
-          <div class="alert-icon">✅</div>
-          <div><b>Resultado esperado:</b> Motor avança 2s → para 1s → recua 2s → para 1s, em loop. Se girar ao contrário, troque os fios Motor+ e Motor− nos bornes do driver.</div>
+      </div>
+      <div class="alert ok"><div class="alert-icon">✅</div><div>Motor avança 2s → para 1s → recua 2s → para 1s. Se girar ao contrário, troque Motor+ e Motor−.</div></div>
+    </div>
+    <div class="img-card">
+      <div class="img-tabs">
+        <button class="img-tab active" onclick="showTab(this,'t3a')">BTS7960 Pinout</button>
+        <button class="img-tab" onclick="showTab(this,'t3b')">ESP-32S</button>
+      </div>
+      <div id="t3a" class="img-panel active">
+        <img src="TBS7960-Pinout.jpg" alt="BTS7960">
+        <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
+          <b style="color:#e2e8f0">Header lógico (lado direito):</b><br>
+          <span style="color:#93c5fd">■</span> Pino 1 <b>R_PWM</b> → GPIO <b>12</b><br>
+          <span style="color:#86efac">■</span> Pino 2 <b>L_PWM</b> → GPIO <b>14</b><br>
+          <span style="color:#fde68a">■</span> Pino 3/4 <b>EN</b> → 3.3V<br>
+          <span style="color:#fdba74">■</span> Pino 7 <b>VCC</b> → 5V<br>
+          <span style="color:#a8a29e">■</span> Pino 8 <b>GND</b><br><br>
+          <b style="color:#e2e8f0">Bornes parafuso:</b><br>
+          <span style="color:#fca5a5">■</span> 11 <b>VM+</b> | <span style="color:#a8a29e">■</span> 12 <b>VM−</b><br>
+          <span style="color:#bbf7d0">■</span> 10 <b>Motor+</b> | 9 <b>Motor−</b>
         </div>
       </div>
-
-      <!-- IMAGEM -->
-      <div class="img-card">
-        <div class="img-tabs">
-          <button class="img-tab active" onclick="showTab(this,'t2a')">BTS7960 Pinout</button>
-          <button class="img-tab" onclick="showTab(this,'t2b')">ESP-32S</button>
-        </div>
-        <div id="t2a" class="img-panel active">
-          <img src="TBS7960-Pinout.jpg" alt="BTS7960">
-          <div style="padding:10px 12px; font-size:11px; color:var(--muted); background:var(--surface2);">
-            <b style="color:#e2e8f0">Header lógico (8 pinos, lado direito):</b><br>
-            <span style="color:#86efac">■</span> Pino 1 <b>R_PWM</b> → GPIO 4 (azul)<br>
-            <span style="color:#86efac">■</span> Pino 2 <b>L_PWM</b> → GPIO 5 (verde)<br>
-            <span style="color:#fde68a">■</span> Pino 3 <b>R_EN</b> → 3.3V (amarelo)<br>
-            <span style="color:#fde68a">■</span> Pino 4 <b>L_EN</b> → 3.3V (amarelo)<br>
-            <span style="color:#a8a29e">■</span> Pino 5/6 <b>R_IS/L_IS</b> → não usar<br>
-            <span style="color:#fdba74">■</span> Pino 7 <b>VCC</b> → 5V ESP32<br>
-            <span style="color:#a8a29e">■</span> Pino 8 <b>GND</b> → GND ESP32<br><br>
-            <b style="color:#e2e8f0">Bornes parafuso (lado esquerdo):</b><br>
-            <span style="color:#fca5a5">■</span> Pino 11 <b>VM+</b> → Bat+ 24V<br>
-            <span style="color:#a8a29e">■</span> Pino 12 <b>VM−</b> → GND bateria<br>
-            <span style="color:#bbf7d0">■</span> Pino 10 <b>Motor+</b> → Fio A<br>
-            <span style="color:#bbf7d0">■</span> Pino 9 &nbsp;<b>Motor−</b> → Fio B
-          </div>
-        </div>
-        <div id="t2b" class="img-panel">
-          <img src="esp-32s v1.1.png" alt="ESP32" style="background:#fff; padding:4px;">
-          <div style="padding:10px 12px; font-size:11px; color:var(--muted); background:var(--surface2);">
-            <b style="color:#e2e8f0">Pinos usados neste passo:</b><br>
-            <span style="color:#fdba74">■</span> <b>5V</b> → VCC Driver 1 (pino 7)<br>
-            <span style="color:#a8a29e">■</span> <b>GND</b> → GND Driver 1 (pino 8)<br>
-            <span style="color:#fde68a">■</span> <b>3V3</b> → R_EN + L_EN<br>
-            <span style="color:#93c5fd">■</span> <b>GPIO 4</b> → R_PWM<br>
-            <span style="color:#86efac">■</span> <b>GPIO 5</b> → L_PWM
-          </div>
+      <div id="t3b" class="img-panel">
+        <img src="esp-32s v1.1.png" alt="ESP32" style="background:#fff;padding:4px;">
+        <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
+          <b style="color:#e2e8f0">Motor Esquerdo:</b><br>
+          <span style="color:#93c5fd">■</span> <b>GPIO 12</b> → R_PWM (avança)<br>
+          <span style="color:#86efac">■</span> <b>GPIO 14</b> → L_PWM (recua)
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ════════════════════════════════ -->
-  <!-- STEP 3 — 2º MOTOR               -->
-  <!-- ════════════════════════════════ -->
-  <div class="step-panel" id="panel2">
-
-    <div class="step-header">
-      <div class="step-icon" style="background:#7f1d1d;">🔴</div>
-      <div>
-        <h2>Passo 3 — Adicionar o Motor Direito (Driver 2)</h2>
-        <p>Repita o processo do Driver 1, mas usando GPIO 16 e GPIO 17 para o segundo driver.</p>
+<!-- PASSO 4 — MOTOR DIREITO -->
+<div class="step-panel" id="panel3">
+  <div class="step-header">
+    <div class="step-icon" style="background:#7f1d1d;">🔴</div>
+    <div><h2>Passo 4 — Motor Direito (Driver 2)</h2>
+    <p>GPIO 16 (avança) e GPIO 17 (recua). Mesma lógica do Driver 1.</p></div>
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="alert warn"><div class="alert-icon">⚠️</div><div><b>Não use GPIO 6–11</b> — ligados à flash interna, travará o ESP32. Use <b>GPIO 16</b> e <b>GPIO 17</b>.</div></div>
+      <div class="checklist-card">
+        <div class="checklist-header">Alimentação de potência — Driver 2 (24V)</div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#dc2626"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Bat+ 24V → Driver 2 VM+ (pino 11)</div><div class="check-desc">Pode ramificar do mesmo ponto do Driver 1.</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">GND unificado → Driver 2 VM− (pino 12)</div></div>
+        </div>
       </div>
-    </div>
-
-    <div class="two-col">
-      <div>
-        <div class="alert warn">
-          <div class="alert-icon">⚠️</div>
-          <div><b>Não use GPIO 6 e GPIO 7</b> — estão ligados à memória flash interna e travarão o ESP32. Use <b>GPIO 16</b> e <b>GPIO 17</b>.</div>
+      <div class="checklist-card" style="margin-top:10px;">
+        <div class="checklist-header">Lógica de controle — Driver 2</div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#ea580c"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">ESP32 pino 5V → Driver 2 VCC (pino 7)</div></div>
         </div>
-
-        <div class="checklist-card">
-          <div class="checklist-header">Alimentação de potência — Driver 2 (24V)</div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#dc2626"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">Bat+ 24V → Driver 2 VM+ (borne parafuso, pino 11)</div>
-              <div class="check-desc">Fio vermelho grosso. Pode ramificar do mesmo ponto do Driver 1 na bateria.</div>
-            </div>
-          </div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#374151; border:1px solid #6b7280"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">GND unificado → Driver 2 VM− (borne parafuso, pino 12)</div>
-              <div class="check-desc">Fio preto grosso. Mesmo barramento de GND da bateria e Driver 1.</div>
-            </div>
-          </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">ESP32 GND → Driver 2 GND (pino 8)</div></div>
         </div>
-
-        <div class="checklist-card" style="margin-top:10px;">
-          <div class="checklist-header">Lógica de controle — Driver 2 (header 8 pinos)</div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#ea580c"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">ESP32 pino 5V → Driver 2 VCC (pino 7 do header)</div>
-              <div class="check-desc">Fio laranja. Pode partir do mesmo pino 5V do ESP32.</div>
-            </div>
-          </div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#374151; border:1px solid #6b7280"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">ESP32 GND → Driver 2 GND (pino 8 do header)</div>
-              <div class="check-desc">Fio preto. Sem isso os sinais PWM não chegam corretamente ao driver.</div>
-            </div>
-          </div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#ca8a04"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">ESP32 pino 3V3 → Driver 2 R_EN (pino 3 do header)</div>
-              <div class="check-desc">Fio amarelo. Pode ramificar do mesmo fio 3V3 que vai ao Driver 1.</div>
-            </div>
-          </div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#ca8a04"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">ESP32 pino 3V3 → Driver 2 L_EN (pino 4 do header)</div>
-              <div class="check-desc">Fio amarelo. Pode ser o mesmo fio ramificado dos outros enables.</div>
-            </div>
-          </div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#7c3aed"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">ESP32 GPIO 16 → Driver 2 R_PWM (pino 1 do header)</div>
-              <div class="check-desc">Fio roxo. GPIO 16 fica no lado direito da placa, marcado como "16". NÃO use GPIO 6.</div>
-            </div>
-          </div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#0891b2"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">ESP32 GPIO 17 → Driver 2 L_PWM (pino 2 do header)</div>
-              <div class="check-desc">Fio ciano. GPIO 17 fica no lado direito da placa, marcado como "17". NÃO use GPIO 7.</div>
-            </div>
-          </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#ca8a04"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">ESP32 pino 3V3 → Driver 2 R_EN (pino 3)</div><div class="check-desc">Pode ramificar do fio 3V3 do Driver 1.</div></div>
         </div>
-
-        <div class="checklist-card" style="margin-top:10px;">
-          <div class="checklist-header">Motor Direito → Driver 2 (bornes verdes)</div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#15803d"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">Motor Dir. Fio A → Driver 2 Motor+ (pino 10)</div>
-              <div class="check-desc">Qualquer fio do motor (inverter se girar ao contrário).</div>
-            </div>
-          </div>
-
-          <div class="check-item" onclick="toggle(this)">
-            <div class="wire-dot" style="background:#15803d"></div>
-            <div class="checkbox"></div>
-            <div class="check-body">
-              <div class="check-title">Motor Dir. Fio B → Driver 2 Motor− (pino 9)</div>
-              <div class="check-desc">O segundo fio do motor direito.</div>
-            </div>
-          </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#ca8a04"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">ESP32 pino 3V3 → Driver 2 L_EN (pino 4)</div></div>
         </div>
-
-        <div class="code-block" style="margin-top:14px;">
-          <div class="code-header">
-            <span>💾 Sketch de teste — Ambos os Motores</span>
-            <button class="copy-btn" onclick="copyCode(this, 'code2')">Copiar</button>
-          </div>
-          <pre id="code2"><span class="cm">// Teste dos 2 motores juntos</span>
-<span class="kw">#define</span> <span class="nm">RPWM_1</span> <span class="num">4</span>   <span class="cm">// Motor Esq — avança</span>
-<span class="kw">#define</span> <span class="nm">LPWM_1</span> <span class="num">5</span>   <span class="cm">// Motor Esq — recua</span>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#7c3aed"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">ESP32 GPIO <b>16</b> → Driver 2 R_PWM (pino 1)</div><div class="check-desc">Fio roxo. Lado direito da placa, marcado "16".</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#0891b2"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">ESP32 GPIO <b>17</b> → Driver 2 L_PWM (pino 2)</div><div class="check-desc">Fio ciano. Lado direito da placa, marcado "17".</div></div>
+        </div>
+      </div>
+      <div class="checklist-card" style="margin-top:10px;">
+        <div class="checklist-header">Motor Direito → Driver 2</div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#15803d"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Motor Dir. Fio A → Driver 2 Motor+ (pino 10)</div><div class="check-desc">Inverter se girar ao contrário.</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#15803d"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">Motor Dir. Fio B → Driver 2 Motor− (pino 9)</div></div>
+        </div>
+      </div>
+      <div class="code-block" style="margin-top:14px;">
+        <div class="code-header"><span>💾 Teste — Ambos os motores (SDK 3.0+)</span><button class="copy-btn" onclick="copyCode(this,'code2')">Copiar</button></div>
+        <pre id="code2"><span class="kw">#define</span> <span class="nm">RPWM_1</span> <span class="num">12</span>  <span class="cm">// Motor Esq — avança</span>
+<span class="kw">#define</span> <span class="nm">LPWM_1</span> <span class="num">14</span>  <span class="cm">// Motor Esq — recua</span>
 <span class="kw">#define</span> <span class="nm">RPWM_2</span> <span class="num">16</span>  <span class="cm">// Motor Dir — avança</span>
 <span class="kw">#define</span> <span class="nm">LPWM_2</span> <span class="num">17</span>  <span class="cm">// Motor Dir — recua</span>
 
 <span class="kw">void</span> <span class="fn">setup</span>() {
-  pinMode(<span class="nm">RPWM_1</span>, OUTPUT); pinMode(<span class="nm">LPWM_1</span>, OUTPUT);
-  pinMode(<span class="nm">RPWM_2</span>, OUTPUT); pinMode(<span class="nm">LPWM_2</span>, OUTPUT);
+  ledcAttach(<span class="nm">RPWM_1</span>, <span class="num">5000</span>, <span class="num">8</span>); ledcAttach(<span class="nm">LPWM_1</span>, <span class="num">5000</span>, <span class="num">8</span>);
+  ledcAttach(<span class="nm">RPWM_2</span>, <span class="num">5000</span>, <span class="num">8</span>); ledcAttach(<span class="nm">LPWM_2</span>, <span class="num">5000</span>, <span class="num">8</span>);
   Serial.begin(<span class="num">115200</span>);
 }
-
-<span class="kw">void</span> <span class="fn">mover</span>(<span class="kw">int</span> velEsq, <span class="kw">int</span> velDir) {
-  analogWrite(<span class="nm">RPWM_1</span>, velEsq > <span class="num">0</span> ? velEsq : <span class="num">0</span>);
-  analogWrite(<span class="nm">LPWM_1</span>, velEsq < <span class="num">0</span> ? -velEsq : <span class="num">0</span>);
-  analogWrite(<span class="nm">RPWM_2</span>, velDir > <span class="num">0</span> ? velDir : <span class="num">0</span>);
-  analogWrite(<span class="nm">LPWM_2</span>, velDir < <span class="num">0</span> ? -velDir : <span class="num">0</span>);
+<span class="kw">void</span> <span class="fn">mover</span>(<span class="kw">int</span> e, <span class="kw">int</span> d) {
+  ledcWrite(<span class="nm">RPWM_1</span>, e > <span class="num">0</span> ? e : <span class="num">0</span>); ledcWrite(<span class="nm">LPWM_1</span>, e < <span class="num">0</span> ? -e : <span class="num">0</span>);
+  ledcWrite(<span class="nm">RPWM_2</span>, d > <span class="num">0</span> ? d : <span class="num">0</span>); ledcWrite(<span class="nm">LPWM_2</span>, d < <span class="num">0</span> ? -d : <span class="num">0</span>);
 }
-
-<span class="kw">void</span> <span class="fn">parar</span>() { <span class="fn">mover</span>(<span class="num">0</span>, <span class="num">0</span>); }
-
 <span class="kw">void</span> <span class="fn">loop</span>() {
   Serial.println(<span class="str">"Ambos avancam"</span>);
-  <span class="fn">mover</span>(<span class="num">150</span>, <span class="num">150</span>);  delay(<span class="num">2000</span>);
-  <span class="fn">parar</span>();          delay(<span class="num">500</span>);
-
+  <span class="fn">mover</span>(<span class="num">150</span>, <span class="num">150</span>); delay(<span class="num">2000</span>); <span class="fn">mover</span>(<span class="num">0</span>,<span class="num">0</span>); delay(<span class="num">500</span>);
   Serial.println(<span class="str">"Ambos recuam"</span>);
-  <span class="fn">mover</span>(-<span class="num">150</span>, -<span class="num">150</span>); delay(<span class="num">2000</span>);
-  <span class="fn">parar</span>();           delay(<span class="num">500</span>);
+  <span class="fn">mover</span>(-<span class="num">150</span>,-<span class="num">150</span>); delay(<span class="num">2000</span>); <span class="fn">mover</span>(<span class="num">0</span>,<span class="num">0</span>); delay(<span class="num">500</span>);
 }</pre>
+      </div>
+    </div>
+    <div class="img-card">
+      <div class="img-tabs">
+        <button class="img-tab active" onclick="showTab(this,'t4a')">BTS7960 Pinout</button>
+        <button class="img-tab" onclick="showTab(this,'t4b')">ESP-32S</button>
+      </div>
+      <div id="t4a" class="img-panel active">
+        <img src="TBS7960-Pinout.jpg" alt="BTS7960">
+        <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
+          <b style="color:#e2e8f0">Driver 2:</b><br>
+          <span style="color:#d8b4fe">■</span> Pino 1 <b>R_PWM</b> → GPIO <b>16</b><br>
+          <span style="color:#67e8f9">■</span> Pino 2 <b>L_PWM</b> → GPIO <b>17</b><br>
+          <span style="color:#fde68a">■</span> EN 3/4 → 3.3V<br>
+          <span style="color:#fdba74">■</span> VCC 7 → 5V | <span style="color:#a8a29e">■</span> GND 8
         </div>
       </div>
-
-      <!-- IMAGEM -->
-      <div class="img-card">
-        <div class="img-tabs">
-          <button class="img-tab active" onclick="showTab(this,'t3a')">BTS7960 Pinout</button>
-          <button class="img-tab" onclick="showTab(this,'t3b')">ESP-32S</button>
-        </div>
-        <div id="t3a" class="img-panel active">
-          <img src="TBS7960-Pinout.jpg" alt="BTS7960">
-          <div style="padding:10px 12px; font-size:11px; color:var(--muted); background:var(--surface2);">
-            <b style="color:#e2e8f0">Driver 2 — mesmas posições do Driver 1:</b><br>
-            <span style="color:#d8b4fe">■</span> Pino 1 <b>R_PWM</b> → GPIO <b>16</b> (roxo)<br>
-            <span style="color:#67e8f9">■</span> Pino 2 <b>L_PWM</b> → GPIO <b>17</b> (ciano)<br>
-            <span style="color:#fde68a">■</span> Pino 3/4 <b>EN</b> → 3.3V<br>
-            <span style="color:#fdba74">■</span> Pino 7 <b>VCC</b> → 5V<br>
-            <span style="color:#a8a29e">■</span> Pino 8 <b>GND</b> → GND
-          </div>
-        </div>
-        <div id="t3b" class="img-panel">
-          <img src="esp-32s v1.1.png" alt="ESP32" style="background:#fff; padding:4px;">
-          <div style="padding:10px 12px; font-size:11px; color:var(--muted); background:var(--surface2);">
-            <b style="color:#e2e8f0">Pinos novos neste passo:</b><br>
-            <span style="color:#d8b4fe">■</span> <b>GPIO 16</b> → R_PWM Driver 2<br>
-            <span style="color:#67e8f9">■</span> <b>GPIO 17</b> → L_PWM Driver 2<br><br>
-            <b style="color:#fecaca">⚠ NÃO USE:</b><br>
-            GPIO 6 (CLK flash), GPIO 7 (D0 flash)<br>
-            GPIO 8–11 também são da flash interna
-          </div>
+      <div id="t4b" class="img-panel">
+        <img src="esp-32s v1.1.png" alt="ESP32" style="background:#fff;padding:4px;">
+        <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
+          <b style="color:#e2e8f0">Motor Direito:</b><br>
+          <span style="color:#d8b4fe">■</span> <b>GPIO 16</b> → R_PWM<br>
+          <span style="color:#67e8f9">■</span> <b>GPIO 17</b> → L_PWM<br><br>
+          <b style="color:#fecaca">⚠ NÃO USE GPIO 6–11</b>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ════════════════════════════════ -->
-  <!-- STEP 4 — TESTE FINAL            -->
-  <!-- ════════════════════════════════ -->
-  <div class="step-panel" id="panel3">
+<!-- PASSO 5 — CÓDIGO FINAL -->
+<div class="step-panel" id="panel4">
+  <div class="step-header">
+    <div class="step-icon" style="background:#14532d;">🎮</div>
+    <div><h2>Passo 5 — Código Final + Teste com Xbox Controller</h2>
+    <p>Suba o sketch real, pareie o controle Xbox via Bluetooth e teste tudo.</p></div>
+  </div>
 
-    <div class="step-header">
-      <div class="step-icon" style="background:#14532d;">✅</div>
-      <div>
-        <h2>Passo 4 — Verificação Final e Resumo</h2>
-        <p>Confira todas as conexões antes de ligar o sistema completo pela primeira vez.</p>
+  <div class="alert ok" style="margin-bottom:16px;"><div class="alert-icon">🎉</div><div>Hardware montado! Suba o sketch abaixo, pareie o controle e confirme pelo Monitor Serial.</div></div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;">
+    <div style="padding:12px 16px;background:var(--surface2);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--border);">🎮 Como parear o Controle Xbox Series X/S</div>
+    <div style="padding:14px 16px;font-size:13px;display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="background:#1e3a8a;color:#93c5fd;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">1</div>
+        <div><b>Ligue o controle</b> pressionando o botão Xbox (logo central).</div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="background:#1e3a8a;color:#93c5fd;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">2</div>
+        <div><b>Ative o modo pairing</b>: segure o botão de sincronização (topo, ao lado do USB) por 3s até o LED piscar rapidamente.</div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="background:#1e3a8a;color:#93c5fd;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">3</div>
+        <div><b>Energize o ESP32</b>. O código chama <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">xboxController.begin()</code> e inicia a busca BLE automaticamente.</div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="background:#14532d;color:#86efac;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">✓</div>
+        <div><b>Conexão confirmada</b>: LED do controle para de piscar → Monitor Serial exibe <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[OK] CONECTADO!</code></div>
       </div>
     </div>
+  </div>
 
-    <div class="alert ok" style="margin-bottom:16px;">
-      <div class="alert-icon">🎉</div>
-      <div>Se chegou até aqui com todos os ítens marcados, seu sistema está pronto! Faça a revisão final abaixo antes de energizar.</div>
-    </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;">
+    <div style="padding:12px 16px;background:var(--surface2);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--border);">🕹️ Mapeamento de Controles</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="background:#111827;">
+        <th style="padding:8px 14px;text-align:left;color:var(--muted);font-weight:600;">Controle</th>
+        <th style="padding:8px 14px;text-align:left;color:var(--muted);font-weight:600;">Ação</th>
+        <th style="padding:8px 14px;text-align:left;color:var(--muted);font-weight:600;">Código</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><b>Analógico Esq ↑</b></td><td style="padding:8px 14px;color:#86efac;">Avançar</td><td style="padding:8px 14px;color:var(--muted);font-size:11px;">32768 − joyLVert (invertido)</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><b>Analógico Esq ↓</b></td><td style="padding:8px 14px;color:#fca5a5;">Recuar</td><td style="padding:8px 14px;color:var(--muted);font-size:11px;">joyLVert negativo</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><b>Analógico Esq ←→</b></td><td style="padding:8px 14px;color:#67e8f9;">Girar (tank drive)</td><td style="padding:8px 14px;color:var(--muted);font-size:11px;">joyLHori divide potência esq/dir</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><b>Gatilho Direito RT &gt; 50%</b></td><td style="padding:8px 14px;color:#fde68a;">Lâmina LIGADA</td><td style="padding:8px 14px;color:var(--muted);font-size:11px;">GPIO 23 → HIGH</td></tr>
+        <tr><td style="padding:8px 14px;"><b>Conexão perdida</b></td><td style="padding:8px 14px;color:#fca5a5;">Para tudo</td><td style="padding:8px 14px;color:var(--muted);font-size:11px;">parar_motores() + GPIO23 LOW</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-    <!-- TABELA RESUMO V1 -->
-    <div class="v1-only" style="background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:16px;">
-      <div style="padding:12px 16px; background:#1c1600; border-bottom:1px solid #78350f; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#fde68a; display:flex; align-items:center; gap:8px;">
-        <span style="background:#78350f; color:#fde68a; padding:2px 8px; border-radius:4px; font-size:11px;">V1</span>
-        Resumo completo — Versão Simples (sem diodo · sem capacitor)
-      </div>
-      <table style="width:100%; border-collapse:collapse; font-size:12px;">
-        <thead>
-          <tr style="background:#111827;">
-            <th style="padding:8px 14px; text-align:left; color:var(--muted); font-weight:600;">Fio</th>
-            <th style="padding:8px 14px; text-align:left; color:var(--muted); font-weight:600;">DE</th>
-            <th style="padding:8px 14px; text-align:left; color:var(--muted); font-weight:600;">PARA</th>
-            <th style="padding:8px 14px; text-align:left; color:var(--muted); font-weight:600;">Obs.</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Vermelho</td>
-            <td style="padding:8px 14px;"><b>Bat+ 24V</b></td>
-            <td style="padding:8px 14px;">MP1584 INPUT+</td>
-            <td style="padding:8px 14px; color:var(--muted);">Direto — sem diodo</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#374151;border:1px solid #6b7280;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Preto</td>
-            <td style="padding:8px 14px;"><b>Bat− GND</b></td>
-            <td style="padding:8px 14px;">MP1584 IN− / Driver1 VM− / Driver2 VM− / ESP32 GND</td>
-            <td style="padding:8px 14px; color:var(--muted);">GND unificado</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#ea580c;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Laranja</td>
-            <td style="padding:8px 14px;"><b>MP1584 OUT+ (5V)</b></td>
-            <td style="padding:8px 14px;">ESP32 VIN → Driver1 VCC → Driver2 VCC</td>
-            <td style="padding:8px 14px; color:var(--muted);">Direto — sem capacitor</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Vermelho</td>
-            <td style="padding:8px 14px;"><b>Bat+ 24V</b></td>
-            <td style="padding:8px 14px;">Driver 1 VM+ (pino 11) + Driver 2 VM+ (pino 11)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Fio grosso 1,5mm²</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#ca8a04;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Amarelo</td>
-            <td style="padding:8px 14px;"><b>ESP32 3V3</b></td>
-            <td style="padding:8px 14px;">Driver1 R_EN(3)+L_EN(4) + Driver2 R_EN(3)+L_EN(4)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Enable permanente</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#2563eb;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Azul</td>
-            <td style="padding:8px 14px;"><b>ESP32 GPIO 4</b></td>
-            <td style="padding:8px 14px;">Driver 1 R_PWM (pino 1)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Motor Esq. — avança</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#16a34a;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Verde</td>
-            <td style="padding:8px 14px;"><b>ESP32 GPIO 5</b></td>
-            <td style="padding:8px 14px;">Driver 1 L_PWM (pino 2)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Motor Esq. — recua</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#7c3aed;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Roxo</td>
-            <td style="padding:8px 14px;"><b>ESP32 GPIO 16</b></td>
-            <td style="padding:8px 14px;">Driver 2 R_PWM (pino 1)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Motor Dir. — avança</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#0891b2;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Ciano</td>
-            <td style="padding:8px 14px;"><b>ESP32 GPIO 17</b></td>
-            <td style="padding:8px 14px;">Driver 2 L_PWM (pino 2)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Motor Dir. — recua</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#15803d;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Motor</td>
-            <td style="padding:8px 14px;"><b>Motor Esq. A/B</b></td>
-            <td style="padding:8px 14px;">Driver 1 Motor+(10) / Motor−(9)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Inverter se errado</td>
-          </tr>
-          <tr>
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#15803d;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Motor</td>
-            <td style="padding:8px 14px;"><b>Motor Dir. A/B</b></td>
-            <td style="padding:8px 14px;">Driver 2 Motor+(10) / Motor−(9)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Inverter se errado</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="code-block">
+    <div class="code-header"><span>💾 hovercomesp32D0WDQ6.ino — Código completo</span><button class="copy-btn" onclick="copyCode(this,'code3')">Copiar</button></div>
+    <pre id="code3"><span class="kw">#include</span> <span class="str">&lt;XboxSeriesXControllerESP32_asukiaaa.hpp&gt;</span>
 
-    <!-- TABELA RESUMO V2 -->
-    <div class="v2-only" style="background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:16px;">
-      <div style="padding:12px 16px; background:#0c1628; border-bottom:1px solid #1e3a8a; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#93c5fd; display:flex; align-items:center; gap:8px;">
-        <span style="background:#1e3a8a; color:#93c5fd; padding:2px 8px; border-radius:4px; font-size:11px;">V2</span>
-        Resumo completo — Versão Protegida (com diodo · com capacitor)
-      </div>
-      <table style="width:100%; border-collapse:collapse; font-size:12px;">
-        <thead>
-          <tr style="background:#111827;">
-            <th style="padding:8px 14px; text-align:left; color:var(--muted); font-weight:600;">Fio</th>
-            <th style="padding:8px 14px; text-align:left; color:var(--muted); font-weight:600;">DE</th>
-            <th style="padding:8px 14px; text-align:left; color:var(--muted); font-weight:600;">PARA</th>
-            <th style="padding:8px 14px; text-align:left; color:var(--muted); font-weight:600;">Obs.</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Vermelho</td>
-            <td style="padding:8px 14px;"><b>Bat+ 24V</b></td>
-            <td style="padding:8px 14px;">Diodo N04 (anodo — lado sem faixa)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Proteção polaridade</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Vermelho</td>
-            <td style="padding:8px 14px;"><b>Diodo N04 (catodo)</b></td>
-            <td style="padding:8px 14px;">MP1584 INPUT+</td>
-            <td style="padding:8px 14px; color:var(--muted);">Lado da faixa cinza</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Vermelho</td>
-            <td style="padding:8px 14px;"><b>Bat+ 24V</b></td>
-            <td style="padding:8px 14px;">Driver 1 VM+ (pino 11) + Driver 2 VM+ (pino 11)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Fio grosso 1,5mm²</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#374151;border:1px solid #6b7280;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Preto</td>
-            <td style="padding:8px 14px;"><b>Bat− GND</b></td>
-            <td style="padding:8px 14px;">MP1584 IN− / Driver1 VM− / Driver2 VM− / ESP32 GND</td>
-            <td style="padding:8px 14px; color:var(--muted);">GND unificado</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#ea580c;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Laranja</td>
-            <td style="padding:8px 14px;"><b>MP1584 OUT+ (5V)</b></td>
-            <td style="padding:8px 14px;">Cap 1000µF (+) → ESP32 VIN → Driver1 VCC → Driver2 VCC</td>
-            <td style="padding:8px 14px; color:var(--muted);">Ajustar para 5.0V</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#ca8a04;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Amarelo</td>
-            <td style="padding:8px 14px;"><b>ESP32 3V3</b></td>
-            <td style="padding:8px 14px;">Driver1 R_EN(3)+L_EN(4) + Driver2 R_EN(3)+L_EN(4)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Enable permanente</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#2563eb;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Azul</td>
-            <td style="padding:8px 14px;"><b>ESP32 GPIO 4</b></td>
-            <td style="padding:8px 14px;">Driver 1 R_PWM (pino 1)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Motor Esq. — avança</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#16a34a;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Verde</td>
-            <td style="padding:8px 14px;"><b>ESP32 GPIO 5</b></td>
-            <td style="padding:8px 14px;">Driver 1 L_PWM (pino 2)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Motor Esq. — recua</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#7c3aed;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Roxo</td>
-            <td style="padding:8px 14px;"><b>ESP32 GPIO 16</b></td>
-            <td style="padding:8px 14px;">Driver 2 R_PWM (pino 1)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Motor Dir. — avança</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#0891b2;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Ciano</td>
-            <td style="padding:8px 14px;"><b>ESP32 GPIO 17</b></td>
-            <td style="padding:8px 14px;">Driver 2 L_PWM (pino 2)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Motor Dir. — recua</td>
-          </tr>
-          <tr style="border-bottom:1px solid #1a2535;">
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#15803d;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Motor</td>
-            <td style="padding:8px 14px;"><b>Motor Esq. A/B</b></td>
-            <td style="padding:8px 14px;">Driver 1 Motor+(10) / Motor−(9)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Inverter se errado</td>
-          </tr>
-          <tr>
-            <td style="padding:8px 14px;"><span style="display:inline-block;width:14px;height:14px;background:#15803d;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Motor</td>
-            <td style="padding:8px 14px;"><b>Motor Dir. A/B</b></td>
-            <td style="padding:8px 14px;">Driver 2 Motor+(10) / Motor−(9)</td>
-            <td style="padding:8px 14px; color:var(--muted);">Inverter se errado</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+<span class="cm">// --- PINOS MOTORES TRAÇÃO (IBT-2 / BTS7960) ---</span>
+<span class="kw">const int</span> <span class="nm">MOTOR_ESQ_RPWM</span> = <span class="num">12</span>; <span class="cm">// Motor Esq avança</span>
+<span class="kw">const int</span> <span class="nm">MOTOR_ESQ_LPWM</span> = <span class="num">14</span>; <span class="cm">// Motor Esq recua</span>
+<span class="kw">const int</span> <span class="nm">MOTOR_DIR_RPWM</span> = <span class="num">16</span>; <span class="cm">// Motor Dir avança</span>
+<span class="kw">const int</span> <span class="nm">MOTOR_DIR_LPWM</span> = <span class="num">17</span>; <span class="cm">// Motor Dir recua</span>
 
-    <!-- CHECKLIST FINAL -->
-    <div class="checklist-card" style="margin-bottom:14px;">
-      <div class="checklist-header">✅ Checklist de segurança antes de energizar</div>
-      <div class="check-item" onclick="toggle(this)">
-        <div class="wire-dot" style="background:#eab308"></div>
-        <div class="checkbox"></div>
-        <div class="check-body">
-          <div class="check-title">MP1584 ajustado para 5.0V (testado com voltímetro sem o ESP32)</div>
-        </div>
-      </div>
-      <div class="check-item" onclick="toggle(this)">
-        <div class="wire-dot" style="background:#eab308"></div>
-        <div class="checkbox"></div>
-        <div class="check-body">
-          <div class="check-title">GND do ESP32, GND dos dois drivers e GND da bateria todos interligados</div>
-        </div>
-      </div>
-      <div class="check-item" onclick="toggle(this)">
-        <div class="wire-dot" style="background:#eab308"></div>
-        <div class="checkbox"></div>
-        <div class="check-body">
-          <div class="check-title">Nenhum fio de sinal (GPIO) tocando o barramento de 24V</div>
-        </div>
-      </div>
-      <div class="check-item" onclick="toggle(this)">
-        <div class="wire-dot" style="background:#eab308"></div>
-        <div class="checkbox"></div>
-        <div class="check-body">
-          <div class="check-title">GPIO 6 e GPIO 7 NÃO foram usados (usar 16 e 17)</div>
-        </div>
-      </div>
-      <div class="check-item" onclick="toggle(this)">
-        <div class="wire-dot" style="background:#eab308"></div>
-        <div class="checkbox"></div>
-        <div class="check-body">
-          <div class="check-title">Bornes VM+ e VM− dos drivers conectados com fio grosso (≥1,5mm²)</div>
-        </div>
-      </div>
-      <div class="check-item v2-only" onclick="toggle(this)">
-        <div class="wire-dot" style="background:#eab308"></div>
-        <div class="checkbox"></div>
-        <div class="check-body">
-          <div class="check-title">Diodo N04: anodo (+) ligado ao Bat+, catodo (faixa) ligado ao MP1584</div>
-        </div>
-      </div>
-      <div class="check-item v2-only" onclick="toggle(this)">
-        <div class="wire-dot" style="background:#eab308"></div>
-        <div class="checkbox"></div>
-        <div class="check-body">
-          <div class="check-title">Capacitor 1000µF: polo (+) perna longa ligado ao MP1584 OUT+</div>
-        </div>
-      </div>
-      <div class="check-item" onclick="toggle(this)">
-        <div class="wire-dot" style="background:#eab308"></div>
-        <div class="checkbox"></div>
-        <div class="check-body">
-          <div class="check-title">Sketch carregado com as definições corretas dos GPIOs</div>
-        </div>
-      </div>
-    </div>
+<span class="cm">// --- PINO MOTOR DA LÂMINA (ROÇADEIRA) ---</span>
+<span class="kw">const int</span> <span class="nm">MOTOR_LAMINA</span> = <span class="num">23</span>; <span class="cm">// Relé ou Driver On/Off</span>
 
-    <div class="code-block">
-      <div class="code-header">
-        <span>💾 Sketch completo — Sistema pronto para uso</span>
-        <button class="copy-btn" onclick="copyCode(this, 'code3')">Copiar</button>
-      </div>
-      <pre id="code3"><span class="cm">// Sistema completo — 2 Motores Dewert 24V via BTS7960</span>
-<span class="cm">// ESP32S NodeMCU v1.1</span>
-
-<span class="kw">#define</span> <span class="nm">RPWM_ESQ</span>  <span class="num">4</span>
-<span class="kw">#define</span> <span class="nm">LPWM_ESQ</span>  <span class="num">5</span>
-<span class="kw">#define</span> <span class="nm">RPWM_DIR</span> <span class="num">16</span>
-<span class="kw">#define</span> <span class="nm">LPWM_DIR</span> <span class="num">17</span>
-
-<span class="kw">void</span> <span class="fn">motorEsq</span>(<span class="kw">int</span> vel) {
-  <span class="kw">if</span> (vel > <span class="num">0</span>)      { analogWrite(<span class="nm">RPWM_ESQ</span>, vel); analogWrite(<span class="nm">LPWM_ESQ</span>, <span class="num">0</span>); }
-  <span class="kw">else if</span> (vel < <span class="num">0</span>) { analogWrite(<span class="nm">RPWM_ESQ</span>, <span class="num">0</span>); analogWrite(<span class="nm">LPWM_ESQ</span>, -vel); }
-  <span class="kw">else</span>               { analogWrite(<span class="nm">RPWM_ESQ</span>, <span class="num">0</span>); analogWrite(<span class="nm">LPWM_ESQ</span>, <span class="num">0</span>); }
-}
-
-<span class="kw">void</span> <span class="fn">motorDir</span>(<span class="kw">int</span> vel) {
-  <span class="kw">if</span> (vel > <span class="num">0</span>)      { analogWrite(<span class="nm">RPWM_DIR</span>, vel); analogWrite(<span class="nm">LPWM_DIR</span>, <span class="num">0</span>); }
-  <span class="kw">else if</span> (vel < <span class="num">0</span>) { analogWrite(<span class="nm">RPWM_DIR</span>, <span class="num">0</span>); analogWrite(<span class="nm">LPWM_DIR</span>, -vel); }
-  <span class="kw">else</span>               { analogWrite(<span class="nm">RPWM_DIR</span>, <span class="num">0</span>); analogWrite(<span class="nm">LPWM_DIR</span>, <span class="num">0</span>); }
-}
+XboxSeriesXControllerESP32_asukiaaa::Core xboxController;
+<span class="kw">const int</span> <span class="nm">PWM_MAX</span> = <span class="num">220</span>;
+<span class="kw">bool</span> <span class="nm">conectado_anteriormente</span> = <span class="kw">false</span>;
 
 <span class="kw">void</span> <span class="fn">setup</span>() {
-  pinMode(<span class="nm">RPWM_ESQ</span>, OUTPUT); pinMode(<span class="nm">LPWM_ESQ</span>, OUTPUT);
-  pinMode(<span class="nm">RPWM_DIR</span>, OUTPUT); pinMode(<span class="nm">LPWM_DIR</span>, OUTPUT);
   Serial.begin(<span class="num">115200</span>);
-  Serial.println(<span class="str">"Sistema pronto!"</span>);
+  delay(<span class="num">1000</span>);
+  Serial.println(<span class="str">"\n--- CONFIGURANDO SENTIDO: CIMA = FRENTE ---"</span>);
+
+  <span class="cm">// PWM com ESP32 Arduino SDK 3.0+ (ledcAttach substitui ledcSetup+ledcAttachPin)</span>
+  ledcAttach(<span class="nm">MOTOR_ESQ_RPWM</span>, <span class="num">5000</span>, <span class="num">8</span>);
+  ledcAttach(<span class="nm">MOTOR_ESQ_LPWM</span>, <span class="num">5000</span>, <span class="num">8</span>);
+  ledcAttach(<span class="nm">MOTOR_DIR_RPWM</span>, <span class="num">5000</span>, <span class="num">8</span>);
+  ledcAttach(<span class="nm">MOTOR_DIR_LPWM</span>, <span class="num">5000</span>, <span class="num">8</span>);
+
+  pinMode(<span class="nm">MOTOR_LAMINA</span>, OUTPUT);
+  digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW);
+
+  xboxController.begin(); <span class="cm">// Inicia busca BLE pelo controle Xbox</span>
 }
 
 <span class="kw">void</span> <span class="fn">loop</span>() {
-  <span class="fn">motorEsq</span>(<span class="num">200</span>);   <span class="cm">// Motor esq avança (0-255)</span>
-  <span class="fn">motorDir</span>(<span class="num">200</span>);   <span class="cm">// Motor dir avança</span>
-  delay(<span class="num">3000</span>);
-  <span class="fn">motorEsq</span>(<span class="num">0</span>);
-  <span class="fn">motorDir</span>(<span class="num">0</span>);
-  delay(<span class="num">1000</span>);
-  <span class="fn">motorEsq</span>(-<span class="num">200</span>);  <span class="cm">// Recua</span>
-  <span class="fn">motorDir</span>(-<span class="num">200</span>);
-  delay(<span class="num">3000</span>);
-  <span class="fn">motorEsq</span>(<span class="num">0</span>);
-  <span class="fn">motorDir</span>(<span class="num">0</span>);
-  delay(<span class="num">1000</span>);
-}</pre>
-    </div>
+  xboxController.onLoop();
 
-    <div class="alert ok" style="margin-top:14px;">
-      <div class="alert-icon">🚀</div>
-      <div><b>Pronto!</b> Todas as etapas concluídas. Os motores Dewert devem responder aos comandos do ESP32 com controle de direção e velocidade via PWM.</div>
-    </div>
+  <span class="kw">if</span> (xboxController.isConnected()) {
+    <span class="kw">if</span> (!<span class="nm">conectado_anteriormente</span>) {
+      Serial.println(<span class="str">"\n[OK] CONECTADO!"</span>);
+      <span class="nm">conectado_anteriormente</span> = <span class="kw">true</span>;
+    }
+    <span class="kw">if</span> (!xboxController.isWaitingForFirstNotification()) {
+      <span class="cm">// Analógico esquerdo — CIMA = POSITIVO (invertido)</span>
+      int32_t joyY = <span class="num">32768</span> - (int32_t)xboxController.xboxNotif.joyLVert;
+      int32_t joyX = (int32_t)xboxController.xboxNotif.joyLHori - <span class="num">32768</span>;
+
+      <span class="cm">// Deadzone: evita trepidação quando o analógico está em repouso</span>
+      <span class="kw">if</span> (abs(joyY) < <span class="num">3500</span>) joyY = <span class="num">0</span>;
+      <span class="kw">if</span> (abs(joyX) < <span class="num">3500</span>) joyX = <span class="num">0</span>;
+
+      <span class="cm">// Tank Drive Mixer: combina Y e X para controle diferencial</span>
+      <span class="kw">int</span> alvo_esq = map(joyY + (joyX / <span class="num">2</span>), -<span class="num">32768</span>, <span class="num">32767</span>, -<span class="nm">PWM_MAX</span>, <span class="nm">PWM_MAX</span>);
+      <span class="kw">int</span> alvo_dir = map(joyY - (joyX / <span class="num">2</span>), -<span class="num">32768</span>, <span class="num">32767</span>, -<span class="nm">PWM_MAX</span>, <span class="nm">PWM_MAX</span>);
+
+      <span class="cm">// Gatilho direito RT > metade = liga lâmina</span>
+      digitalWrite(<span class="nm">MOTOR_LAMINA</span>, xboxController.xboxNotif.trigRT > <span class="num">512</span> ? HIGH : LOW);
+
+      <span class="fn">acionarMotores</span>(alvo_esq, alvo_dir);
+
+      <span class="cm">// Telemetria a cada 500ms</span>
+      <span class="kw">static unsigned long</span> lastLog = <span class="num">0</span>;
+      <span class="kw">if</span> (millis() - lastLog > <span class="num">500</span>) {
+        Serial.print(<span class="str">"JOY Y:"</span>); Serial.print(joyY);
+        Serial.print(<span class="str">" X:"</span>);   Serial.print(joyX);
+        Serial.print(<span class="str">" | ESQ:"</span>); Serial.print(alvo_esq > <span class="num">0</span> ? <span class="str">"FRENTE "</span> : <span class="str">"TRAS "</span>); Serial.print(abs(alvo_esq));
+        Serial.print(<span class="str">" | DIR:"</span>); Serial.print(alvo_dir > <span class="num">0</span> ? <span class="str">"FRENTE "</span> : <span class="str">"TRAS "</span>); Serial.print(abs(alvo_dir));
+        Serial.print(<span class="str">" | LAMINA:"</span>); Serial.println(digitalRead(<span class="nm">MOTOR_LAMINA</span>) ? <span class="str">"LIGADA"</span> : <span class="str">"OFF"</span>);
+        lastLog = millis();
+      }
+    }
+  } <span class="kw">else</span> {
+    <span class="kw">if</span> (<span class="nm">conectado_anteriormente</span>) {
+      Serial.println(<span class="str">"\n[!] CONEXAO PERDIDA - PARANDO"</span>);
+      <span class="fn">parar_motores</span>();
+      digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW);
+      <span class="nm">conectado_anteriormente</span> = <span class="kw">false</span>;
+    }
+    delay(<span class="num">500</span>);
+  }
+}
+
+<span class="kw">void</span> <span class="fn">acionarMotores</span>(<span class="kw">int</span> v_esq, <span class="kw">int</span> v_dir) {
+  ledcWrite(<span class="nm">MOTOR_ESQ_RPWM</span>, v_esq >= <span class="num">0</span> ? abs(v_esq) : <span class="num">0</span>);
+  ledcWrite(<span class="nm">MOTOR_ESQ_LPWM</span>, v_esq < <span class="num">0</span>  ? abs(v_esq) : <span class="num">0</span>);
+  ledcWrite(<span class="nm">MOTOR_DIR_RPWM</span>, v_dir >= <span class="num">0</span> ? abs(v_dir) : <span class="num">0</span>);
+  ledcWrite(<span class="nm">MOTOR_DIR_LPWM</span>, v_dir < <span class="num">0</span>  ? abs(v_dir) : <span class="num">0</span>);
+}
+
+<span class="kw">void</span> <span class="fn">parar_motores</span>() {
+  ledcWrite(<span class="nm">MOTOR_ESQ_RPWM</span>, <span class="num">0</span>); ledcWrite(<span class="nm">MOTOR_ESQ_LPWM</span>, <span class="num">0</span>);
+  ledcWrite(<span class="nm">MOTOR_DIR_RPWM</span>, <span class="num">0</span>); ledcWrite(<span class="nm">MOTOR_DIR_LPWM</span>, <span class="num">0</span>);
+}</pre>
   </div>
 
-</div><!-- /content -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:16px 0;">
+    <div style="padding:12px 16px;background:var(--surface2);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--border);">Resumo completo de todas as conexões</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="background:#111827;">
+        <th style="padding:8px 14px;text-align:left;color:var(--muted);">Fio</th>
+        <th style="padding:8px 14px;text-align:left;color:var(--muted);">DE</th>
+        <th style="padding:8px 14px;text-align:left;color:var(--muted);">PARA</th>
+        <th style="padding:8px 14px;text-align:left;color:var(--muted);">Obs.</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Vermelho</td><td style="padding:8px 14px;"><b>Bat+ 24V</b></td><td style="padding:8px 14px;">MP1584 IN+ <span class="v2-only" style="color:#d8b4fe;">(via Diodo N04)</span></td><td style="padding:8px 14px;color:var(--muted);">Fonte 5V</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Vermelho</td><td style="padding:8px 14px;"><b>Bat+ 24V</b></td><td style="padding:8px 14px;">Driver1 VM+(11) + Driver2 VM+(11)</td><td style="padding:8px 14px;color:var(--muted);">Fio grosso ≥1,5mm²</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#374151;border:1px solid #6b7280;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Preto</td><td style="padding:8px 14px;"><b>Bat− GND</b></td><td style="padding:8px 14px;">MP1584 IN− / D1 VM− / D2 VM− / ESP32 GND</td><td style="padding:8px 14px;color:var(--muted);">GND unificado</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#ea580c;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Laranja</td><td style="padding:8px 14px;"><b>MP1584 OUT+ 5V</b></td><td style="padding:8px 14px;">ESP32 VIN <span class="v2-only" style="color:#67e8f9;">(via Cap 1000µF)</span> + D1 VCC + D2 VCC</td><td style="padding:8px 14px;color:var(--muted);">5.0V ajustado</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#ca8a04;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Amarelo</td><td style="padding:8px 14px;"><b>ESP32 3V3</b></td><td style="padding:8px 14px;">D1 R_EN+L_EN + D2 R_EN+L_EN</td><td style="padding:8px 14px;color:var(--muted);">Enable permanente</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#2563eb;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Azul</td><td style="padding:8px 14px;"><b>GPIO 12</b></td><td style="padding:8px 14px;">Driver 1 R_PWM (pino 1)</td><td style="padding:8px 14px;color:var(--muted);">Motor Esq — avança</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#16a34a;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Verde</td><td style="padding:8px 14px;"><b>GPIO 14</b></td><td style="padding:8px 14px;">Driver 1 L_PWM (pino 2)</td><td style="padding:8px 14px;color:var(--muted);">Motor Esq — recua</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#7c3aed;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Roxo</td><td style="padding:8px 14px;"><b>GPIO 16</b></td><td style="padding:8px 14px;">Driver 2 R_PWM (pino 1)</td><td style="padding:8px 14px;color:var(--muted);">Motor Dir — avança</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#0891b2;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Ciano</td><td style="padding:8px 14px;"><b>GPIO 17</b></td><td style="padding:8px 14px;">Driver 2 L_PWM (pino 2)</td><td style="padding:8px 14px;color:var(--muted);">Motor Dir — recua</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#22c55e;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Verde claro</td><td style="padding:8px 14px;"><b>GPIO 23</b></td><td style="padding:8px 14px;">Motor Lâmina (relé ou driver)</td><td style="padding:8px 14px;color:var(--muted);">On/Off pelo RT</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#15803d;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Motor</td><td style="padding:8px 14px;"><b>Motor Esq. A/B</b></td><td style="padding:8px 14px;">D1 Motor+(10) / Motor−(9)</td><td style="padding:8px 14px;color:var(--muted);">Inverter se errado</td></tr>
+        <tr><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#15803d;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Motor</td><td style="padding:8px 14px;"><b>Motor Dir. A/B</b></td><td style="padding:8px 14px;">D2 Motor+(10) / Motor−(9)</td><td style="padding:8px 14px;color:var(--muted);">Inverter se errado</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="alert ok"><div class="alert-icon">🚀</div><div><b>Pronto!</b> Controle pareado → analógico esquerdo move os motores → gatilho direito aciona a lâmina. Monitore a telemetria no Serial Monitor a cada 500ms.</div></div>
+</div>
 
-<!-- NAV -->
+</div>
+
 <div class="nav-bar">
   <button class="nav-btn" id="btnPrev" onclick="goTo(currentStep-1)" disabled>← Anterior</button>
-  <div class="nav-center" id="navCenter">Passo 1 de 4</div>
+  <div class="nav-center" id="navCenter">Passo 1 de 5</div>
   <button class="nav-btn primary" id="btnNext" onclick="goTo(currentStep+1)">Próximo →</button>
 </div>
 
 <script>
-let currentStep   = 0;
-let currentVersion = 1;
-const totalSteps  = 4;
-const checkDone   = [0, 0, 0, 0];
-let checkCounts   = [0, 0, 0, 0];
-let totalChecks   = 0;
-let totalDone     = 0;
+let currentStep=0,currentVersion=1;
+const totalSteps=5;
+const checkDone=[0,0,0,0,0];
+let checkCounts=[0,0,0,0,0],totalChecks=0,totalDone=0;
 
-function initCounts() {
-  checkCounts = [0, 0, 0, 0];
-  totalChecks = 0;
-  document.querySelectorAll('.step-panel').forEach((panel, idx) => {
-    panel.querySelectorAll('.check-item').forEach(item => {
-      if (item.style.display !== 'none') {
-        checkCounts[idx]++;
-        totalChecks++;
-      }
-    });
+function initCounts(){
+  checkCounts=[0,0,0,0,0];totalChecks=0;
+  document.querySelectorAll('.step-panel').forEach((p,i)=>{
+    p.querySelectorAll('.check-item').forEach(el=>{if(el.style.display!=='none'){checkCounts[i]++;totalChecks++;}});
   });
 }
-
 initCounts();
 
-function toggle(el) {
-  if (el.style.display === 'none') return;
-  const panelIdx = Array.from(document.querySelectorAll('.step-panel'))
-    .indexOf(el.closest('.step-panel'));
-  const wasChecked = el.classList.contains('checked');
+function toggle(el){
+  if(el.style.display==='none')return;
+  const i=Array.from(document.querySelectorAll('.step-panel')).indexOf(el.closest('.step-panel'));
+  const was=el.classList.contains('checked');
   el.classList.toggle('checked');
-  if (!wasChecked) { checkDone[panelIdx]++; totalDone++; }
-  else             { checkDone[panelIdx]--; totalDone--; }
+  if(!was){checkDone[i]++;totalDone++;}else{checkDone[i]--;totalDone--;}
   updateProgress();
 }
-
-function updateProgress() {
-  const pct = totalChecks > 0 ? Math.round((totalDone / totalChecks) * 100) : 0;
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('progressText').textContent = totalDone + ' de ' + totalChecks + ' conexões feitas';
-  document.getElementById('progressPct').textContent = pct + '%';
+function updateProgress(){
+  const pct=totalChecks>0?Math.round(totalDone/totalChecks*100):0;
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressText').textContent=totalDone+' de '+totalChecks+' itens concluídos';
+  document.getElementById('progressPct').textContent=pct+'%';
 }
-
-function switchVersion(v) {
-  currentVersion = v;
-
-  // Toggle card active state
-  document.getElementById('verCard1').classList.toggle('active', v === 1);
-  document.getElementById('verCard2').classList.toggle('active', v === 2);
-
-  // Show/hide version content
-  document.querySelectorAll('.v1-only').forEach(el => {
-    el.style.display = v === 1 ? '' : 'none';
-  });
-  document.querySelectorAll('.v2-only').forEach(el => {
-    const isCheckItem = el.classList.contains('check-item');
-    if (v === 2) {
-      el.style.display = isCheckItem ? 'flex' : '';
-    } else {
-      el.style.display = 'none';
-    }
-  });
-
-  // Reset all checkboxes and counters
-  document.querySelectorAll('.check-item').forEach(el => {
-    el.classList.remove('checked');
-  });
-  checkDone.fill(0);
-  totalDone = 0;
-
-  initCounts();
-  updateProgress();
+function switchVersion(v){
+  currentVersion=v;
+  document.getElementById('verCard1').classList.toggle('active',v===1);
+  document.getElementById('verCard2').classList.toggle('active',v===2);
+  document.querySelectorAll('.v1-only').forEach(el=>{el.style.display=v===1?'':' none';});
+  document.querySelectorAll('.v2-only').forEach(el=>{el.style.display=v===2?(el.classList.contains('check-item')?'flex':''):'none';});
+  document.querySelectorAll('.check-item').forEach(el=>el.classList.remove('checked'));
+  checkDone.fill(0);totalDone=0;initCounts();updateProgress();
 }
-
-function goTo(idx) {
-  if (idx < 0 || idx >= totalSteps) return;
-
-  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel' + idx).classList.add('active');
-
-  document.querySelectorAll('.step-btn').forEach((b, i) => {
-    b.classList.remove('active', 'done');
-    document.getElementById('sci' + i).textContent = i + 1;
-    if (i < idx)   { b.classList.add('done'); document.getElementById('sci' + i).textContent = '✓'; }
-    if (i === idx)   b.classList.add('active');
+function goTo(idx){
+  if(idx<0||idx>=totalSteps)return;
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel'+idx).classList.add('active');
+  document.querySelectorAll('.step-btn').forEach((b,i)=>{
+    b.classList.remove('active','done');
+    document.getElementById('sci'+i).textContent=i+1;
+    if(i<idx){b.classList.add('done');document.getElementById('sci'+i).textContent='✓';}
+    if(i===idx)b.classList.add('active');
   });
-
-  for (let i = 0; i < totalSteps - 1; i++) {
-    const line = document.getElementById('sl' + i);
-    if (line) line.classList.toggle('done', i < idx);
-  }
-
-  currentStep = idx;
-  document.getElementById('btnPrev').disabled = idx === 0;
-  document.getElementById('btnNext').disabled = idx === totalSteps - 1;
-  document.getElementById('btnNext').textContent = idx === totalSteps - 1 ? '✅ Concluído' : 'Próximo →';
-  document.getElementById('navCenter').textContent = 'Passo ' + (idx + 1) + ' de ' + totalSteps;
-
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  for(let i=0;i<totalSteps-1;i++){const l=document.getElementById('sl'+i);if(l)l.classList.toggle('done',i<idx);}
+  currentStep=idx;
+  document.getElementById('btnPrev').disabled=idx===0;
+  document.getElementById('btnNext').disabled=idx===totalSteps-1;
+  document.getElementById('btnNext').textContent=idx===totalSteps-1?'✅ Concluído':'Próximo →';
+  document.getElementById('navCenter').textContent='Passo '+(idx+1)+' de '+totalSteps;
+  window.scrollTo({top:0,behavior:'smooth'});
 }
-
-function showTab(btn, panelId) {
-  const card = btn.closest('.img-card');
-  card.querySelectorAll('.img-tab').forEach(t => t.classList.remove('active'));
-  card.querySelectorAll('.img-panel').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById(panelId).classList.add('active');
+function showTab(btn,id){
+  const c=btn.closest('.img-card');
+  c.querySelectorAll('.img-tab').forEach(t=>t.classList.remove('active'));
+  c.querySelectorAll('.img-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');document.getElementById(id).classList.add('active');
 }
-
-function copyCode(btn, id) {
-  const code = document.getElementById(id).innerText;
-  navigator.clipboard.writeText(code).then(() => {
-    btn.textContent = 'Copiado!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+function copyCode(btn,id){
+  navigator.clipboard.writeText(document.getElementById(id).innerText).then(()=>{
+    btn.textContent='Copiado!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copiar';btn.classList.remove('copied');},2000);
+  });
+}
+function copyText(btn,text){
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig=btn.textContent;btn.textContent='Copiado!';
+    setTimeout(()=>{btn.textContent=orig;},2000);
   });
 }
 </script>
