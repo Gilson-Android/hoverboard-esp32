@@ -191,7 +191,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
       <div class="compare-flow">
         <div class="cf-node bat">🔋 Bat 24V</div><div class="cf-arrow">──►</div>
         <div class="cf-node buck">⚙️ MP1584 5V</div><div class="cf-arrow">──►</div>
-        <div class="cf-node esp">💻 ESP32 VIN</div>
+        <div class="cf-node esp">💻 ESP32 5V0</div>
       </div>
     </div>
     <div class="compare-note">4 conexões · Direto e simples</div>
@@ -203,7 +203,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
         <div class="cf-node diode">◁| Diodo</div><div class="cf-arrow">──►</div>
         <div class="cf-node buck">⚙️ MP1584 5V</div><div class="cf-arrow">──►</div>
         <div class="cf-node cap">⚡ Cap</div><div class="cf-arrow">──►</div>
-        <div class="cf-node esp">💻 ESP32 VIN</div>
+        <div class="cf-node esp">💻 ESP32 5V0</div>
       </div>
     </div>
     <div class="compare-note">7 conexões · Mais seguro</div>
@@ -377,7 +377,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
           </div>
           <div class="check-item" onclick="toggle(this)">
             <div class="wire-dot" style="background:#ea580c"></div><div class="checkbox"></div>
-            <div class="check-body"><div class="check-title">MP1584 OUTPUT+ → ESP32 pino VIN</div><div class="check-desc">Fio laranja. Saída 5V regulada vai direto ao VIN. NÃO use o pino "5V" como entrada.</div></div>
+            <div class="check-body"><div class="check-title">MP1584 OUTPUT+ → ESP32 pino 5V0</div><div class="check-desc">Fio laranja. Saída 5V regulada vai ao pino 5V0 — último pino, lado esquerdo da placa.</div></div>
           </div>
           <div class="check-item" onclick="toggle(this)">
             <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
@@ -388,7 +388,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
           <div class="schema-title">Fluxo V1</div>
           <div class="wire-row"><div class="wire-line" style="background:#dc2626"></div><span class="wire-from">Bat+ 24V</span><span class="wire-arrow">→</span><span class="wire-to">MP1584 IN+ (direto)</span></div>
           <div class="wire-row"><div class="wire-line" style="background:#374151"></div><span class="wire-from">Bat− GND</span><span class="wire-arrow">→</span><span class="wire-to">MP1584 IN− = GND</span></div>
-          <div class="wire-row"><div class="wire-line" style="background:#ea580c"></div><span class="wire-from">MP1584 OUT+ 5V</span><span class="wire-arrow">→</span><span class="wire-to">ESP32 VIN</span></div>
+          <div class="wire-row"><div class="wire-line" style="background:#ea580c"></div><span class="wire-from">MP1584 OUT+ 5V</span><span class="wire-arrow">→</span><span class="wire-to">ESP32 5V0</span></div>
           <div class="wire-row"><div class="wire-line" style="background:#374151"></div><span class="wire-from">MP1584 Out− GND</span><span class="wire-arrow">→</span><span class="wire-to">ESP32 GND</span></div>
         </div>
       </div>
@@ -420,7 +420,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
           </div>
           <div class="check-item" onclick="toggle(this)">
             <div class="wire-dot" style="background:#ea580c"></div><div class="checkbox"></div>
-            <div class="check-body"><div class="check-title">Polo (+) do capacitor → ESP32 pino VIN</div><div class="check-desc">Fio laranja. NÃO use o pino "5V" como entrada.</div></div>
+            <div class="check-body"><div class="check-title">Polo (+) do capacitor → ESP32 pino 5V0</div><div class="check-desc">Fio laranja. Use o pino 5V0 — último pino, lado esquerdo da placa.</div></div>
           </div>
           <div class="check-item" onclick="toggle(this)">
             <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
@@ -431,11 +431,11 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
           <div class="schema-title">Fluxo V2</div>
           <div class="wire-row"><div class="wire-line" style="background:#dc2626"></div><span class="wire-from">Bat+ 24V</span><span class="wire-arrow">→</span><span class="wire-to">Diodo N04 → MP1584 IN+</span></div>
           <div class="wire-row"><div class="wire-line" style="background:#374151"></div><span class="wire-from">Bat− GND</span><span class="wire-arrow">→</span><span class="wire-to">MP1584 IN− = GND</span></div>
-          <div class="wire-row"><div class="wire-line" style="background:#ea580c"></div><span class="wire-from">MP1584 OUT+ 5V</span><span class="wire-arrow">→</span><span class="wire-to">Cap (+) → ESP32 VIN</span></div>
+          <div class="wire-row"><div class="wire-line" style="background:#ea580c"></div><span class="wire-from">MP1584 OUT+ 5V</span><span class="wire-arrow">→</span><span class="wire-to">Cap (+) → ESP32 5V0</span></div>
           <div class="wire-row"><div class="wire-line" style="background:#374151"></div><span class="wire-from">MP1584 Out− GND</span><span class="wire-arrow">→</span><span class="wire-to">Cap (−) → ESP32 GND</span></div>
         </div>
       </div>
-      <div class="alert ok"><div class="alert-icon">✅</div><div><b>Teste:</b> LED do ESP32 acende. Voltímetro: <b>5V entre VIN e GND</b>, <b>3.3V entre 3V3 e GND</b>.</div></div>
+      <div class="alert ok"><div class="alert-icon">✅</div><div><b>Teste:</b> LED do ESP32 acende. Voltímetro: <b>5V entre 5V0 e GND</b>, <b>3.3V entre 3V3 e GND</b>.</div></div>
     </div>
     <div class="img-card">
       <div class="img-tabs">
@@ -446,7 +446,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
         <img src="esp-32s v1.1.png" alt="ESP32 Pinout">
         <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
           <b style="color:#e2e8f0">Pinos usados:</b><br>
-          <span style="color:#fdba74">■</span> <b>VIN</b> — entrada 5V (lado direito, topo)<br>
+          <span style="color:#fdba74">■</span> <b>5V0</b> — entrada 5V (lado esquerdo, base)<br>
           <span style="color:#a8a29e">■</span> <b>GND</b> — terra (múltiplos pinos)
         </div>
       </div>
@@ -488,7 +488,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
         <div class="checklist-header">Lógica de controle — Driver 1 (header 8 pinos)</div>
         <div class="check-item" onclick="toggle(this)">
           <div class="wire-dot" style="background:#ea580c"></div><div class="checkbox"></div>
-          <div class="check-body"><div class="check-title">ESP32 pino 5V → Driver 1 VCC (pino 7)</div><div class="check-desc">Fio laranja. Alimenta o circuito lógico do BTS7960.</div></div>
+          <div class="check-body"><div class="check-title">ESP32 pino 5V0 → Driver 1 VCC (pino 7)</div><div class="check-desc">Fio laranja. Alimenta o circuito lógico do BTS7960.</div></div>
         </div>
         <div class="check-item" onclick="toggle(this)">
           <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
@@ -606,7 +606,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
         <div class="checklist-header">Lógica de controle — Driver 2</div>
         <div class="check-item" onclick="toggle(this)">
           <div class="wire-dot" style="background:#ea580c"></div><div class="checkbox"></div>
-          <div class="check-body"><div class="check-title">ESP32 pino 5V → Driver 2 VCC (pino 7)</div></div>
+          <div class="check-body"><div class="check-title">ESP32 pino 5V0 → Driver 2 VCC (pino 7)</div></div>
         </div>
         <div class="check-item" onclick="toggle(this)">
           <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
@@ -850,7 +850,7 @@ XboxSeriesXControllerESP32_asukiaaa::Core xboxController;
         <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Vermelho</td><td style="padding:8px 14px;"><b>Bat+ 24V</b></td><td style="padding:8px 14px;">MP1584 IN+ <span class="v2-only" style="color:#d8b4fe;">(via Diodo N04)</span></td><td style="padding:8px 14px;color:var(--muted);">Fonte 5V</td></tr>
         <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Vermelho</td><td style="padding:8px 14px;"><b>Bat+ 24V</b></td><td style="padding:8px 14px;">Driver1 VM+(11) + Driver2 VM+(11)</td><td style="padding:8px 14px;color:var(--muted);">Fio grosso ≥1,5mm²</td></tr>
         <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#374151;border:1px solid #6b7280;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Preto</td><td style="padding:8px 14px;"><b>Bat− GND</b></td><td style="padding:8px 14px;">MP1584 IN− / D1 VM− / D2 VM− / ESP32 GND</td><td style="padding:8px 14px;color:var(--muted);">GND unificado</td></tr>
-        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#ea580c;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Laranja</td><td style="padding:8px 14px;"><b>MP1584 OUT+ 5V</b></td><td style="padding:8px 14px;">ESP32 VIN <span class="v2-only" style="color:#67e8f9;">(via Cap 1000µF)</span> + D1 VCC + D2 VCC</td><td style="padding:8px 14px;color:var(--muted);">5.0V ajustado</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#ea580c;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Laranja</td><td style="padding:8px 14px;"><b>MP1584 OUT+ 5V</b></td><td style="padding:8px 14px;">ESP32 5V0 <span class="v2-only" style="color:#67e8f9;">(via Cap 1000µF)</span> + D1 VCC + D2 VCC</td><td style="padding:8px 14px;color:var(--muted);">5.0V ajustado</td></tr>
         <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#ca8a04;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Amarelo</td><td style="padding:8px 14px;"><b>ESP32 3V3</b></td><td style="padding:8px 14px;">D1 R_EN+L_EN + D2 R_EN+L_EN</td><td style="padding:8px 14px;color:var(--muted);">Enable permanente</td></tr>
         <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#2563eb;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Azul</td><td style="padding:8px 14px;"><b>GPIO 12</b></td><td style="padding:8px 14px;">Driver 1 R_PWM (pino 1)</td><td style="padding:8px 14px;color:var(--muted);">Motor Esq — avança</td></tr>
         <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#16a34a;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Verde</td><td style="padding:8px 14px;"><b>GPIO 14</b></td><td style="padding:8px 14px;">Driver 1 L_PWM (pino 2)</td><td style="padding:8px 14px;color:var(--muted);">Motor Esq — recua</td></tr>

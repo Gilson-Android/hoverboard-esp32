@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Diagrama de Ligações — ESP32 + BTS7960 + Dewert 24V</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #111827; font-family: 'Segoe UI', sans-serif; color: #f3f4f6; padding: 20px; }
+
+h1 { text-align: center; font-size: 20px; color: #e0f2fe; padding: 16px 0 4px; letter-spacing: 1px; }
+.subtitle { text-align: center; color: #6b7280; font-size: 12px; margin-bottom: 24px; }
+
+/* ── GRID PRINCIPAL ── */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px 1fr;
+  grid-template-rows: auto auto;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── CARDS ── */
+.card {
+  background: #1f2937;
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid #374151;
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #374151;
+}
+.card img {
+  width: 100%;
+  border-radius: 8px;
+  display: block;
+}
+
+/* ── ESP32 CENTRAL ── */
+.esp-card {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  background: #0c4a6e;
+  border-color: #0284c7;
+}
+.esp-card .card-title { color: #38bdf8; border-color: #0369a1; }
+
+/* ── DRIVER CARDS ── */
+.driver-left { grid-column: 1; grid-row: 1; border-color: #dc2626; }
+.driver-left .card-title { color: #fca5a5; }
+.driver-right { grid-column: 3; grid-row: 1; border-color: #dc2626; }
+.driver-right .card-title { color: #fca5a5; }
+
+/* ── POWER CARD ── */
+.power-card { grid-column: 1; grid-row: 2; border-color: #ca8a04; }
+.power-card .card-title { color: #fde047; }
+.motor-card { grid-column: 3; grid-row: 2; border-color: #16a34a; }
+.motor-card .card-title { color: #86efac; }
+
+/* ── PINOS ── */
+.pin-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+.pin-table th { background: #111827; color: #9ca3af; font-weight: 600; padding: 4px 8px; text-align: left; }
+.pin-table td { padding: 4px 8px; border-bottom: 1px solid #1f2937; }
+.pin-table tr:hover td { background: #374151; }
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.v24   { background: #7f1d1d; color: #fca5a5; }
+.gnd   { background: #1c1917; color: #a8a29e; border: 1px solid #44403c; }
+.v5    { background: #7c2d12; color: #fdba74; }
+.v33   { background: #78350f; color: #fde68a; }
+.pwm1a { background: #1e3a5f; color: #93c5fd; }
+.pwm1b { background: #14532d; color: #86efac; }
+.pwm2a { background: #3b0764; color: #d8b4fe; }
+.pwm2b { background: #164e63; color: #67e8f9; }
+.motor { background: #14532d; color: #bbf7d0; }
+
+/* ── TABELA DE CONEXÕES ── */
+.conn-section {
+  max-width: 1200px;
+  margin: 20px auto 0;
+}
+.conn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+.conn-card {
+  background: #1f2937;
+  border-radius: 10px;
+  padding: 14px;
+  border: 1px solid #374151;
+}
+.conn-card h3 { font-size: 13px; margin-bottom: 10px; }
+.conn-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid #111827;
+  font-size: 12px;
+}
+.conn-row:last-child { border-bottom: none; }
+.wire {
+  width: 28px;
+  height: 4px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.arrow { color: #6b7280; font-size: 14px; }
+.from { font-weight: 600; min-width: 90px; }
+.to   { color: #d1d5db; }
+
+/* ── NOTAS ── */
+.notes {
+  max-width: 1200px;
+  margin: 16px auto 0;
+  background: #1f2937;
+  border-radius: 10px;
+  padding: 14px 20px;
+  border-left: 4px solid #f59e0b;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #d1d5db;
+}
+.notes strong { color: #fbbf24; }
+</style>
+</head>
+<body>
+
+<h1>Diagrama de Ligações — ESP32S + 2× BTS7960 + 2× Motor Dewert 24V</h1>
+<p class="subtitle">NodeMCU ESP-32S v1.1 &nbsp;|&nbsp; BTS7960 IBT-2 &nbsp;|&nbsp; MP1584 Buck 24V→5V &nbsp;|&nbsp; Bateria 24V</p>
+
+<!-- ═══ GRID PRINCIPAL ═══ -->
+<div class="main-grid">
+
+  <!-- DRIVER 1 -->
+  <div class="card driver-left">
+    <div class="card-title">🔴 Driver 1 — BTS7960 (Motor Esquerdo)</div>
+    <img src="TBS7960-Pinout.jpg" alt="BTS7960 Pinout">
+    <table class="pin-table" style="margin-top:10px">
+      <tr><th>Pino</th><th>Conectar em</th><th>Sinal</th></tr>
+      <tr><td><b>R_PWM (1)</b></td><td><span class="badge pwm1a">ESP32 GPIO 4</span></td><td>PWM direção A</td></tr>
+      <tr><td><b>L_PWM (2)</b></td><td><span class="badge pwm1b">ESP32 GPIO 5</span></td><td>PWM direção B</td></tr>
+      <tr><td><b>R_EN (3)</b></td><td><span class="badge v33">ESP32 3.3V</span></td><td>Enable always ON</td></tr>
+      <tr><td><b>L_EN (4)</b></td><td><span class="badge v33">ESP32 3.3V</span></td><td>Enable always ON</td></tr>
+      <tr><td><b>R_IS (5)</b></td><td style="color:#6b7280">— (não usar)</td><td>Sense (ignorar)</td></tr>
+      <tr><td><b>L_IS (6)</b></td><td style="color:#6b7280">— (não usar)</td><td>Sense (ignorar)</td></tr>
+      <tr><td><b>VCC (7)</b></td><td><span class="badge v5">ESP32 5V / Buck</span></td><td>Alimentação lógica</td></tr>
+      <tr><td><b>GND (8)</b></td><td><span class="badge gnd">GND Unificado</span></td><td>Terra lógico</td></tr>
+      <tr><td><b>VM+ (11)</b></td><td><span class="badge v24">Bat+ 24V</span></td><td>Potência motores</td></tr>
+      <tr><td><b>VM− (12)</b></td><td><span class="badge gnd">Bat− GND</span></td><td>Potência motores</td></tr>
+      <tr><td><b>Motor+ (10)</b></td><td><span class="badge motor">Motor Esq. fio A</span></td><td>Saída para motor</td></tr>
+      <tr><td><b>Motor− (9)</b></td><td><span class="badge motor">Motor Esq. fio B</span></td><td>Saída para motor</td></tr>
+    </table>
+  </div>
+
+  <!-- ESP32 CENTRAL -->
+  <div class="card esp-card">
+    <div class="card-title">⚡ NodeMCU ESP-32S v1.1</div>
+    <img src="esp-32s v1.1.png" alt="ESP32S NodeMCU Pinout" style="background:#fff; padding:4px;">
+    <div style="background:#7f1d1d; border-radius:6px; padding:8px 10px; margin:8px 0; font-size:11px; line-height:1.7; color:#fecaca;">
+      <b>⚠ GPIO 6 e 7 NÃO DISPONÍVEIS</b> nesta placa — são CLK/D0 da flash interna.<br>
+      Use <b>GPIO 16 e GPIO 17</b> no lugar (lado direito da placa, marcados como 16 e 17).
+    </div>
+    <table class="pin-table">
+      <tr><th>Pino ESP32</th><th>Destino</th></tr>
+      <tr><td><span class="badge v5">5V0</span></td><td>Buck OUT+ / VCC ambos drivers</td></tr>
+      <tr><td><span class="badge gnd">GND</span></td><td>GND unificado / GND ambos drivers</td></tr>
+      <tr><td><span class="badge v33">3.3V</span></td><td>R_EN + L_EN (Driver 1 e Driver 2)</td></tr>
+      <tr><td><span class="badge pwm1a">GPIO 4 (lado direito)</span></td><td>Driver 1 → R_PWM</td></tr>
+      <tr><td><span class="badge pwm1b">GPIO 5 (lado direito)</span></td><td>Driver 1 → L_PWM</td></tr>
+      <tr><td><span class="badge pwm2a">GPIO 16 (lado direito)</span></td><td>Driver 2 → R_PWM</td></tr>
+      <tr><td><span class="badge pwm2b">GPIO 17 (lado direito)</span></td><td>Driver 2 → L_PWM</td></tr>
+    </table>
+  </div>
+
+  <!-- DRIVER 2 -->
+  <div class="card driver-right">
+    <div class="card-title">🔴 Driver 2 — BTS7960 (Motor Direito)</div>
+    <img src="TBS7960-Pinout.jpg" alt="BTS7960 Pinout">
+    <table class="pin-table" style="margin-top:10px">
+      <tr><th>Pino</th><th>Conectar em</th><th>Sinal</th></tr>
+      <tr><td><b>R_PWM (1)</b></td><td><span class="badge pwm2a">ESP32 GPIO 16</span></td><td>PWM direção A</td></tr>
+      <tr><td><b>L_PWM (2)</b></td><td><span class="badge pwm2b">ESP32 GPIO 17</span></td><td>PWM direção B</td></tr>
+      <tr><td><b>R_EN (3)</b></td><td><span class="badge v33">ESP32 3.3V</span></td><td>Enable always ON</td></tr>
+      <tr><td><b>L_EN (4)</b></td><td><span class="badge v33">ESP32 3.3V</span></td><td>Enable always ON</td></tr>
+      <tr><td><b>R_IS (5)</b></td><td style="color:#6b7280">— (não usar)</td><td>Sense (ignorar)</td></tr>
+      <tr><td><b>L_IS (6)</b></td><td style="color:#6b7280">— (não usar)</td><td>Sense (ignorar)</td></tr>
+      <tr><td><b>VCC (7)</b></td><td><span class="badge v5">ESP32 5V / Buck</span></td><td>Alimentação lógica</td></tr>
+      <tr><td><b>GND (8)</b></td><td><span class="badge gnd">GND Unificado</span></td><td>Terra lógico</td></tr>
+      <tr><td><b>VM+ (11)</b></td><td><span class="badge v24">Bat+ 24V</span></td><td>Potência motores</td></tr>
+      <tr><td><b>VM− (12)</b></td><td><span class="badge gnd">Bat− GND</span></td><td>Potência motores</td></tr>
+      <tr><td><b>Motor+ (10)</b></td><td><span class="badge motor">Motor Dir. fio A</span></td><td>Saída para motor</td></tr>
+      <tr><td><b>Motor− (9)</b></td><td><span class="badge motor">Motor Dir. fio B</span></td><td>Saída para motor</td></tr>
+    </table>
+  </div>
+
+  <!-- POWER -->
+  <div class="card power-card">
+    <div class="card-title">⚡ Alimentação — MP1584 Buck + Bateria 24V</div>
+    <img src="MP1584-Pinout.jpg" alt="MP1584 Pinout">
+    <table class="pin-table" style="margin-top:10px">
+      <tr><th>Pino MP1584</th><th>Conectar em</th></tr>
+      <tr><td><span class="badge v24">INPUT+</span></td><td>Bat+ → Diodo N04 (saída com faixa)</td></tr>
+      <tr><td><span class="badge gnd">INPUT−</span></td><td>GND Unificado (Bat−)</td></tr>
+      <tr><td><span class="badge v5">OUTPUT+</span></td><td>→ Cap 1000µF (+) → ESP32 5V</td></tr>
+      <tr><td><span class="badge gnd">OUTPUT−</span></td><td>GND Unificado</td></tr>
+    </table>
+    <div style="margin-top:12px; padding:10px; background:#111827; border-radius:8px; font-size:12px; color:#9ca3af;">
+      <b style="color:#fde047">Bateria 24V</b><br>
+      <span style="color:#fca5a5">B+ (vermelho)</span> → Diodo N04 entrada sem faixa<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ <span style="color:#fca5a5">VM+ Driver 1 e Driver 2</span> (direto)<br>
+      <span style="color:#a8a29e">B− (preto)</span> → GND Unificado (todos os GNDs)
+    </div>
+  </div>
+
+  <!-- MOTORES -->
+  <div class="card motor-card">
+    <div class="card-title">🔌 Motores Dewert 24V</div>
+    <div style="display:grid; gap:10px; margin-top:4px;">
+      <div style="background:#111827; border-radius:8px; padding:12px; border: 1px solid #166534;">
+        <div style="font-weight:700; color:#86efac; margin-bottom:8px; font-size:13px;">Motor ESQUERDO</div>
+        <div style="font-size:12px; color:#d1d5db; line-height:2;">
+          <span class="badge motor">Fio A</span> → Driver 1 <b>Motor+ (pino 10)</b><br>
+          <span class="badge motor">Fio B</span> → Driver 1 <b>Motor− (pino 9)</b>
+        </div>
+        <div style="font-size:11px; color:#6b7280; margin-top:6px;">Se motor girar ao contrário: inverter os dois fios</div>
+      </div>
+      <div style="background:#111827; border-radius:8px; padding:12px; border: 1px solid #166534;">
+        <div style="font-weight:700; color:#86efac; margin-bottom:8px; font-size:13px;">Motor DIREITO</div>
+        <div style="font-size:12px; color:#d1d5db; line-height:2;">
+          <span class="badge motor">Fio A</span> → Driver 2 <b>Motor+ (pino 10)</b><br>
+          <span class="badge motor">Fio B</span> → Driver 2 <b>Motor− (pino 9)</b>
+        </div>
+        <div style="font-size:11px; color:#6b7280; margin-top:6px;">Se motor girar ao contrário: inverter os dois fios</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══ TABELA DE CONEXÕES ═══ -->
+<div class="conn-section">
+  <div class="conn-grid">
+
+    <div class="conn-card">
+      <h3 style="color:#fde047">⚡ Bloco de Alimentação</h3>
+      <div class="conn-row">
+        <div class="wire" style="background:#dc2626"></div>
+        <span class="from">Bat+ 24V</span>
+        <span class="arrow">→</span>
+        <span class="to">Diodo N04 (entrada, sem faixa)</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#dc2626"></div>
+        <span class="from">Bat+ 24V</span>
+        <span class="arrow">→</span>
+        <span class="to">VM+ Driver 1 &amp; Driver 2 (potência)</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#374151; border:1px solid #6b7280"></div>
+        <span class="from">Bat− GND</span>
+        <span class="arrow">→</span>
+        <span class="to">GND unificado (todos os GNDs)</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#dc2626"></div>
+        <span class="from">Diodo saída</span>
+        <span class="arrow">→</span>
+        <span class="to">MP1584 INPUT+</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#ea580c"></div>
+        <span class="from">MP1584 OUT+</span>
+        <span class="arrow">→</span>
+        <span class="to">Cap 1000µF (+) → ESP32 5V</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#ea580c"></div>
+        <span class="from">ESP32 5V</span>
+        <span class="arrow">→</span>
+        <span class="to">VCC Driver 1 + VCC Driver 2</span>
+      </div>
+    </div>
+
+    <div class="conn-card">
+      <h3 style="color:#38bdf8">🟦 ESP32 → Driver 1 (Esquerdo)</h3>
+      <div class="conn-row">
+        <div class="wire" style="background:#ca8a04"></div>
+        <span class="from">ESP32 3.3V</span>
+        <span class="arrow">→</span>
+        <span class="to">Driver1 R_EN (pino 3)</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#ca8a04"></div>
+        <span class="from">ESP32 3.3V</span>
+        <span class="arrow">→</span>
+        <span class="to">Driver1 L_EN (pino 4)</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#1d4ed8"></div>
+        <span class="from">GPIO 4 (P4)</span>
+        <span class="arrow">→</span>
+        <span class="to">Driver1 R_PWM (pino 1)</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#15803d"></div>
+        <span class="from">GPIO 5 (P5)</span>
+        <span class="arrow">→</span>
+        <span class="to">Driver1 L_PWM (pino 2)</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#ea580c"></div>
+        <span class="from">ESP32 5V</span>
+        <span class="arrow">→</span>
+        <span class="to">Driver1 VCC (pino 7)</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#374151; border:1px solid #6b7280"></div>
+        <span class="from">ESP32 GND</span>
+        <span class="arrow">→</span>
+        <span class="to">Driver1 GND (pino 8)</span>
+      </div>
+    </div>
+
+    <div class="conn-card">
+      <h3 style="color:#38bdf8">🟦 ESP32 → Driver 2 (Direito)</h3>
+      <div class="conn-row">
+        <div class="wire" style="background:#ca8a04"></div>
+        <span class="from">ESP32 3.3V</span>
+        <span class="arrow">→</span>
+        <span class="to">Driver2 R_EN (pino 3)</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#ca8a04"></div>
+        <span class="from">ESP32 3.3V</span>
+        <span class="arrow">→</span>
+        <span class="to">Driver2 L_EN (pino 4)</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#7c3aed"></div>
+        <span class="from">GPIO 16</span>
+        <span class="arrow">→</span>
+        <span class="to">Driver2 R_PWM (pino 1)</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#0e7490"></div>
+        <span class="from">GPIO 17</span>
+        <span class="arrow">→</span>
+        <span class="to">Driver2 L_PWM (pino 2)</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#ea580c"></div>
+        <span class="from">ESP32 5V</span>
+        <span class="arrow">→</span>
+        <span class="to">Driver2 VCC (pino 7)</span>
+      </div>
+      <div class="conn-row">
+        <div class="wire" style="background:#374151; border:1px solid #6b7280"></div>
+        <span class="from">ESP32 GND</span>
+        <span class="arrow">→</span>
+        <span class="to">Driver2 GND (pino 8)</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ NOTAS ═══ -->
+<div class="notes">
+  <strong>⚠ GPIO 6 e 7 NÃO FUNCIONAM nesta placa:</strong>
+  No NodeMCU ESP-32S v1.1, GPIO 6 = CLK e GPIO 7 = D0 da flash interna — usá-los trava o ESP32.
+  O diagrama já usa <b>GPIO 16</b> e <b>GPIO 17</b> (lado direito da placa, pinos livres e com suporte a PWM/LEDC).<br><br>
+  <strong>⚠ GND Unificado obrigatório:</strong>
+  O GND do ESP32, GND dos dois drivers (pino 8) e GND do conversor buck DEVEM estar todos interligados num ponto comum.
+  Sem isso o ESP32 não consegue controlar os drivers corretamente.<br><br>
+  <strong>⚠ Diodo N04 (proteção polaridade):</strong>
+  A banda cinza/marcada é o catodo (saída, lado do buck). O lado sem marca é o anodo (entrada, lado da bateria).<br><br>
+  <strong>⚠ Ajuste do MP1584:</strong>
+  Antes de ligar ao ESP32, ajuste o trimpot do buck com voltímetro até marcar exatamente <b>5.0V</b> na saída (OUTPUT+).
+</div>
+
+</body>
+</html>
