@@ -307,9 +307,23 @@ pre { padding:14px; font-size:12px; line-height:1.7; overflow-x:auto; color:#a5f
 .nav-btn.primary:hover { background:#1d4ed8; }
 .nav-btn:disabled { opacity:.3; cursor:not-allowed; }
 .nav-center { font-size:13px; color:var(--muted); text-align:center; }
+
+/* Lightbox */
+.img-panel img, .info-card img, .component-card img { cursor:zoom-in; transition:opacity .15s; }
+.img-panel img:hover, .info-card img:hover, .component-card img:hover { opacity:.85; }
+.img-zoom-hint { display:block; text-align:right; font-size:10px; color:var(--muted); padding:4px 8px 0; letter-spacing:.5px; }
+#lightbox { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.88); cursor:zoom-out; align-items:center; justify-content:center; }
+#lightbox.open { display:flex; }
+#lightbox img { max-width:92vw; max-height:90vh; object-fit:contain; border-radius:8px; box-shadow:0 8px 48px #000a; cursor:default; }
+#lightbox-close { position:fixed; top:16px; right:20px; font-size:28px; color:#fff; cursor:pointer; line-height:1; opacity:.8; z-index:10000; }
+#lightbox-close:hover { opacity:1; }
 </style>
 </head>
 <body>
+<div id="lightbox" onclick="closeLightbox(event)">
+  <span id="lightbox-close" onclick="closeLightbox()">✕</span>
+  <img id="lightbox-img" src="" alt="">
+</div>
 
 <!-- ══════════════════════════════════════════
      HEADER GLOBAL
@@ -337,7 +351,8 @@ pre { padding:14px; font-size:12px; line-height:1.7; overflow-x:auto; color:#a5f
     <!-- DRIVER 1 -->
     <div class="card driver-left">
       <div class="card-title">🔴 Driver 1 — BTS7960 (Motor Esquerdo)</div>
-      <img src="TBS7960-Pinout.jpg" alt="BTS7960">
+      <img src="TBS7960-Pinout.jpg" alt="BTS7960" onclick="openLightbox(this)">
+        <span class="img-zoom-hint">🔍 clique para ampliar</span>
       <table class="pin-table" style="margin-top:8px">
         <tr><th>Pino</th><th>Conectar em</th><th>Função</th></tr>
         <tr><td><b>R_PWM (1)</b></td><td><span class="badge pwm1a">GPIO 4</span></td><td>PWM avança</td></tr>
@@ -358,7 +373,8 @@ pre { padding:14px; font-size:12px; line-height:1.7; overflow-x:auto; color:#a5f
     <!-- ESP32 CENTRAL -->
     <div class="card esp-card">
       <div class="card-title">⚡ NodeMCU ESP-32S v1.1</div>
-      <img src="esp-32s v1.1.png" alt="ESP32S Pinout" style="background:#fff; padding:4px;">
+      <img src="esp-32s v1.1.png" alt="ESP32S Pinout" style="background:#fff; padding:4px;" onclick="openLightbox(this)">
+      <span class="img-zoom-hint">🔍 clique para ampliar</span>
       <div style="background:#7f1d1d; border-radius:6px; padding:8px 10px; margin:8px 0; font-size:11px; line-height:1.7; color:#fecaca;">
         <b>⚠ GPIO 6 e 7 NÃO DISPONÍVEIS</b> — são CLK/D0 da flash interna.<br>
         Use <b>GPIO 16</b> e <b>GPIO 17</b> no lugar.
@@ -378,7 +394,8 @@ pre { padding:14px; font-size:12px; line-height:1.7; overflow-x:auto; color:#a5f
     <!-- DRIVER 2 -->
     <div class="card driver-right">
       <div class="card-title">🔴 Driver 2 — BTS7960 (Motor Direito)</div>
-      <img src="TBS7960-Pinout.jpg" alt="BTS7960">
+      <img src="TBS7960-Pinout.jpg" alt="BTS7960" onclick="openLightbox(this)">
+        <span class="img-zoom-hint">🔍 clique para ampliar</span>
       <table class="pin-table" style="margin-top:8px">
         <tr><th>Pino</th><th>Conectar em</th><th>Função</th></tr>
         <tr><td><b>R_PWM (1)</b></td><td><span class="badge pwm2a">GPIO 16</span></td><td>PWM avança</td></tr>
@@ -399,7 +416,8 @@ pre { padding:14px; font-size:12px; line-height:1.7; overflow-x:auto; color:#a5f
     <!-- POWER -->
     <div class="card power-card">
       <div class="card-title">⚡ Alimentação — MP1584 + Bateria 24V</div>
-      <img src="MP1584-Pinout.jpg" alt="MP1584" style="background:#fff; padding:4px;">
+      <img src="MP1584-Pinout.jpg" alt="MP1584" style="background:#fff; padding:4px;" onclick="openLightbox(this)">
+      <span class="img-zoom-hint">🔍 clique para ampliar</span>
       <table class="pin-table" style="margin-top:8px">
         <tr><th>Pino MP1584</th><th>Conectar em</th></tr>
         <tr><td><span class="badge v24">INPUT+</span></td><td>Bat+ → Diodo N04 (catodo/faixa)</td></tr>
@@ -645,11 +663,13 @@ pre { padding:14px; font-size:12px; line-height:1.7; overflow-x:auto; color:#a5f
             <button class="img-tab" onclick="showTab(this,'t1b')">MP1584</button>
           </div>
           <div id="t1a" class="img-panel active">
-            <img src="esp-32s v1.1.png" alt="ESP32" style="background:#fff; padding:4px;">
-            <div class="img-caption"><b style="color:#e2e8f0">Pinos deste passo:</b><br><span style="color:#fdba74">■</span> <b>VIN</b> — entrada 5V (1º pino superior direito)<br><span style="color:#a8a29e">■</span> <b>GND</b> — terra (vários pinos, ambos os lados)</div>
+            <img src="esp-32s v1.1.png" alt="ESP32" style="background:#fff; padding:4px;" onclick="openLightbox(this)">
+            <span class="img-zoom-hint">🔍 clique para ampliar</span>
+            <div class="img-caption"><b style="color:#e2e8f0">Pinos deste passo:</b><br><span style="color:#fdba74">■</span> <b>5V0</b> — entrada 5V (último pino, lado esquerdo)<br><span style="color:#a8a29e">■</span> <b>GND</b> — terra (vários pinos, ambos os lados)</div>
           </div>
           <div id="t1b" class="img-panel">
-            <img src="MP1584-Pinout.jpg" alt="MP1584" style="background:#fff; padding:6px;">
+            <img src="MP1584-Pinout.jpg" alt="MP1584" style="background:#fff; padding:6px;" onclick="openLightbox(this)">
+            <span class="img-zoom-hint">🔍 clique para ampliar</span>
             <div class="img-caption"><span style="color:#fca5a5">■</span> <b>INPUT+</b> — canto sup. direito (24V via diodo)<br><span style="color:#a8a29e">■</span> <b>INPUT−</b> — canto inf. direito (GND)<br><span style="color:#fdba74">■</span> <b>OUTPUT+</b> — canto sup. esquerdo (5V)<br><span style="color:#fde68a">■</span> <b>Trimpot</b> — ajuste até 5.0V</div>
           </div>
         </div>
@@ -853,11 +873,13 @@ pre { padding:14px; font-size:12px; line-height:1.7; overflow-x:auto; color:#a5f
             <button class="img-tab" onclick="showTab(this,'t2b')">ESP-32S</button>
           </div>
           <div id="t2a" class="img-panel active">
-            <img src="TBS7960-Pinout.jpg" alt="BTS7960">
+            <img src="TBS7960-Pinout.jpg" alt="BTS7960" onclick="openLightbox(this)">
+        <span class="img-zoom-hint">🔍 clique para ampliar</span>
             <div class="img-caption"><b style="color:#e2e8f0">Header 8 pinos (lado direito):</b><br><span style="color:#93c5fd">■</span> Pino 1 <b>R_PWM</b> → GPIO 4<br><span style="color:#86efac">■</span> Pino 2 <b>L_PWM</b> → GPIO 5<br><span style="color:#fde68a">■</span> Pino 3/4 <b>EN</b> → 3.3V<br><span style="color:#fdba74">■</span> Pino 7 <b>VCC</b> → 5V<br><span style="color:#a8a29e">■</span> Pino 8 <b>GND</b> → GND<br><b style="color:#e2e8f0">Bornes (lado esquerdo):</b><br><span style="color:#fca5a5">■</span> Pino 11 <b>VM+</b> → Bat+ 24V<br><span style="color:#a8a29e">■</span> Pino 12 <b>VM−</b> → GND<br><span style="color:#bbf7d0">■</span> Pino 10 <b>Motor+</b> / Pino 9 <b>Motor−</b></div>
           </div>
           <div id="t2b" class="img-panel">
-            <img src="esp-32s v1.1.png" alt="ESP32" style="background:#fff; padding:4px;">
+            <img src="esp-32s v1.1.png" alt="ESP32" style="background:#fff; padding:4px;" onclick="openLightbox(this)">
+            <span class="img-zoom-hint">🔍 clique para ampliar</span>
             <div class="img-caption"><b style="color:#e2e8f0">Pinos deste passo:</b><br><span style="color:#fdba74">■</span> <b>5V</b> → VCC Driver 1<br><span style="color:#a8a29e">■</span> <b>GND</b> → GND Driver 1<br><span style="color:#fde68a">■</span> <b>3V3</b> → R_EN + L_EN<br><span style="color:#93c5fd">■</span> <b>GPIO 4</b> → R_PWM<br><span style="color:#86efac">■</span> <b>GPIO 5</b> → L_PWM</div>
           </div>
         </div>
@@ -1067,11 +1089,13 @@ pre { padding:14px; font-size:12px; line-height:1.7; overflow-x:auto; color:#a5f
             <button class="img-tab" onclick="showTab(this,'t3b')">ESP-32S</button>
           </div>
           <div id="t3a" class="img-panel active">
-            <img src="TBS7960-Pinout.jpg" alt="BTS7960">
+            <img src="TBS7960-Pinout.jpg" alt="BTS7960" onclick="openLightbox(this)">
+        <span class="img-zoom-hint">🔍 clique para ampliar</span>
             <div class="img-caption"><b style="color:#e2e8f0">Driver 2 — mesmas posições:</b><br><span style="color:#d8b4fe">■</span> Pino 1 <b>R_PWM</b> → GPIO <b>16</b><br><span style="color:#67e8f9">■</span> Pino 2 <b>L_PWM</b> → GPIO <b>17</b><br><span style="color:#fde68a">■</span> Pino 3/4 EN → 3.3V<br><span style="color:#fdba74">■</span> Pino 7 VCC → 5V<br><span style="color:#a8a29e">■</span> Pino 8 GND → GND</div>
           </div>
           <div id="t3b" class="img-panel">
-            <img src="esp-32s v1.1.png" alt="ESP32" style="background:#fff; padding:4px;">
+            <img src="esp-32s v1.1.png" alt="ESP32" style="background:#fff; padding:4px;" onclick="openLightbox(this)">
+            <span class="img-zoom-hint">🔍 clique para ampliar</span>
             <div class="img-caption"><b style="color:#e2e8f0">Pinos novos neste passo:</b><br><span style="color:#d8b4fe">■</span> <b>GPIO 16</b> → R_PWM Driver 2<br><span style="color:#67e8f9">■</span> <b>GPIO 17</b> → L_PWM Driver 2<br><b style="color:#fecaca">⚠ NÃO usar: GPIO 6, 7, 8–11</b> (flash interna)</div>
           </div>
         </div>
@@ -1367,6 +1391,18 @@ function copyCode(btn, id) {
     setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
   });
 }
+function openLightbox(img) {
+  document.getElementById('lightbox-img').src = img.src;
+  document.getElementById('lightbox-img').alt = img.alt;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(e) {
+  if (e && e.target === document.getElementById('lightbox-img')) return;
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 </script>
 </body>
 </html>

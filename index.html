@@ -149,9 +149,23 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
 .nav-btn:disabled{opacity:.3;cursor:not-allowed;}
 .nav-center{font-size:13px;color:var(--muted);text-align:center;}
 .v2-only{display:none;}
+
+/* Lightbox */
+.img-panel img,.img-card>img{cursor:zoom-in;transition:opacity .15s;}
+.img-panel img:hover,.img-card>img:hover{opacity:.85;}
+.img-zoom-hint{display:block;text-align:right;font-size:10px;color:var(--muted);padding:4px 8px 0;letter-spacing:.5px;}
+#lightbox{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);cursor:zoom-out;align-items:center;justify-content:center;}
+#lightbox.open{display:flex;}
+#lightbox img{max-width:92vw;max-height:90vh;object-fit:contain;border-radius:8px;box-shadow:0 8px 48px #000a;cursor:default;}
+#lightbox-close{position:fixed;top:16px;right:20px;font-size:28px;color:#fff;cursor:pointer;line-height:1;opacity:.8;z-index:10000;}
+#lightbox-close:hover{opacity:1;}
 </style>
 </head>
 <body>
+<div id="lightbox" onclick="closeLightbox(event)">
+  <span id="lightbox-close" onclick="closeLightbox()">✕</span>
+  <img id="lightbox-img" src="" alt="">
+</div>
 
 <div class="header">
   <h1>Guia de Montagem — ESP32 Hoverboard + Xbox Controller</h1>
@@ -443,7 +457,8 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
         <button class="img-tab" onclick="showTab(this,'t2b')">MP1584</button>
       </div>
       <div id="t2a" class="img-panel active">
-        <img src="esp-32s v1.1.png" alt="ESP32 Pinout">
+        <img src="esp-32s v1.1.png" alt="ESP32 Pinout" onclick="openLightbox(this)">
+        <span class="img-zoom-hint">🔍 clique para ampliar</span>
         <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
           <b style="color:#e2e8f0">Pinos usados:</b><br>
           <span style="color:#fdba74">■</span> <b>5V0</b> — entrada 5V (lado esquerdo, base)<br>
@@ -451,7 +466,8 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
         </div>
       </div>
       <div id="t2b" class="img-panel">
-        <img src="MP1584-Pinout.jpg" alt="MP1584" style="background:#fff;padding:6px;">
+        <img src="MP1584-Pinout.jpg" alt="MP1584" style="background:#fff;padding:6px;" onclick="openLightbox(this)">
+        <span class="img-zoom-hint">🔍 clique para ampliar</span>
         <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
           <span style="color:#fca5a5">■</span> <b>INPUT+</b> — 24V (via diodo em V2)<br>
           <span style="color:#a8a29e">■</span> <b>INPUT−</b> — GND<br>
@@ -556,7 +572,8 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
         <button class="img-tab" onclick="showTab(this,'t3b')">ESP-32S</button>
       </div>
       <div id="t3a" class="img-panel active">
-        <img src="TBS7960-Pinout.jpg" alt="BTS7960">
+        <img src="TBS7960-Pinout.jpg" alt="BTS7960" onclick="openLightbox(this)">
+        <span class="img-zoom-hint">🔍 clique para ampliar</span>
         <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
           <b style="color:#e2e8f0">Header lógico (lado direito):</b><br>
           <span style="color:#93c5fd">■</span> Pino 1 <b>R_PWM</b> → GPIO <b>12</b><br>
@@ -680,7 +697,8 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
         </div>
       </div>
       <div id="t4b" class="img-panel">
-        <img src="esp-32s v1.1.png" alt="ESP32" style="background:#fff;padding:4px;">
+        <img src="esp-32s v1.1.png" alt="ESP32" style="background:#fff;padding:4px;" onclick="openLightbox(this)">
+        <span class="img-zoom-hint">🔍 clique para ampliar</span>
         <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
           <b style="color:#e2e8f0">Motor Direito:</b><br>
           <span style="color:#d8b4fe">■</span> <b>GPIO 16</b> → R_PWM<br>
@@ -946,6 +964,18 @@ function copyText(btn,text){
     setTimeout(()=>{btn.textContent=orig;},2000);
   });
 }
+function openLightbox(img){
+  document.getElementById('lightbox-img').src=img.src;
+  document.getElementById('lightbox-img').alt=img.alt;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLightbox(e){
+  if(e&&e.target===document.getElementById('lightbox-img'))return;
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
 </script>
 </body>
 </html>
