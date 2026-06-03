@@ -451,7 +451,7 @@ pre { padding:14px; font-size:12px; line-height:1.7; overflow-x:auto; color:#a5f
         <div class="conn-row"><div class="wire-seg" style="background:#374151; border:1px solid #6b7280"></div><span class="conn-from">Bat− GND</span><span class="conn-arr">→</span><span class="conn-to">GND unificado (tudo)</span></div>
         <div class="conn-row"><div class="wire-seg" style="background:#dc2626"></div><span class="conn-from">Diodo (catodo)</span><span class="conn-arr">→</span><span class="conn-to">MP1584 INPUT+</span></div>
         <div class="conn-row"><div class="wire-seg" style="background:#ea580c"></div><span class="conn-from">MP1584 OUT+ (5V)</span><span class="conn-arr">→</span><span class="conn-to">Cap (+) → ESP32 5V0</span></div>
-        <div class="conn-row"><div class="wire-seg" style="background:#ea580c"></div><span class="conn-from">ESP32 5V</span><span class="conn-arr">→</span><span class="conn-to">VCC Driver 1 + Driver 2</span></div>
+        <div class="conn-row"><div class="wire-seg" style="background:#ea580c"></div><span class="conn-from">MP1584 OUT+ (5V)</span><span class="conn-arr">→</span><span class="conn-to">VCC Driver 1 + Driver 2 (ramais paralelos)</span></div>
       </div>
 
       <div class="conn-card">
@@ -810,7 +810,7 @@ pre { padding:14px; font-size:12px; line-height:1.7; overflow-x:auto; color:#a5f
           </div>
           <div class="checklist-card" style="margin-top:8px;">
             <div class="checklist-header">Lógica — Driver 1 (header 8 pinos)</div>
-            <div class="check-item" onclick="toggle(this)"><div class="wire-dot" style="background:#ea580c"></div><div class="checkbox">✓</div><div class="check-body"><div class="check-title">ESP32 5V0 → Driver 1 VCC (pino 7)</div><div class="check-desc">Fio laranja fino. Alimenta a lógica do BTS7960.</div></div></div>
+            <div class="check-item" onclick="toggle(this)"><div class="wire-dot" style="background:#ea580c"></div><div class="checkbox">✓</div><div class="check-body"><div class="check-title">MP1584 OUT+ → Driver 1 VCC (pino 7)</div><div class="check-desc">Fio laranja. Ramal direto do MP1584, paralelo ao fio do ESP32 5V0.</div></div></div>
             <div class="check-item" onclick="toggle(this)"><div class="wire-dot" style="background:#374151; border:1px solid #6b7280"></div><div class="checkbox">✓</div><div class="check-body"><div class="check-title">ESP32 GND → Driver 1 GND (pino 8)</div><div class="check-desc">CRÍTICO: sem este fio o driver ignora os sinais do ESP32.</div></div></div>
             <div class="check-item" onclick="toggle(this)"><div class="wire-dot" style="background:#ca8a04"></div><div class="checkbox">✓</div><div class="check-body"><div class="check-title">ESP32 3V3 → Driver 1 R_EN (pino 3)</div><div class="check-desc">Fio amarelo. Habilita o lado direito. Sem isso o driver fica travado.</div></div></div>
             <div class="check-item" onclick="toggle(this)"><div class="wire-dot" style="background:#ca8a04"></div><div class="checkbox">✓</div><div class="check-body"><div class="check-title">ESP32 3V3 → Driver 1 L_EN (pino 4)</div><div class="check-desc">Pode ramificar do mesmo fio do R_EN.</div></div></div>
@@ -1025,7 +1025,7 @@ pre { padding:14px; font-size:12px; line-height:1.7; overflow-x:auto; color:#a5f
           </div>
           <div class="checklist-card" style="margin-top:8px;">
             <div class="checklist-header">Lógica — Driver 2 (header 8 pinos)</div>
-            <div class="check-item" onclick="toggle(this)"><div class="wire-dot" style="background:#ea580c"></div><div class="checkbox">✓</div><div class="check-body"><div class="check-title">ESP32 5V0 → Driver 2 VCC (pino 7)</div><div class="check-desc">Mesmo pino 5V do ESP32.</div></div></div>
+            <div class="check-item" onclick="toggle(this)"><div class="wire-dot" style="background:#ea580c"></div><div class="checkbox">✓</div><div class="check-body"><div class="check-title">MP1584 OUT+ → Driver 2 VCC (pino 7)</div><div class="check-desc">Fio laranja. Ramal direto do MP1584, mesmo ponto do fio do Driver 1 VCC.</div></div></div>
             <div class="check-item" onclick="toggle(this)"><div class="wire-dot" style="background:#374151; border:1px solid #6b7280"></div><div class="checkbox">✓</div><div class="check-body"><div class="check-title">ESP32 GND → Driver 2 GND (pino 8)</div><div class="check-desc">Crítico — sem isso PWM não funciona.</div></div></div>
             <div class="check-item" onclick="toggle(this)"><div class="wire-dot" style="background:#ca8a04"></div><div class="checkbox">✓</div><div class="check-body"><div class="check-title">ESP32 3V3 → Driver 2 R_EN (pino 3)</div><div class="check-desc">Ramificar dos enables do Driver 1.</div></div></div>
             <div class="check-item" onclick="toggle(this)"><div class="wire-dot" style="background:#ca8a04"></div><div class="checkbox">✓</div><div class="check-body"><div class="check-title">ESP32 3V3 → Driver 2 L_EN (pino 4)</div><div class="check-desc">Mesmo fio ramificado.</div></div></div>
@@ -1233,7 +1233,7 @@ pre { padding:14px; font-size:12px; line-height:1.7; overflow-x:auto; color:#a5f
             <tr><td><span class="dot" style="background:#dc2626"></span>Vermelho</td><td><b>Bat+ 24V</b></td><td>VM+ Driver 1 + VM+ Driver 2</td><td style="color:var(--muted)">Fio grosso ≥1,5mm²</td></tr>
             <tr><td><span class="dot" style="background:#dc2626"></span>Vermelho</td><td><b>Diodo (catodo)</b></td><td>MP1584 INPUT+</td><td style="color:var(--muted)">Lado da faixa cinza</td></tr>
             <tr><td><span class="dot" style="background:#374151; border:1px solid #6b7280"></span>Preto</td><td><b>Bat− GND</b></td><td>MP1584 IN− / VM− D1 / VM− D2 / ESP32 GND</td><td style="color:var(--muted)">GND unificado</td></tr>
-            <tr><td><span class="dot" style="background:#ea580c"></span>Laranja</td><td><b>MP1584 OUT+ 5V</b></td><td>Cap (+) → ESP32 5V0 → VCC D1 → VCC D2</td><td style="color:var(--muted)">Ajustar para 5.0V</td></tr>
+            <tr><td><span class="dot" style="background:#ea580c"></span>Laranja</td><td><b>MP1584 OUT+ 5V</b></td><td>ESP32 5V0 / VCC D1 / VCC D2 (ramais paralelos do MP1584)</td><td style="color:var(--muted)">Ajustar para 5.0V</td></tr>
             <tr><td><span class="dot" style="background:#ca8a04"></span>Amarelo</td><td><b>ESP32 3V3</b></td><td>R_EN+L_EN D1 + R_EN+L_EN D2</td><td style="color:var(--muted)">Enable permanente</td></tr>
             <tr><td><span class="dot" style="background:#2563eb"></span>Azul</td><td><b>GPIO 4</b></td><td>Driver 1 R_PWM (pino 1)</td><td style="color:var(--muted)">Motor Esq. avança</td></tr>
             <tr><td><span class="dot" style="background:#16a34a"></span>Verde</td><td><b>GPIO 5</b></td><td>Driver 1 L_PWM (pino 2)</td><td style="color:var(--muted)">Motor Esq. recua</td></tr>
