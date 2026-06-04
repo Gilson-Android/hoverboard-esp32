@@ -1,9 +1,38 @@
 // Bibliotecas:
 //   - XboxSeriesXControllerESP32_asukiaaa (Gerenciador de bibliotecas)
-//   - IBusBM by bmellink (Gerenciador de bibliotecas)
+//   (iBUS implementado internamente — sem biblioteca externa)
 
 #include <XboxSeriesXControllerESP32_asukiaaa.hpp>
-#include <IBusBM.h>
+
+// ─── LEITOR iBUS (FlySky FS-iA6B) ───────────────────────────────────────────
+// Protocolo: 32 bytes por pacote — 0x20 0x40 + 14 canais × 2 bytes + checksum
+struct IBusSimple {
+  uint16_t ch[14] = {};
+
+  void update(HardwareSerial& s) {
+    static uint8_t buf[32];
+    static uint8_t pos = 0;
+
+    while (s.available()) {
+      uint8_t b = s.read();
+      if (pos == 0 && b != 0x20) continue;
+      if (pos == 1 && b != 0x40) { pos = 0; continue; }
+      buf[pos++] = b;
+      if (pos == 32) {
+        pos = 0;
+        uint16_t sum = 0;
+        for (int i = 0; i < 30; i++) sum += buf[i];
+        uint16_t ck = buf[30] | ((uint16_t)buf[31] << 8);
+        if (ck == (uint16_t)(0xFFFF - sum)) {
+          for (int i = 0; i < 14; i++)
+            ch[i] = buf[2 + i*2] | ((uint16_t)(buf[3 + i*2] & 0x0F) << 8);
+        }
+      }
+    }
+  }
+
+  uint16_t readChannel(int c) { return (c >= 0 && c < 14) ? ch[c] : 0; }
+};
 
 // --- PINOS MOTORES TRAÇÃO (BTS7960) ---
 const int MOTOR_ESQ_RPWM = 12;
@@ -24,7 +53,7 @@ ControlMode mode = WAITING;
 
 // --- OBJETOS DE CONTROLE ---
 XboxSeriesXControllerESP32_asukiaaa::Core xboxController;
-IBusBM ibus;
+IBusSimple ibus;
 HardwareSerial ibusSerial(1); // UART1 com pino customizado
 
 const int PWM_MAX = 220;
@@ -45,7 +74,6 @@ void setup() {
 
   // iBUS: UART1 no GPIO 13 (RX apenas, TX não usado = -1)
   ibusSerial.begin(115200, SERIAL_8N1, IBUS_RX, -1);
-  ibus.begin(ibusSerial);
 
   xboxController.begin();
 
@@ -78,6 +106,7 @@ void loopWaiting() {
   }
 
   // Verifica iBUS: canal válido (900–2100)
+  ibus.update(ibusSerial);
   uint16_t ch1 = ibus.readChannel(0);
   uint16_t ch2 = ibus.readChannel(1);
   if (ch1 >= 900 && ch1 <= 2100 && ch2 >= 900 && ch2 <= 2100) {
@@ -132,6 +161,7 @@ void loopXbox() {
 //   CH6 = Chave SWC ou SwD           → Lâmina ON/OFF
 
 void loopRadio() {
+  ibus.update(ibusSerial);
   uint16_t ch1 = ibus.readChannel(0); // steering
   uint16_t ch2 = ibus.readChannel(1); // throttle
   uint16_t ch6 = ibus.readChannel(5); // blade
