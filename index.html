@@ -731,7 +731,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
         <div class="checklist-header">Alimentação do FS-iA6B</div>
         <div class="check-item" onclick="toggle(this)">
           <div class="wire-dot" style="background:#ea580c"></div><div class="checkbox"></div>
-          <div class="check-body"><div class="check-title">ESP32 5V0 → FS-iA6B pino + (B/VCC)</div><div class="check-desc">Fio laranja. Use o conector B/VCC do receptor (canto direito).</div></div>
+          <div class="check-body"><div class="check-title">MP1584 OUT+ → FS-iA6B pino + (B/VCC)</div><div class="check-desc">Fio laranja. Ramal direto do MP1584, paralelo ao fio do ESP32 5V0 e dos drivers.</div></div>
         </div>
         <div class="check-item" onclick="toggle(this)">
           <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
@@ -757,7 +757,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
       </div>
 
       <div class="wire-summary" style="margin-top:12px;">
-        <div class="wire-row"><div class="wire-line" style="background:#ea580c"></div><span class="wire-from">ESP32 5V0</span><span class="wire-arrow">→</span><span class="wire-to">FS-iA6B B/VCC pino +</span></div>
+        <div class="wire-row"><div class="wire-line" style="background:#ea580c"></div><span class="wire-from">MP1584 OUT+ 5V</span><span class="wire-arrow">→</span><span class="wire-to">FS-iA6B B/VCC pino + (ramal paralelo)</span></div>
         <div class="wire-row"><div class="wire-line" style="background:#374151"></div><span class="wire-from">ESP32 GND</span><span class="wire-arrow">→</span><span class="wire-to">FS-iA6B B/VCC pino −</span></div>
         <div class="wire-row"><div class="wire-line" style="background:#a855f7"></div><span class="wire-from">FS-iA6B i-BUS SENS Signal</span><span class="wire-arrow">→</span><span class="wire-to">ESP32 GPIO 13</span></div>
       </div>
