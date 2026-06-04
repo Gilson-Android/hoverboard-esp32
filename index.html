@@ -233,7 +233,9 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
   <div class="step-line" id="sl2"></div>
   <button class="step-btn" onclick="goTo(3)" id="sbtn3"><div class="step-circle" id="sci3">4</div><div class="step-label">Motor<br>Direito</div></button>
   <div class="step-line" id="sl3"></div>
-  <button class="step-btn" onclick="goTo(4)" id="sbtn4"><div class="step-circle" id="sci4">5</div><div class="step-label">Código<br>Final</div></button>
+  <button class="step-btn" onclick="goTo(4)" id="sbtn4"><div class="step-circle" id="sci4">5</div><div class="step-label">Rádio<br>FS-iA6B</div></button>
+  <div class="step-line" id="sl4"></div>
+  <button class="step-btn" onclick="goTo(5)" id="sbtn5"><div class="step-circle" id="sci5">6</div><div class="step-label">Código<br>Final</div></button>
 </div>
 
 <div class="progress-bar">
@@ -711,11 +713,103 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
   </div>
 </div>
 
-<!-- PASSO 5 — CÓDIGO FINAL -->
+<!-- PASSO 5 — RECEPTOR FS-iA6B -->
 <div class="step-panel" id="panel4">
   <div class="step-header">
+    <div class="step-icon" style="background:#4c1d95;">📡</div>
+    <div><h2>Passo 5 — Receptor FS-iA6B (Modo Rádio)</h2>
+    <p>Conexão do receptor FS-iA6B ao ESP32 via protocolo iBUS. Opcional — só se for usar o rádio FS-i6X.</p></div>
+  </div>
+
+  <div class="alert info" style="margin-bottom:16px;"><div class="alert-icon">ℹ️</div><div>Este passo é <b>opcional</b>. Se for usar apenas o Xbox, pule para o Passo 6. O código já suporta os dois modos — o que conectar primeiro vira o controle ativo.</div></div>
+
+  <div class="two-col">
+    <div>
+      <div class="alert warn" style="margin-bottom:12px;"><div class="alert-icon">⚠️</div><div>Antes de conectar, configure o protocolo <b>iBUS</b> no FS-i6X: <b>System → RX Setup → Protocol → iBUS</b>. Sem isso o receptor não envia dados válidos.</div></div>
+
+      <div class="checklist-card">
+        <div class="checklist-header">Alimentação do FS-iA6B</div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#ea580c"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">ESP32 5V0 → FS-iA6B pino + (B/VCC)</div><div class="check-desc">Fio laranja. Use o conector B/VCC do receptor (canto direito).</div></div>
+        </div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#374151;border:1px solid #6b7280"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">ESP32 GND → FS-iA6B pino − (B/VCC)</div><div class="check-desc">Fio preto. GND comum.</div></div>
+        </div>
+      </div>
+
+      <div class="checklist-card" style="margin-top:10px;">
+        <div class="checklist-header">Sinal iBUS</div>
+        <div class="check-item" onclick="toggle(this)">
+          <div class="wire-dot" style="background:#a855f7"></div><div class="checkbox"></div>
+          <div class="check-body"><div class="check-title">FS-iA6B porta i-BUS (SENS) → ESP32 GPIO 13</div><div class="check-desc">Fio roxo. Pino Signal da porta SENS do conector i-BUS. GPIO 13 = UART1 RX.</div></div>
+        </div>
+      </div>
+
+      <div class="checklist-card" style="margin-top:10px;">
+        <div class="checklist-header">Mapeamento de canais (configurar no FS-i6X)</div>
+        <div style="padding:10px 12px;font-size:12px;line-height:1.8;color:var(--text);">
+          <span style="color:#93c5fd">■</span> <b>CH1</b> — Stick esq. horizontal → <b>Virar (steering)</b><br>
+          <span style="color:#86efac">■</span> <b>CH2</b> — Stick esq. vertical → <b>Frente / Ré (throttle)</b><br>
+          <span style="color:#fde68a">■</span> <b>CH6</b> — Chave SwC ou SwD → <b>Lâmina ON/OFF</b>
+        </div>
+      </div>
+
+      <div class="wire-summary" style="margin-top:12px;">
+        <div class="wire-row"><div class="wire-line" style="background:#ea580c"></div><span class="wire-from">ESP32 5V0</span><span class="wire-arrow">→</span><span class="wire-to">FS-iA6B B/VCC pino +</span></div>
+        <div class="wire-row"><div class="wire-line" style="background:#374151"></div><span class="wire-from">ESP32 GND</span><span class="wire-arrow">→</span><span class="wire-to">FS-iA6B B/VCC pino −</span></div>
+        <div class="wire-row"><div class="wire-line" style="background:#a855f7"></div><span class="wire-from">FS-iA6B i-BUS SENS Signal</span><span class="wire-arrow">→</span><span class="wire-to">ESP32 GPIO 13</span></div>
+      </div>
+
+      <div class="alert ok" style="margin-top:12px;"><div class="alert-icon">✅</div><div><b>Teste:</b> Ligue o FS-i6X → energize o ESP32 → LED faz duplo pisca rápido → Monitor Serial exibe <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[MODO] Rádio FS-i6X conectado!</code></div></div>
+    </div>
+
+    <div class="img-card">
+      <div class="img-tabs">
+        <button class="img-tab active" onclick="showTab(this,'t5a')">FS-iA6B Pinout</button>
+        <button class="img-tab" onclick="showTab(this,'t5b')">Conector i-BUS</button>
+        <button class="img-tab" onclick="showTab(this,'t5c')">ESP-32S</button>
+      </div>
+      <div id="t5a" class="img-panel active">
+        <img src="fs-ia6B 3.webp" alt="FS-iA6B Pinout" onclick="openLightbox(this)">
+        <span class="img-zoom-hint">🔍 clique para ampliar</span>
+        <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
+          <b style="color:#e2e8f0">Pinout FS-iA6B:</b><br>
+          <span style="color:#ea580c">■</span> <b>B/VCC</b> — canto direito: +5V e GND<br>
+          <span style="color:#a855f7">■</span> <b>i-BUS SENS</b> — porta superior esquerda: Signal iBUS<br>
+          <span style="color:#64748b">■</span> <b>CH1–CH6</b> — canais PWM individuais (não usados)
+        </div>
+      </div>
+      <div id="t5b" class="img-panel">
+        <img src="fs-ia6B 1.avif" alt="FS-iA6B conector detalhe" onclick="openLightbox(this)">
+        <span class="img-zoom-hint">🔍 clique para ampliar</span>
+        <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
+          <b style="color:#e2e8f0">Conector i-BUS:</b><br>
+          <span style="color:#fca5a5">■</span> <b>Signal</b> — linha de cima<br>
+          <span style="color:#ea580c">■</span> <b>+</b> — linha do meio (VCC 5V)<br>
+          <span style="color:#a8a29e">■</span> <b>−</b> — linha de baixo (GND)
+        </div>
+      </div>
+      <div id="t5c" class="img-panel">
+        <img src="esp-32s v1.1.png" alt="ESP32" style="background:#fff;padding:4px;" onclick="openLightbox(this)">
+        <span class="img-zoom-hint">🔍 clique para ampliar</span>
+        <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
+          <b style="color:#e2e8f0">Pinos usados (rádio):</b><br>
+          <span style="color:#a855f7">■</span> <b>GPIO 13</b> — iBUS RX (lado esquerdo)<br>
+          <span style="color:#ea580c">■</span> <b>5V0</b> — alimentação receptor<br>
+          <span style="color:#a8a29e">■</span> <b>GND</b> — terra
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PASSO 6 — CÓDIGO FINAL -->
+<div class="step-panel" id="panel5">
+  <div class="step-header">
     <div class="step-icon" style="background:#14532d;">🎮</div>
-    <div><h2>Passo 5 — Código Final + Teste com Xbox Controller</h2>
+    <div><h2>Passo 6 — Código Final + Teste</h2>
     <p>Suba o sketch real, pareie o controle Xbox via Bluetooth e teste tudo.</p></div>
   </div>
 
@@ -894,7 +988,7 @@ XboxSeriesXControllerESP32_asukiaaa::Core xboxController;
 
 <script>
 let currentStep=0,currentVersion=1;
-const totalSteps=5;
+const totalSteps=6;
 const checkDone=[0,0,0,0,0];
 let checkCounts=[0,0,0,0,0],totalChecks=0,totalDone=0;
 
@@ -943,7 +1037,7 @@ function goTo(idx){
   currentStep=idx;
   document.getElementById('btnPrev').disabled=idx===0;
   document.getElementById('btnNext').disabled=idx===totalSteps-1;
-  document.getElementById('btnNext').textContent=idx===totalSteps-1?'✅ Concluído':'Próximo →';
+  document.getElementById('btnNext').textContent=idx===totalSteps-1?'✅ Concluído':(idx===4?'Próximo → (opcional)':'Próximo →');
   document.getElementById('navCenter').textContent='Passo '+(idx+1)+' de '+totalSteps;
   window.scrollTo({top:0,behavior:'smooth'});
 }
