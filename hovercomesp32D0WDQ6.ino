@@ -165,7 +165,9 @@ void loopWaiting() {
     }
   }
 
-  if (!ibus.signalLost(300) && ch1 >= 900 && ch1 <= 2100 && ch2 >= 900 && ch2 <= 2100) {
+  // Só entra em modo RADIO se a sentinela CH9 não indicar failsafe (rádio OFF)
+  if (!ibus.signalLost(300) && ch1 >= 900 && ch1 <= 2100 && ch2 >= 900 && ch2 <= 2100
+      && ibus.readChannel(8) <= 1600) {
     mode = RADIO;
     Serial.println("\n[MODO] Rádio FS-i6X conectado!");
     return;
@@ -217,6 +219,7 @@ void loopXbox() {
 //   CH2  = Stick esquerdo vertical    → Throttle (frente/ré)
 //   CH6  = Chave SwC (3 posições)     → Pistão: cima=estica, meio=parado, baixo=fecha
 //   CH7  = Chave SwA ou SwD           → Lâmina ON/OFF
+//   CH9  = SENTINELA (sem chave)      → 1000 em operação; 2000 = failsafe (rádio OFF)
 
 void loopRadio() {
   ibus.update(ibusSerial);
@@ -224,6 +227,21 @@ void loopRadio() {
   uint16_t ch2  = ibus.readChannel(1); // throttle
   uint16_t ch6  = ibus.readChannel(5); // pistão (SwC 3 posições)
   uint16_t ch7  = ibus.readChannel(6); // lâmina ON/OFF
+  uint16_t ch9  = ibus.readChannel(8); // sentinela de failsafe
+
+  // TRAVA DE FAILSAFE: com o rádio desligado o receptor continua enviando iBUS,
+  // mas o CH9 (sem chave atribuída) salta de 1000 para 2000. Detecta e mata tudo.
+  if (ch9 > 1600) {
+    Serial.println("[!] FAILSAFE — radio desligado! Parando tudo e desarmando.");
+    parar_motores();
+    parar_pistao();
+    digitalWrite(MOTOR_LAMINA, LOW);
+    ibus.lastPacketMs = 0;
+    armed = false;
+    armStartMs = 0;
+    mode = WAITING;
+    return;
+  }
 
   // Perda de sinal: timeout de pacotes ou valores fora de faixa
   if (ibus.signalLost() || ch1 < 900 || ch1 > 2100 || ch2 < 900 || ch2 > 2100) {
