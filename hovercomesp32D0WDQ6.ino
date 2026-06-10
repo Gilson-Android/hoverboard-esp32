@@ -166,9 +166,9 @@ void loopWaiting() {
     }
   }
 
-  // Só entra em modo RADIO se a sentinela CH10 não indicar failsafe (rádio OFF)
+  // Só entra em modo RADIO com a SwD ligada (CH10 ≈ 2000 = habilitado)
   if (!ibus.signalLost(300) && ch1 >= 900 && ch1 <= 2100 && ch2 >= 900 && ch2 <= 2100
-      && ibus.readChannel(9) <= 1700) {
+      && ibus.readChannel(9) >= 1700) {
     mode = RADIO;
     Serial.println("\n[MODO] Rádio FS-i6X conectado!");
     return;
@@ -220,9 +220,9 @@ void loopXbox() {
 //   CH2  = Stick esquerdo vertical    → Throttle (frente/ré)
 //   CH6  = Chave SwC (3 posições)     → Pistão: cima=estica, meio=parado, baixo=fecha
 //   CH7  = Chave SwA ou SwD           → Lâmina ON/OFF
-//   CH10 = Chave SwD → SENTINELA/EMERGÊNCIA: opere com SwD OFF (1000).
-//          2000 = SwD ON (kill manual) ou failsafe +100% (rádio desligado).
-//          Grave o failsafe do CH10 com a SwD em ON. (CH9 não serve: espelha a SwA)
+//   CH10 = Chave SwD → HABILITAÇÃO: SwD ON (2000) libera a operação.
+//          SwD OFF, rádio desligado ou failsafe → CH10 baixo → trava tudo.
+//          Grave o failsafe com TODAS as chaves desligadas (CH10 → 1000).
 
 void loopRadio() {
   ibus.update(ibusSerial);
@@ -232,10 +232,10 @@ void loopRadio() {
   uint16_t ch7  = ibus.readChannel(6); // lâmina ON/OFF
   uint16_t ch10 = ibus.readChannel(9); // sentinela de failsafe
 
-  // TRAVA DE FAILSAFE: com o rádio desligado o receptor continua enviando iBUS,
-  // mas o CH10 (sem chave atribuída) salta de ~1500 para 2000. Detecta e mata tudo.
-  if (ch10 > 1700) {
-    Serial.println("[!] FAILSAFE — radio desligado! Cortando energia de tudo.");
+  // TRAVA: operar exige SwD ON (CH10 ≈ 2000). Rádio desligado → failsafe
+  // envia CH10 = 1000; SwD OFF = kill manual. Qualquer um corta tudo.
+  if (ch10 < 1700) {
+    Serial.println("[!] TRAVA — SwD desligada ou radio caiu! Cortando energia de tudo.");
     parar_motores();
     desenergizar_pistao();
     digitalWrite(MOTOR_LAMINA, LOW);
