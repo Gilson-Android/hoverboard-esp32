@@ -8,6 +8,7 @@
 // Protocolo: 32 bytes por pacote — 0x20 0x40 + 14 canais × 2 bytes + checksum
 struct IBusSimple {
   uint16_t ch[14] = {};
+  unsigned long lastPacketMs = 0;
 
   void update(HardwareSerial& s) {
     static uint8_t buf[32];
@@ -26,12 +27,14 @@ struct IBusSimple {
         if (ck == (uint16_t)(0xFFFF - sum)) {
           for (int i = 0; i < 14; i++)
             ch[i] = buf[2 + i*2] | ((uint16_t)(buf[3 + i*2] & 0x0F) << 8);
+          lastPacketMs = millis();
         }
       }
     }
   }
 
   uint16_t readChannel(int c) { return (c >= 0 && c < 14) ? ch[c] : 0; }
+  bool signalLost(unsigned long timeoutMs = 500) { return (millis() - lastPacketMs) > timeoutMs; }
 };
 
 // --- PINOS MOTORES TRAÇÃO (BTS7960) ---
@@ -42,6 +45,10 @@ const int MOTOR_DIR_LPWM = 17;
 
 // --- PINO MOTOR DA LÂMINA ---
 const int MOTOR_LAMINA = 23;
+
+// --- PINOS PISTÃO ELÉTRICO (BTS7960) ---
+const int PISTON_RPWM = 25; // sobe
+const int PISTON_LPWM = 26; // desce
 
 // --- LED E iBUS ---
 const int LED_PIN    = 2;   // LED embutido da placa
@@ -57,6 +64,11 @@ IBusSimple ibus;
 HardwareSerial ibusSerial(1); // UART1 com pino customizado
 
 const int PWM_MAX = 220;
+const int PISTON_PWM = 220; // velocidade do pistão (0–255)
+
+bool armed = false;
+unsigned long armStartMs = 0;
+const unsigned long ARM_HOLD_MS = 1000;
 
 void setup() {
   Serial.begin(115200);
@@ -66,6 +78,9 @@ void setup() {
   ledcAttach(MOTOR_ESQ_LPWM, 5000, 8);
   ledcAttach(MOTOR_DIR_RPWM, 5000, 8);
   ledcAttach(MOTOR_DIR_LPWM, 5000, 8);
+  ledcAttach(PISTON_RPWM, 5000, 8);
+  ledcAttach(PISTON_LPWM, 5000, 8);
+  parar_pistao(); // fiação atual: 0/0 abriria o braço no boot
 
   pinMode(MOTOR_LAMINA, OUTPUT);
   digitalWrite(MOTOR_LAMINA, LOW);
@@ -93,6 +108,37 @@ void loop() {
   }
 }
 
+// ─── LOG DE TODOS OS CANAIS iBUS ────────────────────────────────────────────
+
+void logIbusChannels(const char* prefixo) {
+  Serial.print(prefixo);
+  for (int i = 0; i < 14; i++) {
+    Serial.printf(" CH%02d:%4d", i + 1, ibus.readChannel(i));
+  }
+  Serial.println();
+}
+
+// Detecta mudança em qualquer canal e imprime só o que mudou.
+// Use para mapear controles: mova um por vez e veja qual CH aparece.
+void logIbusMudancas() {
+  static uint16_t anterior[14] = {};
+  static bool inicializado = false;
+
+  if (!inicializado) {
+    for (int i = 0; i < 14; i++) anterior[i] = ibus.readChannel(i);
+    inicializado = true;
+    return;
+  }
+
+  for (int i = 0; i < 14; i++) {
+    uint16_t atual = ibus.readChannel(i);
+    if (abs((int)atual - (int)anterior[i]) > 20) {
+      Serial.printf("[MUDA] CH%02d: %4d -> %4d\n", i + 1, anterior[i], atual);
+      anterior[i] = atual;
+    }
+  }
+}
+
 // ─── MODO AGUARDANDO ────────────────────────────────────────────────────────
 
 void loopWaiting() {
@@ -105,11 +151,21 @@ void loopWaiting() {
     return;
   }
 
-  // Verifica iBUS: canal válido (900–2100)
+  // Verifica iBUS: pacote recente + canal válido (900–2100)
   ibus.update(ibusSerial);
   uint16_t ch1 = ibus.readChannel(0);
   uint16_t ch2 = ibus.readChannel(1);
-  if (ch1 >= 900 && ch1 <= 2100 && ch2 >= 900 && ch2 <= 2100) {
+
+  // Mostra canais enquanto aguarda, para facilitar mapeamento do transmissor
+  if (!ibus.signalLost(300) && ch1 >= 900 && ch1 <= 2100) {
+    static unsigned long lastWaitLog = 0;
+    if (millis() - lastWaitLog > 500) {
+      logIbusChannels("[AGUARD]");
+      lastWaitLog = millis();
+    }
+  }
+
+  if (!ibus.signalLost(300) && ch1 >= 900 && ch1 <= 2100 && ch2 >= 900 && ch2 <= 2100) {
     mode = RADIO;
     Serial.println("\n[MODO] Rádio FS-i6X conectado!");
     return;
@@ -126,6 +182,7 @@ void loopXbox() {
   if (!xboxController.isConnected()) {
     Serial.println("[!] Xbox desconectado — parando, voltando a aguardar");
     parar_motores();
+    parar_pistao();
     digitalWrite(MOTOR_LAMINA, LOW);
     mode = WAITING;
     return;
@@ -156,44 +213,83 @@ void loopXbox() {
 
 // ─── MODO RÁDIO (FS-i6X + FS-iA6B via iBUS) ────────────────────────────────
 // Mapeamento de canais no transmissor FS-i6X:
-//   CH1 = Stick esquerdo horizontal  → Steering (virar)
-//   CH2 = Stick esquerdo vertical    → Throttle (frente/ré)
-//   CH6 = Chave SWC ou SwD           → Lâmina ON/OFF
+//   CH1  = Stick esquerdo horizontal  → Steering (virar)
+//   CH2  = Stick esquerdo vertical    → Throttle (frente/ré)
+//   CH6  = Chave SwC (3 posições)     → Pistão: cima=estica, meio=parado, baixo=fecha
+//   CH7  = Chave SwA ou SwD           → Lâmina ON/OFF
 
 void loopRadio() {
   ibus.update(ibusSerial);
-  uint16_t ch1 = ibus.readChannel(0); // steering
-  uint16_t ch2 = ibus.readChannel(1); // throttle
-  uint16_t ch6 = ibus.readChannel(5); // blade
+  uint16_t ch1  = ibus.readChannel(0); // steering
+  uint16_t ch2  = ibus.readChannel(1); // throttle
+  uint16_t ch6  = ibus.readChannel(5); // pistão (SwC 3 posições)
+  uint16_t ch7  = ibus.readChannel(6); // lâmina ON/OFF
 
-  // Perda de sinal: para tudo e volta a aguardar
-  if (ch1 < 900 || ch1 > 2100 || ch2 < 900 || ch2 > 2100) {
+  // Perda de sinal: timeout de pacotes ou valores fora de faixa
+  if (ibus.signalLost() || ch1 < 900 || ch1 > 2100 || ch2 < 900 || ch2 > 2100) {
+    if (armed) Serial.println("[!] Sinal perdido — sistema desarmado");
     Serial.println("[!] Sinal de rádio perdido — parando, voltando a aguardar");
     parar_motores();
+    parar_pistao();
     digitalWrite(MOTOR_LAMINA, LOW);
+    ibus.lastPacketMs = 0;
+    armed = false;
+    armStartMs = 0;
     mode = WAITING;
     return;
   }
 
-  // Centro em 1500; deadzone de ±50
+  // Lógica de armação: throttle no mínimo (CH2 ≤ 1050) por 1s
+  if (!armed) {
+    if (ch2 <= 1050) {
+      if (armStartMs == 0) armStartMs = millis();
+      if (millis() - armStartMs >= ARM_HOLD_MS) {
+        armed = true;
+        armStartMs = 0;
+        Serial.println("[ARM] Sistema armado — controle ativo!");
+      }
+    } else {
+      armStartMs = 0;
+    }
+    parar_motores();
+    parar_pistao();
+    digitalWrite(MOTOR_LAMINA, LOW);
+    static unsigned long lastArmLog = 0;
+    if (millis() - lastArmLog > 2000) {
+      Serial.println("[DESARMADO] Empurre throttle para o minimo por 1s para armar");
+      lastArmLog = millis();
+    }
+    return;
+  }
+
+  // Sistema armado — operação normal
   int throttle = (int)ch2 - 1500;
   int steering = (int)ch1 - 1500;
   if (abs(throttle) < 50) throttle = 0;
   if (abs(steering) < 50) steering = 0;
 
-  // Tank drive
   int alvo_esq = constrain(map(throttle + (steering / 2), -500, 500, -PWM_MAX, PWM_MAX), -PWM_MAX, PWM_MAX);
   int alvo_dir = constrain(map(throttle - (steering / 2), -500, 500, -PWM_MAX, PWM_MAX), -PWM_MAX, PWM_MAX);
 
-  // CH6 > 1500 = lâmina ligada
-  digitalWrite(MOTOR_LAMINA, ch6 > 1500 ? HIGH : LOW);
+  // SwC 3 posições: cima (~1000) = abre | meio (~1500) = parado | baixo (~2000) = fecha
+  // Comportamento medido da fiação do pistão:
+  //   saída 0 = abre | +PISTON_PWM = parado | -PISTON_PWM = fecha
+  int alvo_pistao = PISTON_PWM;                   // meio  → parado
+  if (ch6 < 1200)      alvo_pistao = 0;           // cima  → abre o braço
+  else if (ch6 > 1800) alvo_pistao = -PISTON_PWM; // baixo → fecha o braço
 
+  digitalWrite(MOTOR_LAMINA, ch7 > 1500 ? HIGH : LOW);
   acionarMotores(alvo_esq, alvo_dir);
+  acionarPistao(alvo_pistao);
 
+  // Detecta qualquer canal que mudou (para mapeamento de controles)
+  logIbusMudancas();
+
+  // Log periódico de status normal
   static unsigned long lastLog = 0;
-  if (millis() - lastLog > 500) {
-    Serial.printf("RADIO | CH1:%d CH2:%d CH6:%d | ESQ:%d DIR:%d | LAMINA:%s\n",
-      ch1, ch2, ch6, alvo_esq, alvo_dir,
+  if (millis() - lastLog > 1000) {
+    Serial.printf("[RADIO ] ESQ:%4d DIR:%4d | PISTAO:%4d | LAMINA:%s\n",
+      alvo_esq, alvo_dir, alvo_pistao,
       digitalRead(MOTOR_LAMINA) ? "ON" : "OFF");
     lastLog = millis();
   }
@@ -216,11 +312,15 @@ void atualizarLed() {
       break;
     }
     case RADIO: {
-      // Duplo pisca rápido: ON-OFF-ON-pausa (ciclo de 1 s)
-      // 0–100ms ON | 100–200ms OFF | 200–300ms ON | 300–1000ms OFF
-      unsigned long t = now % 1000;
-      bool on = (t < 100) || (t >= 200 && t < 300);
-      digitalWrite(LED_PIN, on ? HIGH : LOW);
+      if (!armed) {
+        // Pisca rápido: 100ms — aguardando armação
+        digitalWrite(LED_PIN, (now / 100) % 2 == 0 ? HIGH : LOW);
+      } else {
+        // Duplo pisca: 0–100ms ON | 100–200ms OFF | 200–300ms ON | 300–1000ms OFF
+        unsigned long t = now % 1000;
+        bool on = (t < 100) || (t >= 200 && t < 300);
+        digitalWrite(LED_PIN, on ? HIGH : LOW);
+      }
       break;
     }
   }
@@ -244,4 +344,19 @@ void acionarMotores(int v_esq, int v_dir) {
 void parar_motores() {
   ledcWrite(MOTOR_ESQ_RPWM, 0); ledcWrite(MOTOR_ESQ_LPWM, 0);
   ledcWrite(MOTOR_DIR_RPWM, 0); ledcWrite(MOTOR_DIR_LPWM, 0);
+}
+
+void acionarPistao(int v) {
+  if (v > 0) {
+    ledcWrite(PISTON_RPWM, v); ledcWrite(PISTON_LPWM, 0);
+  } else if (v < 0) {
+    ledcWrite(PISTON_RPWM, 0); ledcWrite(PISTON_LPWM, abs(v));
+  } else {
+    ledcWrite(PISTON_RPWM, 0); ledcWrite(PISTON_LPWM, 0);
+  }
+}
+
+void parar_pistao() {
+  // Fiação atual: 0/0 ABRE o braço — o estado "parado" é RPWM alto
+  ledcWrite(PISTON_RPWM, PISTON_PWM); ledcWrite(PISTON_LPWM, 0);
 }

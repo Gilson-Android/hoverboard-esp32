@@ -752,7 +752,20 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
         <div style="padding:10px 12px;font-size:12px;line-height:1.8;color:var(--text);">
           <span style="color:#93c5fd">■</span> <b>CH1</b> — Stick esq. horizontal → <b>Virar (steering)</b><br>
           <span style="color:#86efac">■</span> <b>CH2</b> — Stick esq. vertical → <b>Frente / Ré (throttle)</b><br>
-          <span style="color:#fde68a">■</span> <b>CH6</b> — Chave SwC ou SwD → <b>Lâmina ON/OFF</b>
+          <span style="color:#fbbf24">■</span> <b>CH6</b> — Chave SwC (3 posições) → <b>Pistão da lâmina</b>: cima=abre, meio=parado, baixo=fecha<br>
+          <span style="color:#fde68a">■</span> <b>CH7</b> — Chave SwA ou SwD → <b>Lâmina ON/OFF</b><br>
+          <span style="color:var(--muted)">Atribua em <b>Menu → Functions → Aux. channels</b>: Channel 6 = SwC, Channel 7 = SwA.</span>
+        </div>
+      </div>
+
+      <div class="checklist-card" style="margin-top:10px;">
+        <div class="checklist-header">⚠️ Failsafe — obrigatório (Menu → System → RX Setup → Failsafe)</div>
+        <div style="padding:10px 12px;font-size:12px;line-height:1.8;color:var(--text);">
+          Com o transmissor desligado, o FS-iA6B <b>continua enviando os últimos valores via iBUS</b> — sem failsafe configurado, motores e pistão continuam executando o último comando indefinidamente. Configure (deixe o controle na posição segura e salve):<br>
+          <span style="color:#86efac">■</span> <b>CH2</b> = 0% (stick no centro) → tração para<br>
+          <span style="color:#fbbf24">■</span> <b>CH6</b> = 0% (SwC no meio) → pistão para<br>
+          <span style="color:#fde68a">■</span> <b>CH7</b> = −100% (chave em OFF) → lâmina desliga<br>
+          <span style="color:#fca5a5">Teste: com o braço em movimento, desligue o transmissor — tudo deve parar imediatamente.</span>
         </div>
       </div>
 
@@ -762,7 +775,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
         <div class="wire-row"><div class="wire-line" style="background:#a855f7"></div><span class="wire-from">FS-iA6B i-BUS SENS Signal</span><span class="wire-arrow">→</span><span class="wire-to">ESP32 GPIO 13</span></div>
       </div>
 
-      <div class="alert ok" style="margin-top:12px;"><div class="alert-icon">✅</div><div><b>Teste:</b> Ligue o FS-i6X → energize o ESP32 → LED faz duplo pisca rápido → Monitor Serial exibe <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[MODO] Rádio FS-i6X conectado!</code></div></div>
+      <div class="alert ok" style="margin-top:12px;"><div class="alert-icon">✅</div><div><b>Teste:</b> Ligue o FS-i6X → energize o ESP32 → LED <b>pisca rápido</b> (desarmado) → Serial exibe <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[MODO] Rádio FS-i6X conectado!</code> → empurre o stick de throttle para o <b>mínimo</b> e segure 1s → LED muda para <b>duplo pisca</b> (armado)</div></div>
     </div>
 
     <div class="img-card">
@@ -810,10 +823,27 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
   <div class="step-header">
     <div class="step-icon" style="background:#14532d;">🎮</div>
     <div><h2>Passo 6 — Código Final + Teste</h2>
-    <p>Suba o sketch real, pareie o controle Xbox via Bluetooth e teste tudo.</p></div>
+    <p>Suba o sketch, conecte via Xbox ou Rádio FS-i6X e teste os dois modos de controle.</p></div>
   </div>
 
-  <div class="alert ok" style="margin-bottom:16px;"><div class="alert-icon">🎉</div><div>Hardware montado! Suba o sketch abaixo, pareie o controle e confirme pelo Monitor Serial.</div></div>
+  <div class="alert ok" style="margin-bottom:16px;"><div class="alert-icon">🎉</div><div>Hardware montado! Suba o sketch abaixo. O sistema aceita <b>Xbox Series X via Bluetooth</b> ou <b>rádio FS-i6X via iBUS</b> — o primeiro a conectar assume o controle.</div></div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;">
+    <div style="padding:12px 16px;background:var(--surface2);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--border);">💡 Status LED (GPIO 2)</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="background:#111827;">
+        <th style="padding:8px 14px;text-align:left;color:var(--muted);">Padrão LED</th>
+        <th style="padding:8px 14px;text-align:left;color:var(--muted);">Estado</th>
+        <th style="padding:8px 14px;text-align:left;color:var(--muted);">O que fazer</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><b>Pisca lento</b> (500ms)</td><td style="padding:8px 14px;color:#fde68a;">Aguardando conexão</td><td style="padding:8px 14px;color:var(--muted);">Ligue o Xbox ou o FS-i6X</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><b>Sólido</b></td><td style="padding:8px 14px;color:#86efac;">Xbox conectado</td><td style="padding:8px 14px;color:var(--muted);">Pode operar normalmente</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><b>Pisca rápido</b> (100ms)</td><td style="padding:8px 14px;color:#fca5a5;">Rádio conectado — DESARMADO</td><td style="padding:8px 14px;color:var(--muted);">Empurre throttle ao mínimo por 1s para armar</td></tr>
+        <tr><td style="padding:8px 14px;"><b>Duplo pisca</b> (2×/s)</td><td style="padding:8px 14px;color:#86efac;">Rádio conectado — ARMADO</td><td style="padding:8px 14px;color:var(--muted);">Operação normal liberada</td></tr>
+      </tbody>
+    </table>
+  </div>
 
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;">
     <div style="padding:12px 16px;background:var(--surface2);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--border);">🎮 Como parear o Controle Xbox Series X/S</div>
@@ -838,115 +868,227 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
   </div>
 
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;">
+    <div style="padding:12px 16px;background:var(--surface2);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--border);">📻 Como usar o Rádio FS-i6X (Modo Rádio)</div>
+    <div style="padding:14px 16px;font-size:13px;display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="background:#1e3a8a;color:#93c5fd;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">1</div>
+        <div><b>Ligue o transmissor FS-i6X primeiro</b>, depois energize o ESP32.</div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="background:#1e3a8a;color:#93c5fd;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">2</div>
+        <div>O LED do ESP32 <b>pisca rápido</b> (100ms) — sistema conectado porém <b>DESARMADO</b>. Motores bloqueados por segurança.</div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="background:#1e3a8a;color:#93c5fd;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">3</div>
+        <div><b>Para armar:</b> empurre o stick de throttle (esquerdo vertical) totalmente para <b>baixo</b> e segure por <b>1 segundo</b>. Serial exibe <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[ARM] Sistema armado — controle ativo!</code></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="background:#14532d;color:#86efac;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">✓</div>
+        <div>LED muda para <b>duplo pisca</b> — hover responde normalmente. Se o sinal for perdido, sistema <b>desarma automaticamente</b> e motores param.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;">
     <div style="padding:12px 16px;background:var(--surface2);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--border);">🕹️ Mapeamento de Controles</div>
     <table style="width:100%;border-collapse:collapse;font-size:12px;">
       <thead><tr style="background:#111827;">
+        <th style="padding:8px 14px;text-align:left;color:var(--muted);font-weight:600;">Modo</th>
         <th style="padding:8px 14px;text-align:left;color:var(--muted);font-weight:600;">Controle</th>
         <th style="padding:8px 14px;text-align:left;color:var(--muted);font-weight:600;">Ação</th>
-        <th style="padding:8px 14px;text-align:left;color:var(--muted);font-weight:600;">Código</th>
       </tr></thead>
       <tbody>
-        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><b>Analógico Esq ↑</b></td><td style="padding:8px 14px;color:#86efac;">Avançar</td><td style="padding:8px 14px;color:var(--muted);font-size:11px;">32768 − joyLVert (invertido)</td></tr>
-        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><b>Analógico Esq ↓</b></td><td style="padding:8px 14px;color:#fca5a5;">Recuar</td><td style="padding:8px 14px;color:var(--muted);font-size:11px;">joyLVert negativo</td></tr>
-        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><b>Analógico Esq ←→</b></td><td style="padding:8px 14px;color:#67e8f9;">Girar (tank drive)</td><td style="padding:8px 14px;color:var(--muted);font-size:11px;">joyLHori divide potência esq/dir</td></tr>
-        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><b>Gatilho Direito RT &gt; 50%</b></td><td style="padding:8px 14px;color:#fde68a;">Lâmina LIGADA</td><td style="padding:8px 14px;color:var(--muted);font-size:11px;">GPIO 23 → HIGH</td></tr>
-        <tr><td style="padding:8px 14px;"><b>Conexão perdida</b></td><td style="padding:8px 14px;color:#fca5a5;">Para tudo</td><td style="padding:8px 14px;color:var(--muted);font-size:11px;">parar_motores() + GPIO23 LOW</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;background:#0f1a2e;"><td style="padding:8px 14px;" rowspan="5"><b style="color:#93c5fd;">Xbox</b></td><td style="padding:8px 14px;"><b>Analógico Esq ↑↓</b></td><td style="padding:8px 14px;color:#86efac;">Avançar / Recuar</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;background:#0f1a2e;"><td style="padding:8px 14px;"><b>Analógico Esq ←→</b></td><td style="padding:8px 14px;color:#67e8f9;">Girar (tank drive)</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;background:#0f1a2e;"><td style="padding:8px 14px;"><b>Gatilho Direito RT &gt; 50%</b></td><td style="padding:8px 14px;color:#fde68a;">Lâmina LIGADA</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;background:#0f1a2e;"><td style="padding:8px 14px;"><b>RT solto</b></td><td style="padding:8px 14px;color:#fde68a;">Lâmina DESLIGADA</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;background:#0f1a2e;"><td style="padding:8px 14px;"><b>Desconexão BLE</b></td><td style="padding:8px 14px;color:#fca5a5;">Para tudo automaticamente</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;background:#0a1525;"><td style="padding:8px 14px;" rowspan="9"><b style="color:#86efac;">Rádio</b></td><td style="padding:8px 14px;"><b>Throttle mín. por 1s</b></td><td style="padding:8px 14px;color:#fde68a;">Armar o sistema</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;background:#0a1525;"><td style="padding:8px 14px;"><b>CH2 (stick esq. ↑↓)</b></td><td style="padding:8px 14px;color:#86efac;">Avançar / Recuar</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;background:#0a1525;"><td style="padding:8px 14px;"><b>CH1 (stick esq. ←→)</b></td><td style="padding:8px 14px;color:#67e8f9;">Girar (tank drive)</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;background:#0a1525;"><td style="padding:8px 14px;"><b>SwC cima (CH6 &lt; 1200)</b></td><td style="padding:8px 14px;color:#fbbf24;">Pistão abre o braço</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;background:#0a1525;"><td style="padding:8px 14px;"><b>SwC meio (CH6 ≈ 1500)</b></td><td style="padding:8px 14px;color:#fbbf24;">Pistão parado</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;background:#0a1525;"><td style="padding:8px 14px;"><b>SwC baixo (CH6 &gt; 1800)</b></td><td style="padding:8px 14px;color:#fbbf24;">Pistão fecha o braço</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;background:#0a1525;"><td style="padding:8px 14px;"><b>SwA ON (CH7 &gt; 1500)</b></td><td style="padding:8px 14px;color:#fde68a;">Lâmina LIGADA</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;background:#0a1525;"><td style="padding:8px 14px;"><b>SwA OFF (CH7 ≤ 1500)</b></td><td style="padding:8px 14px;color:#fde68a;">Lâmina DESLIGADA</td></tr>
+        <tr style="background:#0a1525;"><td style="padding:8px 14px;"><b>Sinal perdido</b></td><td style="padding:8px 14px;color:#fca5a5;">Para tudo + desarma (exige Failsafe configurado no rádio)</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="code-block">
-    <div class="code-header"><span>💾 hovercomesp32D0WDQ6.ino — Código completo</span><button class="copy-btn" onclick="copyCode(this,'code3')">Copiar</button></div>
+    <div class="code-header"><span>💾 hovercomesp32D0WDQ6.ino — Código completo (Xbox + Rádio)</span><button class="copy-btn" onclick="copyCode(this,'code3')">Copiar</button></div>
     <pre id="code3"><span class="kw">#include</span> <span class="str">&lt;XboxSeriesXControllerESP32_asukiaaa.hpp&gt;</span>
+<span class="cm">// iBUS implementado internamente — sem biblioteca externa</span>
 
-<span class="cm">// --- PINOS MOTORES TRAÇÃO (IBT-2 / BTS7960) ---</span>
-<span class="kw">const int</span> <span class="nm">MOTOR_ESQ_RPWM</span> = <span class="num">12</span>; <span class="cm">// Motor Esq avança</span>
-<span class="kw">const int</span> <span class="nm">MOTOR_ESQ_LPWM</span> = <span class="num">14</span>; <span class="cm">// Motor Esq recua</span>
-<span class="kw">const int</span> <span class="nm">MOTOR_DIR_RPWM</span> = <span class="num">16</span>; <span class="cm">// Motor Dir avança</span>
-<span class="kw">const int</span> <span class="nm">MOTOR_DIR_LPWM</span> = <span class="num">17</span>; <span class="cm">// Motor Dir recua</span>
+<span class="cm">// ─── LEITOR iBUS (FlySky FS-iA6B) ───────────────────────────────────────────</span>
+<span class="kw">struct</span> IBusSimple {
+  uint16_t ch[<span class="num">14</span>] = {};
+  <span class="kw">unsigned long</span> lastPacketMs = <span class="num">0</span>;
 
-<span class="cm">// --- PINO MOTOR DA LÂMINA (ROÇADEIRA) ---</span>
-<span class="kw">const int</span> <span class="nm">MOTOR_LAMINA</span> = <span class="num">23</span>; <span class="cm">// Relé ou Driver On/Off</span>
+  <span class="kw">void</span> <span class="fn">update</span>(HardwareSerial&amp; s) {
+    <span class="kw">static</span> uint8_t buf[<span class="num">32</span>];
+    <span class="kw">static</span> uint8_t pos = <span class="num">0</span>;
+    <span class="kw">while</span> (s.available()) {
+      uint8_t b = s.read();
+      <span class="kw">if</span> (pos == <span class="num">0</span> &amp;&amp; b != <span class="num">0x20</span>) <span class="kw">continue</span>;
+      <span class="kw">if</span> (pos == <span class="num">1</span> &amp;&amp; b != <span class="num">0x40</span>) { pos = <span class="num">0</span>; <span class="kw">continue</span>; }
+      buf[pos++] = b;
+      <span class="kw">if</span> (pos == <span class="num">32</span>) {
+        pos = <span class="num">0</span>;
+        uint16_t sum = <span class="num">0</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; <span class="num">30</span>; i++) sum += buf[i];
+        uint16_t ck = buf[<span class="num">30</span>] | ((uint16_t)buf[<span class="num">31</span>] &lt;&lt; <span class="num">8</span>);
+        <span class="kw">if</span> (ck == (uint16_t)(<span class="num">0xFFFF</span> - sum)) {
+          <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; <span class="num">14</span>; i++)
+            ch[i] = buf[<span class="num">2</span> + i*<span class="num">2</span>] | ((uint16_t)(buf[<span class="num">3</span> + i*<span class="num">2</span>] &amp; <span class="num">0x0F</span>) &lt;&lt; <span class="num">8</span>);
+          lastPacketMs = millis();
+        }
+      }
+    }
+  }
+  uint16_t <span class="fn">readChannel</span>(<span class="kw">int</span> c) { <span class="kw">return</span> (c &gt;= <span class="num">0</span> &amp;&amp; c &lt; <span class="num">14</span>) ? ch[c] : <span class="num">0</span>; }
+  <span class="kw">bool</span> <span class="fn">signalLost</span>(<span class="kw">unsigned long</span> ms = <span class="num">500</span>) { <span class="kw">return</span> (millis() - lastPacketMs) &gt; ms; }
+};
+
+<span class="cm">// --- PINOS ---</span>
+<span class="kw">const int</span> <span class="nm">MOTOR_ESQ_RPWM</span> = <span class="num">12</span>, <span class="nm">MOTOR_ESQ_LPWM</span> = <span class="num">14</span>;
+<span class="kw">const int</span> <span class="nm">MOTOR_DIR_RPWM</span> = <span class="num">16</span>, <span class="nm">MOTOR_DIR_LPWM</span> = <span class="num">17</span>;
+<span class="kw">const int</span> <span class="nm">MOTOR_LAMINA</span> = <span class="num">23</span>, <span class="nm">LED_PIN</span> = <span class="num">2</span>, <span class="nm">IBUS_RX</span> = <span class="num">13</span>;
+<span class="kw">const int</span> <span class="nm">PISTON_RPWM</span> = <span class="num">25</span>, <span class="nm">PISTON_LPWM</span> = <span class="num">26</span>; <span class="cm">// BTS7960 do atuador linear</span>
+
+<span class="cm">// --- MODOS ---</span>
+<span class="kw">enum</span> ControlMode { WAITING, XBOX, RADIO };
+ControlMode mode = WAITING;
 
 XboxSeriesXControllerESP32_asukiaaa::Core xboxController;
+IBusSimple ibus;
+HardwareSerial ibusSerial(<span class="num">1</span>);
+
 <span class="kw">const int</span> <span class="nm">PWM_MAX</span> = <span class="num">220</span>;
-<span class="kw">bool</span> <span class="nm">conectado_anteriormente</span> = <span class="kw">false</span>;
+<span class="kw">const int</span> <span class="nm">PISTON_PWM</span> = <span class="num">220</span>;
+<span class="kw">bool</span> armed = <span class="kw">false</span>;
+<span class="kw">unsigned long</span> armStartMs = <span class="num">0</span>;
+<span class="kw">const unsigned long</span> ARM_HOLD_MS = <span class="num">1000</span>;
 
 <span class="kw">void</span> <span class="fn">setup</span>() {
   Serial.begin(<span class="num">115200</span>);
   delay(<span class="num">1000</span>);
-  Serial.println(<span class="str">"\n--- CONFIGURANDO SENTIDO: CIMA = FRENTE ---"</span>);
-
-  <span class="cm">// PWM com ESP32 Arduino SDK 3.0+ (ledcAttach substitui ledcSetup+ledcAttachPin)</span>
-  ledcAttach(<span class="nm">MOTOR_ESQ_RPWM</span>, <span class="num">5000</span>, <span class="num">8</span>);
-  ledcAttach(<span class="nm">MOTOR_ESQ_LPWM</span>, <span class="num">5000</span>, <span class="num">8</span>);
-  ledcAttach(<span class="nm">MOTOR_DIR_RPWM</span>, <span class="num">5000</span>, <span class="num">8</span>);
-  ledcAttach(<span class="nm">MOTOR_DIR_LPWM</span>, <span class="num">5000</span>, <span class="num">8</span>);
-
-  pinMode(<span class="nm">MOTOR_LAMINA</span>, OUTPUT);
-  digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW);
-
-  xboxController.begin(); <span class="cm">// Inicia busca BLE pelo controle Xbox</span>
+  ledcAttach(<span class="nm">MOTOR_ESQ_RPWM</span>, <span class="num">5000</span>, <span class="num">8</span>); ledcAttach(<span class="nm">MOTOR_ESQ_LPWM</span>, <span class="num">5000</span>, <span class="num">8</span>);
+  ledcAttach(<span class="nm">MOTOR_DIR_RPWM</span>, <span class="num">5000</span>, <span class="num">8</span>); ledcAttach(<span class="nm">MOTOR_DIR_LPWM</span>, <span class="num">5000</span>, <span class="num">8</span>);
+  ledcAttach(<span class="nm">PISTON_RPWM</span>, <span class="num">5000</span>, <span class="num">8</span>); ledcAttach(<span class="nm">PISTON_LPWM</span>, <span class="num">5000</span>, <span class="num">8</span>);
+  <span class="fn">parar_pistao</span>(); <span class="cm">// fiação atual: 0/0 abriria o braço no boot</span>
+  pinMode(<span class="nm">MOTOR_LAMINA</span>, OUTPUT); digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW);
+  pinMode(<span class="nm">LED_PIN</span>, OUTPUT);
+  ibusSerial.begin(<span class="num">115200</span>, SERIAL_8N1, <span class="nm">IBUS_RX</span>, -<span class="num">1</span>);
+  xboxController.begin();
+  Serial.println(<span class="str">"[AGUARDANDO] Ligue o radio FS-i6X ou conecte o Xbox..."</span>);
 }
 
 <span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="fn">atualizarLed</span>();
+  <span class="kw">switch</span> (mode) {
+    <span class="kw">case</span> WAITING: <span class="fn">loopWaiting</span>(); <span class="kw">break</span>;
+    <span class="kw">case</span> XBOX:    <span class="fn">loopXbox</span>();    <span class="kw">break</span>;
+    <span class="kw">case</span> RADIO:   <span class="fn">loopRadio</span>();   <span class="kw">break</span>;
+  }
+}
+
+<span class="kw">void</span> <span class="fn">loopWaiting</span>() {
   xboxController.onLoop();
+  <span class="kw">if</span> (xboxController.isConnected()) { mode = XBOX; <span class="kw">return</span>; }
+  ibus.update(ibusSerial);
+  uint16_t ch1 = ibus.readChannel(<span class="num">0</span>), ch2 = ibus.readChannel(<span class="num">1</span>);
+  <span class="kw">if</span> (!ibus.signalLost(<span class="num">300</span>) &amp;&amp; ch1 &gt;= <span class="num">900</span> &amp;&amp; ch1 &lt;= <span class="num">2100</span> &amp;&amp; ch2 &gt;= <span class="num">900</span> &amp;&amp; ch2 &lt;= <span class="num">2100</span>) {
+    mode = RADIO;
+    Serial.println(<span class="str">"[MODO] Radio FS-i6X conectado!"</span>);
+  }
+  delay(<span class="num">10</span>);
+}
 
-  <span class="kw">if</span> (xboxController.isConnected()) {
-    <span class="kw">if</span> (!<span class="nm">conectado_anteriormente</span>) {
-      Serial.println(<span class="str">"\n[OK] CONECTADO!"</span>);
-      <span class="nm">conectado_anteriormente</span> = <span class="kw">true</span>;
-    }
-    <span class="kw">if</span> (!xboxController.isWaitingForFirstNotification()) {
-      <span class="cm">// Analógico esquerdo — CIMA = POSITIVO (invertido)</span>
-      int32_t joyY = <span class="num">32768</span> - (int32_t)xboxController.xboxNotif.joyLVert;
-      int32_t joyX = (int32_t)xboxController.xboxNotif.joyLHori - <span class="num">32768</span>;
+<span class="kw">void</span> <span class="fn">loopXbox</span>() {
+  xboxController.onLoop();
+  <span class="kw">if</span> (!xboxController.isConnected()) { <span class="fn">parar_motores</span>(); <span class="fn">parar_pistao</span>(); digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW); mode = WAITING; <span class="kw">return</span>; }
+  <span class="kw">if</span> (xboxController.isWaitingForFirstNotification()) <span class="kw">return</span>;
+  int32_t joyY = <span class="num">32768</span> - (int32_t)xboxController.xboxNotif.joyLVert;
+  int32_t joyX = (int32_t)xboxController.xboxNotif.joyLHori - <span class="num">32768</span>;
+  <span class="kw">if</span> (abs(joyY) &lt; <span class="num">3500</span>) joyY = <span class="num">0</span>;
+  <span class="kw">if</span> (abs(joyX) &lt; <span class="num">3500</span>) joyX = <span class="num">0</span>;
+  <span class="kw">int</span> esq = map(joyY + (joyX/<span class="num">2</span>), -<span class="num">32768</span>, <span class="num">32767</span>, -<span class="nm">PWM_MAX</span>, <span class="nm">PWM_MAX</span>);
+  <span class="kw">int</span> dir = map(joyY - (joyX/<span class="num">2</span>), -<span class="num">32768</span>, <span class="num">32767</span>, -<span class="nm">PWM_MAX</span>, <span class="nm">PWM_MAX</span>);
+  digitalWrite(<span class="nm">MOTOR_LAMINA</span>, xboxController.xboxNotif.trigRT &gt; <span class="num">512</span> ? HIGH : LOW);
+  <span class="fn">acionarMotores</span>(esq, dir);
+}
 
-      <span class="cm">// Deadzone: evita trepidação quando o analógico está em repouso</span>
-      <span class="kw">if</span> (abs(joyY) < <span class="num">3500</span>) joyY = <span class="num">0</span>;
-      <span class="kw">if</span> (abs(joyX) < <span class="num">3500</span>) joyX = <span class="num">0</span>;
+<span class="kw">void</span> <span class="fn">loopRadio</span>() {
+  ibus.update(ibusSerial);
+  uint16_t ch1 = ibus.readChannel(<span class="num">0</span>), ch2 = ibus.readChannel(<span class="num">1</span>);
+  uint16_t ch6 = ibus.readChannel(<span class="num">5</span>), ch7 = ibus.readChannel(<span class="num">6</span>);
 
-      <span class="cm">// Tank Drive Mixer: combina Y e X para controle diferencial</span>
-      <span class="kw">int</span> alvo_esq = map(joyY + (joyX / <span class="num">2</span>), -<span class="num">32768</span>, <span class="num">32767</span>, -<span class="nm">PWM_MAX</span>, <span class="nm">PWM_MAX</span>);
-      <span class="kw">int</span> alvo_dir = map(joyY - (joyX / <span class="num">2</span>), -<span class="num">32768</span>, <span class="num">32767</span>, -<span class="nm">PWM_MAX</span>, <span class="nm">PWM_MAX</span>);
+  <span class="kw">if</span> (ibus.signalLost() || ch1 &lt; <span class="num">900</span> || ch1 &gt; <span class="num">2100</span> || ch2 &lt; <span class="num">900</span> || ch2 &gt; <span class="num">2100</span>) {
+    Serial.println(<span class="str">"[!] Sinal perdido — parando"</span>);
+    <span class="fn">parar_motores</span>(); <span class="fn">parar_pistao</span>(); digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW);
+    ibus.lastPacketMs = <span class="num">0</span>; armed = <span class="kw">false</span>; armStartMs = <span class="num">0</span>; mode = WAITING;
+    <span class="kw">return</span>;
+  }
 
-      <span class="cm">// Gatilho direito RT > metade = liga lâmina</span>
-      digitalWrite(<span class="nm">MOTOR_LAMINA</span>, xboxController.xboxNotif.trigRT > <span class="num">512</span> ? HIGH : LOW);
-
-      <span class="fn">acionarMotores</span>(alvo_esq, alvo_dir);
-
-      <span class="cm">// Telemetria a cada 500ms</span>
-      <span class="kw">static unsigned long</span> lastLog = <span class="num">0</span>;
-      <span class="kw">if</span> (millis() - lastLog > <span class="num">500</span>) {
-        Serial.print(<span class="str">"JOY Y:"</span>); Serial.print(joyY);
-        Serial.print(<span class="str">" X:"</span>);   Serial.print(joyX);
-        Serial.print(<span class="str">" | ESQ:"</span>); Serial.print(alvo_esq > <span class="num">0</span> ? <span class="str">"FRENTE "</span> : <span class="str">"TRAS "</span>); Serial.print(abs(alvo_esq));
-        Serial.print(<span class="str">" | DIR:"</span>); Serial.print(alvo_dir > <span class="num">0</span> ? <span class="str">"FRENTE "</span> : <span class="str">"TRAS "</span>); Serial.print(abs(alvo_dir));
-        Serial.print(<span class="str">" | LAMINA:"</span>); Serial.println(digitalRead(<span class="nm">MOTOR_LAMINA</span>) ? <span class="str">"LIGADA"</span> : <span class="str">"OFF"</span>);
-        lastLog = millis();
+  <span class="cm">// Armação: throttle no mínimo (CH2 ≤ 1050) por 1s</span>
+  <span class="kw">if</span> (!armed) {
+    <span class="kw">if</span> (ch2 &lt;= <span class="num">1050</span>) {
+      <span class="kw">if</span> (armStartMs == <span class="num">0</span>) armStartMs = millis();
+      <span class="kw">if</span> (millis() - armStartMs &gt;= ARM_HOLD_MS) {
+        armed = <span class="kw">true</span>; armStartMs = <span class="num">0</span>;
+        Serial.println(<span class="str">"[ARM] Sistema armado — controle ativo!"</span>);
       }
-    }
-  } <span class="kw">else</span> {
-    <span class="kw">if</span> (<span class="nm">conectado_anteriormente</span>) {
-      Serial.println(<span class="str">"\n[!] CONEXAO PERDIDA - PARANDO"</span>);
-      <span class="fn">parar_motores</span>();
-      digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW);
-      <span class="nm">conectado_anteriormente</span> = <span class="kw">false</span>;
-    }
-    delay(<span class="num">500</span>);
+    } <span class="kw">else</span> { armStartMs = <span class="num">0</span>; }
+    <span class="fn">parar_motores</span>(); <span class="fn">parar_pistao</span>(); digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW); <span class="kw">return</span>;
+  }
+
+  <span class="cm">// Operação normal</span>
+  <span class="kw">int</span> throttle = (int)ch2 - <span class="num">1500</span>, steering = (int)ch1 - <span class="num">1500</span>;
+  <span class="kw">if</span> (abs(throttle) &lt; <span class="num">50</span>) throttle = <span class="num">0</span>;
+  <span class="kw">if</span> (abs(steering) &lt; <span class="num">50</span>) steering = <span class="num">0</span>;
+  <span class="kw">int</span> esq = constrain(map(throttle + (steering/<span class="num">2</span>), -<span class="num">500</span>, <span class="num">500</span>, -<span class="nm">PWM_MAX</span>, <span class="nm">PWM_MAX</span>), -<span class="nm">PWM_MAX</span>, <span class="nm">PWM_MAX</span>);
+  <span class="kw">int</span> dir = constrain(map(throttle - (steering/<span class="num">2</span>), -<span class="num">500</span>, <span class="num">500</span>, -<span class="nm">PWM_MAX</span>, <span class="nm">PWM_MAX</span>), -<span class="nm">PWM_MAX</span>, <span class="nm">PWM_MAX</span>);
+  <span class="cm">// Pistão (SwC): saída 0 = abre | +PISTON_PWM = parado | -PISTON_PWM = fecha</span>
+  <span class="kw">int</span> pistao = <span class="nm">PISTON_PWM</span>;
+  <span class="kw">if</span> (ch6 &lt; <span class="num">1200</span>) pistao = <span class="num">0</span>;
+  <span class="kw">else if</span> (ch6 &gt; <span class="num">1800</span>) pistao = -<span class="nm">PISTON_PWM</span>;
+  digitalWrite(<span class="nm">MOTOR_LAMINA</span>, ch7 &gt; <span class="num">1500</span> ? HIGH : LOW);
+  <span class="fn">acionarMotores</span>(esq, dir);
+  <span class="fn">acionarPistao</span>(pistao);
+}
+
+<span class="kw">void</span> <span class="fn">atualizarLed</span>() {
+  <span class="kw">unsigned long</span> now = millis();
+  <span class="kw">switch</span> (mode) {
+    <span class="kw">case</span> WAITING: digitalWrite(<span class="nm">LED_PIN</span>, (now/<span class="num">500</span>)%<span class="num">2</span>==<span class="num">0</span> ? HIGH:LOW); <span class="kw">break</span>;
+    <span class="kw">case</span> XBOX:    digitalWrite(<span class="nm">LED_PIN</span>, HIGH); <span class="kw">break</span>;
+    <span class="kw">case</span> RADIO:
+      <span class="kw">if</span> (!armed) { digitalWrite(<span class="nm">LED_PIN</span>, (now/<span class="num">100</span>)%<span class="num">2</span>==<span class="num">0</span> ? HIGH:LOW); }
+      <span class="kw">else</span> { <span class="kw">unsigned long</span> t=now%<span class="num">1000</span>; digitalWrite(<span class="nm">LED_PIN</span>, (t&lt;<span class="num">100</span>||(t&gt;=<span class="num">200</span>&amp;&amp;t&lt;<span class="num">300</span>)) ? HIGH:LOW); }
+      <span class="kw">break</span>;
   }
 }
 
 <span class="kw">void</span> <span class="fn">acionarMotores</span>(<span class="kw">int</span> v_esq, <span class="kw">int</span> v_dir) {
-  ledcWrite(<span class="nm">MOTOR_ESQ_RPWM</span>, v_esq >= <span class="num">0</span> ? abs(v_esq) : <span class="num">0</span>);
-  ledcWrite(<span class="nm">MOTOR_ESQ_LPWM</span>, v_esq < <span class="num">0</span>  ? abs(v_esq) : <span class="num">0</span>);
-  ledcWrite(<span class="nm">MOTOR_DIR_RPWM</span>, v_dir >= <span class="num">0</span> ? abs(v_dir) : <span class="num">0</span>);
-  ledcWrite(<span class="nm">MOTOR_DIR_LPWM</span>, v_dir < <span class="num">0</span>  ? abs(v_dir) : <span class="num">0</span>);
+  ledcWrite(<span class="nm">MOTOR_ESQ_RPWM</span>, v_esq&gt;=<span class="num">0</span> ? abs(v_esq):<span class="num">0</span>); ledcWrite(<span class="nm">MOTOR_ESQ_LPWM</span>, v_esq&lt;<span class="num">0</span> ? abs(v_esq):<span class="num">0</span>);
+  ledcWrite(<span class="nm">MOTOR_DIR_RPWM</span>, v_dir&gt;=<span class="num">0</span> ? abs(v_dir):<span class="num">0</span>); ledcWrite(<span class="nm">MOTOR_DIR_LPWM</span>, v_dir&lt;<span class="num">0</span> ? abs(v_dir):<span class="num">0</span>);
+}
+<span class="kw">void</span> <span class="fn">parar_motores</span>() {
+  ledcWrite(<span class="nm">MOTOR_ESQ_RPWM</span>,<span class="num">0</span>); ledcWrite(<span class="nm">MOTOR_ESQ_LPWM</span>,<span class="num">0</span>);
+  ledcWrite(<span class="nm">MOTOR_DIR_RPWM</span>,<span class="num">0</span>); ledcWrite(<span class="nm">MOTOR_DIR_LPWM</span>,<span class="num">0</span>);
 }
 
-<span class="kw">void</span> <span class="fn">parar_motores</span>() {
-  ledcWrite(<span class="nm">MOTOR_ESQ_RPWM</span>, <span class="num">0</span>); ledcWrite(<span class="nm">MOTOR_ESQ_LPWM</span>, <span class="num">0</span>);
-  ledcWrite(<span class="nm">MOTOR_DIR_RPWM</span>, <span class="num">0</span>); ledcWrite(<span class="nm">MOTOR_DIR_LPWM</span>, <span class="num">0</span>);
+<span class="kw">void</span> <span class="fn">acionarPistao</span>(<span class="kw">int</span> v) {
+  <span class="kw">if</span> (v &gt; <span class="num">0</span>) { ledcWrite(<span class="nm">PISTON_RPWM</span>, v); ledcWrite(<span class="nm">PISTON_LPWM</span>, <span class="num">0</span>); }
+  <span class="kw">else if</span> (v &lt; <span class="num">0</span>) { ledcWrite(<span class="nm">PISTON_RPWM</span>, <span class="num">0</span>); ledcWrite(<span class="nm">PISTON_LPWM</span>, abs(v)); }
+  <span class="kw">else</span> { ledcWrite(<span class="nm">PISTON_RPWM</span>, <span class="num">0</span>); ledcWrite(<span class="nm">PISTON_LPWM</span>, <span class="num">0</span>); }
+}
+
+<span class="kw">void</span> <span class="fn">parar_pistao</span>() {
+  <span class="cm">// Fiação atual: 0/0 ABRE o braço — o estado "parado" é RPWM alto</span>
+  ledcWrite(<span class="nm">PISTON_RPWM</span>, <span class="nm">PISTON_PWM</span>); ledcWrite(<span class="nm">PISTON_LPWM</span>, <span class="num">0</span>);
 }</pre>
   </div>
 
@@ -961,21 +1103,24 @@ XboxSeriesXControllerESP32_asukiaaa::Core xboxController;
       </tr></thead>
       <tbody>
         <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Vermelho</td><td style="padding:8px 14px;"><b>Bat+ 24V</b></td><td style="padding:8px 14px;">MP1584 IN+ <span class="v2-only" style="color:#d8b4fe;">(via Diodo N04)</span></td><td style="padding:8px 14px;color:var(--muted);">Fonte 5V</td></tr>
-        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Vermelho</td><td style="padding:8px 14px;"><b>Bat+ 24V</b></td><td style="padding:8px 14px;">Driver1 VM+(11) + Driver2 VM+(11)</td><td style="padding:8px 14px;color:var(--muted);">Fio grosso ≥1,5mm²</td></tr>
-        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#374151;border:1px solid #6b7280;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Preto</td><td style="padding:8px 14px;"><b>Bat− GND</b></td><td style="padding:8px 14px;">MP1584 IN− / D1 VM− / D2 VM− / ESP32 GND</td><td style="padding:8px 14px;color:var(--muted);">GND unificado</td></tr>
-        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#ea580c;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Laranja</td><td style="padding:8px 14px;"><b>MP1584 OUT+ 5V</b></td><td style="padding:8px 14px;">ESP32 5V0 <span class="v2-only" style="color:#67e8f9;">(via Cap 1000µF)</span> / D1 VCC / D2 VCC (ramais paralelos)</td><td style="padding:8px 14px;color:var(--muted);">5.0V ajustado</td></tr>
-        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#ca8a04;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Amarelo</td><td style="padding:8px 14px;"><b>ESP32 3V3</b></td><td style="padding:8px 14px;">D1 R_EN+L_EN + D2 R_EN+L_EN</td><td style="padding:8px 14px;color:var(--muted);">Enable permanente</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Vermelho</td><td style="padding:8px 14px;"><b>Bat+ 24V</b></td><td style="padding:8px 14px;">Driver1 VM+(11) + Driver2 VM+(11) + Driver3 VM+(11)</td><td style="padding:8px 14px;color:var(--muted);">Fio grosso ≥1,5mm²</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#374151;border:1px solid #6b7280;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Preto</td><td style="padding:8px 14px;"><b>Bat− GND</b></td><td style="padding:8px 14px;">MP1584 IN− / D1 VM− / D2 VM− / D3 VM− / ESP32 GND</td><td style="padding:8px 14px;color:var(--muted);">GND unificado</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#ea580c;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Laranja</td><td style="padding:8px 14px;"><b>MP1584 OUT+ 5V</b></td><td style="padding:8px 14px;">ESP32 5V0 <span class="v2-only" style="color:#67e8f9;">(via Cap 1000µF)</span> / D1 VCC / D2 VCC / D3 VCC (ramais paralelos)</td><td style="padding:8px 14px;color:var(--muted);">5.0V ajustado</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#ca8a04;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Amarelo</td><td style="padding:8px 14px;"><b>ESP32 3V3</b></td><td style="padding:8px 14px;">D1 R_EN+L_EN + D2 R_EN+L_EN + D3 R_EN+L_EN</td><td style="padding:8px 14px;color:var(--muted);">Enable permanente</td></tr>
         <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#2563eb;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Azul</td><td style="padding:8px 14px;"><b>GPIO 12</b></td><td style="padding:8px 14px;">Driver 1 R_PWM (pino 1)</td><td style="padding:8px 14px;color:var(--muted);">Motor Esq — avança</td></tr>
         <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#16a34a;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Verde</td><td style="padding:8px 14px;"><b>GPIO 14</b></td><td style="padding:8px 14px;">Driver 1 L_PWM (pino 2)</td><td style="padding:8px 14px;color:var(--muted);">Motor Esq — recua</td></tr>
         <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#7c3aed;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Roxo</td><td style="padding:8px 14px;"><b>GPIO 16</b></td><td style="padding:8px 14px;">Driver 2 R_PWM (pino 1)</td><td style="padding:8px 14px;color:var(--muted);">Motor Dir — avança</td></tr>
         <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#0891b2;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Ciano</td><td style="padding:8px 14px;"><b>GPIO 17</b></td><td style="padding:8px 14px;">Driver 2 L_PWM (pino 2)</td><td style="padding:8px 14px;color:var(--muted);">Motor Dir — recua</td></tr>
         <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#22c55e;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Verde claro</td><td style="padding:8px 14px;"><b>GPIO 23</b></td><td style="padding:8px 14px;">Motor Lâmina (relé ou driver)</td><td style="padding:8px 14px;color:var(--muted);">On/Off pelo RT</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#f59e0b;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Âmbar</td><td style="padding:8px 14px;"><b>GPIO 25</b></td><td style="padding:8px 14px;">Driver 3 R_PWM (pino 1)</td><td style="padding:8px 14px;color:var(--muted);">Pistão — PWM alto = parado</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#e11d48;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Rosa</td><td style="padding:8px 14px;"><b>GPIO 26</b></td><td style="padding:8px 14px;">Driver 3 L_PWM (pino 2)</td><td style="padding:8px 14px;color:var(--muted);">Pistão — fechar braço</td></tr>
         <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#15803d;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Motor</td><td style="padding:8px 14px;"><b>Motor Esq. A/B</b></td><td style="padding:8px 14px;">D1 Motor+(10) / Motor−(9)</td><td style="padding:8px 14px;color:var(--muted);">Inverter se errado</td></tr>
-        <tr><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#15803d;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Motor</td><td style="padding:8px 14px;"><b>Motor Dir. A/B</b></td><td style="padding:8px 14px;">D2 Motor+(10) / Motor−(9)</td><td style="padding:8px 14px;color:var(--muted);">Inverter se errado</td></tr>
+        <tr style="border-bottom:1px solid #1a2535;"><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#15803d;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Motor</td><td style="padding:8px 14px;"><b>Motor Dir. A/B</b></td><td style="padding:8px 14px;">D2 Motor+(10) / Motor−(9)</td><td style="padding:8px 14px;color:var(--muted);">Inverter se errado</td></tr>
+        <tr><td style="padding:8px 14px;"><span style="display:inline-block;width:12px;height:12px;background:#15803d;border-radius:3px;vertical-align:middle;margin-right:6px;"></span>Motor</td><td style="padding:8px 14px;"><b>Atuador linear A/B</b></td><td style="padding:8px 14px;">D3 Motor+(10) / Motor−(9)</td><td style="padding:8px 14px;color:var(--muted);">Pistão da lâmina (cadeira de rodas)</td></tr>
       </tbody>
     </table>
   </div>
-  <div class="alert ok"><div class="alert-icon">🚀</div><div><b>Pronto!</b> Controle pareado → analógico esquerdo move os motores → gatilho direito aciona a lâmina. Monitore a telemetria no Serial Monitor a cada 500ms.</div></div>
+  <div class="alert ok"><div class="alert-icon">🚀</div><div><b>Pronto!</b> <b>Xbox:</b> pareie via BLE → analógico esquerdo move os motores → RT aciona a lâmina. <b>Rádio:</b> ligue o FS-i6X → throttle ao mínimo por 1s para armar → sticks movem os motores → SwA (CH7) liga/desliga a lâmina → SwC (CH6) abre/fecha o braço do pistão. Perda de sinal para tudo — desde que o <b>Failsafe esteja configurado no rádio</b> (veja Passo 5).</div></div>
 </div>
 
 </div>
