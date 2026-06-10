@@ -1056,7 +1056,7 @@ HardwareSerial ibusSerial(<span class="num">1</span>);
         Serial.println(<span class="str">"[ARM] Sistema armado — controle ativo!"</span>);
       }
     } <span class="kw">else</span> { armStartMs = <span class="num">0</span>; }
-    <span class="fn">parar_motores</span>(); <span class="fn">parar_pistao</span>(); digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW); <span class="kw">return</span>;
+    <span class="fn">parar_motores</span>(); <span class="fn">desenergizar_pistao</span>(); digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW); <span class="kw">return</span>;
   }
 
   <span class="cm">// Operação normal</span>
@@ -1065,7 +1065,8 @@ HardwareSerial ibusSerial(<span class="num">1</span>);
   <span class="kw">if</span> (abs(steering) &lt; <span class="num">50</span>) steering = <span class="num">0</span>;
   <span class="kw">int</span> esq = constrain(map(throttle + (steering/<span class="num">2</span>), -<span class="num">500</span>, <span class="num">500</span>, -<span class="nm">PWM_MAX</span>, <span class="nm">PWM_MAX</span>), -<span class="nm">PWM_MAX</span>, <span class="nm">PWM_MAX</span>);
   <span class="kw">int</span> dir = constrain(map(throttle - (steering/<span class="num">2</span>), -<span class="num">500</span>, <span class="num">500</span>, -<span class="nm">PWM_MAX</span>, <span class="nm">PWM_MAX</span>), -<span class="nm">PWM_MAX</span>, <span class="nm">PWM_MAX</span>);
-  <span class="cm">// Pistão (SwC): saída 0 = abre | +PISTON_PWM = parado | -PISTON_PWM = fecha</span>
+  <span class="cm">// Pistão (SwC): cima = abre | meio = parado | baixo = fecha</span>
+  <span class="cm">// Comportamento real do braço: saída 0 = abre | +220 = parado | -220 = fecha</span>
   <span class="kw">int</span> pistao = <span class="nm">PISTON_PWM</span>;
   <span class="kw">if</span> (ch6 &lt; <span class="num">1200</span>) pistao = <span class="num">0</span>;
   <span class="kw">else if</span> (ch6 &gt; <span class="num">1800</span>) pistao = -<span class="nm">PISTON_PWM</span>;
@@ -1101,13 +1102,9 @@ HardwareSerial ibusSerial(<span class="num">1</span>);
   <span class="kw">else</span> { ledcWrite(<span class="nm">PISTON_RPWM</span>, <span class="num">0</span>); ledcWrite(<span class="nm">PISTON_LPWM</span>, <span class="num">0</span>); }
 }
 
-<span class="kw">void</span> <span class="fn">parar_pistao</span>() {
-  <span class="cm">// "Segurar parado" — usado SÓ com rádio conectado (fiação: 0/0 abre)</span>
-  ledcWrite(<span class="nm">PISTON_RPWM</span>, <span class="nm">PISTON_PWM</span>); ledcWrite(<span class="nm">PISTON_LPWM</span>, <span class="num">0</span>);
-}
-
 <span class="kw">void</span> <span class="fn">desenergizar_pistao</span>() {
-  <span class="cm">// Corta TODA a energia do atuador — usado sempre que não há rádio</span>
+  <span class="cm">// Corta TODA a energia do atuador (0/0). Sem rádio ou desarmado.</span>
+  <span class="cm">// Atenção: sem energia o braço tende a ABRIR (característica do braço).</span>
   ledcWrite(<span class="nm">PISTON_RPWM</span>, <span class="num">0</span>); ledcWrite(<span class="nm">PISTON_LPWM</span>, <span class="num">0</span>);
 }</pre>
   </div>

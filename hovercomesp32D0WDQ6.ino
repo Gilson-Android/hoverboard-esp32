@@ -271,7 +271,7 @@ void loopRadio() {
       armStartMs = 0;
     }
     parar_motores();
-    parar_pistao();
+    desenergizar_pistao();
     digitalWrite(MOTOR_LAMINA, LOW);
     static unsigned long lastArmLog = 0;
     if (millis() - lastArmLog > 2000) {
@@ -291,9 +291,8 @@ void loopRadio() {
   int alvo_dir = constrain(map(throttle - (steering / 2), -500, 500, -PWM_MAX, PWM_MAX), -PWM_MAX, PWM_MAX);
 
   // SwC 3 posições: cima (~1000) = abre | meio (~1500) = parado | baixo (~2000) = fecha
-  // Comportamento medido da fiação do pistão:
-  //   saída 0 = abre | +PISTON_PWM = parado | -PISTON_PWM = fecha
-  int alvo_pistao = PISTON_PWM;                   // meio  → parado
+  // Comportamento real do braço: saída 0 = abre | +220 = parado | -220 = fecha
+  int alvo_pistao = PISTON_PWM;                   // meio  → segura parado
   if (ch6 < 1200)      alvo_pistao = 0;           // cima  → abre o braço
   else if (ch6 > 1800) alvo_pistao = -PISTON_PWM; // baixo → fecha o braço
 
@@ -375,14 +374,9 @@ void acionarPistao(int v) {
   }
 }
 
-void parar_pistao() {
-  // Estado "segurar parado" usado SÓ durante operação com rádio conectado.
-  // Fiação atual: 0/0 ABRE o braço — segurar parado exige RPWM alto.
-  ledcWrite(PISTON_RPWM, PISTON_PWM); ledcWrite(PISTON_LPWM, 0);
-}
-
 void desenergizar_pistao() {
   // Corta TODA a energia do atuador (0/0). Usado sempre que não há
-  // comunicação com o rádio — nenhuma tensão sai para o braço.
+  // comunicação com o rádio ou o sistema está desarmado.
+  // Atenção: pela característica do braço, sem energia ele tende a ABRIR.
   ledcWrite(PISTON_RPWM, 0); ledcWrite(PISTON_LPWM, 0);
 }
