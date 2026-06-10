@@ -753,9 +753,9 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
           <span style="color:#93c5fd">■</span> <b>CH1</b> — Stick esq. horizontal → <b>Virar (steering)</b><br>
           <span style="color:#86efac">■</span> <b>CH2</b> — Stick esq. vertical → <b>Frente / Ré (throttle)</b><br>
           <span style="color:#fbbf24">■</span> <b>CH6</b> — Chave SwC (3 posições) → <b>Pistão da lâmina</b>: cima=abre, meio=parado, baixo=fecha<br>
-          <span style="color:#fde68a">■</span> <b>CH7</b> — Chave SwA ou SwD → <b>Lâmina ON/OFF</b><br>
+          <span style="color:#fde68a">■</span> <b>CH7</b> — Chave SwA (ponta esquerda) → <b>Lâmina ON/OFF</b><br>
           <span style="color:#a78bfa">■</span> <b>CH10</b> — Chave SwD → <b>HABILITAÇÃO + EMERGÊNCIA</b> — opere com SwD em ON (2000); SwD em OFF ou rádio desligado = trava tudo<br>
-          <span style="color:var(--muted)">Atribua em <b>Menu → Functions → Aux. channels</b>: Channel 6 = SwC, Channel 7 = SwA, Channel 10 = SwD. (CH9 não serve de sentinela neste rádio: ele espelha a SwA. Canal None não grava failsafe — por isso o CH10 usa a SwD.)</span>
+          <span style="color:var(--muted)">Atribua em <b>Menu → Functions → Aux. channels</b>: Channel 6 = SwC, Channel 7 = SwA, Channel 10 = SwD — e <b>salve segurando o Cancel</b> (toque curto sai sem salvar!). Verifique no Serial Monitor: cada chave deve mexer só no seu canal. (CH9 espelha a SwA neste rádio — ignore, não é usado. Canal None não grava failsafe — por isso o CH10 usa a SwD.)</span>
         </div>
       </div>
 
@@ -769,7 +769,8 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
           <span style="color:#a78bfa">■</span> <b>CH10</b> = −100% (SwD desligada) → rádio caiu envia CH10=1000 e o código <b>trava tudo</b> (corta TODA a energia do braço, para motores, desliga a lâmina, desarma e bloqueia rearme)<br>
           <span style="color:#86efac"><b>Regra de ouro:</b> grave o failsafe com os sticks no centro e <b>TODAS as chaves desligadas</b> — nessa condição todos os canais ficam corretos de uma vez.</span><br>
           <span style="color:#fca5a5"><b>⚠️ Atenção ao salvar o CH7:</b> a chave SwA precisa estar em <b>OFF</b> no momento de salvar — se salvar com ela em ON (+100%), desligar o rádio <b>LIGA a lâmina</b>!</span><br>
-          <span style="color:#fca5a5">Teste: com o braço em movimento e a lâmina ligada, desligue o transmissor — tudo deve parar imediatamente e o Serial deve exibir <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[!] FAILSAFE — radio desligado!</code></span>
+          <span style="color:#fca5a5">No menu Failsafe, <b>"Off" significa manter o último valor</b> (perigoso!) — todos os canais acima precisam mostrar um percentual. Salve segurando o Cancel.</span><br>
+          <span style="color:#fca5a5">Teste 1: com tudo rodando, vire a <b>SwD para OFF</b> → tudo morre na hora. Teste 2: religue, rearme e <b>desligue o transmissor</b> → mesmo resultado, 0V no braço. Serial exibe <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[!] TRAVA — SwD desligada ou radio caiu!</code></span>
         </div>
       </div>
 
@@ -876,11 +877,11 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
     <div style="padding:14px 16px;font-size:13px;display:flex;flex-direction:column;gap:10px;">
       <div style="display:flex;gap:12px;align-items:flex-start;">
         <div style="background:#1e3a8a;color:#93c5fd;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">1</div>
-        <div><b>Ligue o transmissor FS-i6X primeiro</b>, depois energize o ESP32. Ligue a <b>SwD</b> (habilitação) — sem ela o sistema não entra no modo rádio.</div>
+        <div><b>Ligue o transmissor FS-i6X primeiro</b>, depois energize o ESP32. LED <b>pisca lento</b> = aguardando.</div>
       </div>
       <div style="display:flex;gap:12px;align-items:flex-start;">
         <div style="background:#1e3a8a;color:#93c5fd;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">2</div>
-        <div>O LED do ESP32 <b>pisca rápido</b> (100ms) — sistema conectado porém <b>DESARMADO</b>. Motores bloqueados por segurança.</div>
+        <div>Ligue a <b>SwD</b> (habilitação — chave da ponta direita) → sistema conecta: LED <b>pisca rápido</b> (100ms), porém <b>DESARMADO</b>. Sem a SwD ligada o sistema não entra no modo rádio.</div>
       </div>
       <div style="display:flex;gap:12px;align-items:flex-start;">
         <div style="background:#1e3a8a;color:#93c5fd;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">3</div>
@@ -888,7 +889,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
       </div>
       <div style="display:flex;gap:12px;align-items:flex-start;">
         <div style="background:#14532d;color:#86efac;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">✓</div>
-        <div>LED muda para <b>duplo pisca</b> — hover responde normalmente. Se o sinal for perdido, sistema <b>desarma automaticamente</b> e motores param.</div>
+        <div>LED muda para <b>duplo pisca</b> — operação liberada. <b>Emergência: SwD em OFF mata tudo instantaneamente.</b> Rádio desligado ou sinal perdido também trava e corta toda a energia.</div>
       </div>
     </div>
   </div>

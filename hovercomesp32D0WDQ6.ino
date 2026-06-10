@@ -219,7 +219,7 @@ void loopXbox() {
 //   CH1  = Stick esquerdo horizontal  → Steering (virar)
 //   CH2  = Stick esquerdo vertical    → Throttle (frente/ré)
 //   CH6  = Chave SwC (3 posições)     → Pistão: cima=estica, meio=parado, baixo=fecha
-//   CH7  = Chave SwA ou SwD           → Lâmina ON/OFF
+//   CH7  = Chave SwA                  → Lâmina ON/OFF (SwD é reservada à habilitação)
 //   CH10 = Chave SwD → HABILITAÇÃO: SwD ON (2000) libera a operação.
 //          SwD OFF, rádio desligado ou failsafe → CH10 baixo → trava tudo.
 //          Grave o failsafe com TODAS as chaves desligadas (CH10 → 1000).
