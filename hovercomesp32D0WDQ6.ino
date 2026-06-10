@@ -220,8 +220,9 @@ void loopXbox() {
 //   CH2  = Stick esquerdo vertical    → Throttle (frente/ré)
 //   CH6  = Chave SwC (3 posições)     → Pistão: cima=estica, meio=parado, baixo=fecha
 //   CH7  = Chave SwA ou SwD           → Lâmina ON/OFF
-//   CH10 = SENTINELA (sem chave)      → ~1500 em operação; 2000 = failsafe (rádio OFF)
-//          (CH9 não serve: no rádio ele espelha a SwA)
+//   CH10 = Chave SwD → SENTINELA/EMERGÊNCIA: opere com SwD OFF (1000).
+//          2000 = SwD ON (kill manual) ou failsafe +100% (rádio desligado).
+//          Grave o failsafe do CH10 com a SwD em ON. (CH9 não serve: espelha a SwA)
 
 void loopRadio() {
   ibus.update(ibusSerial);
