@@ -80,7 +80,7 @@ void setup() {
   ledcAttach(MOTOR_DIR_LPWM, 5000, 8);
   ledcAttach(PISTON_RPWM, 5000, 8);
   ledcAttach(PISTON_LPWM, 5000, 8);
-  parar_pistao(); // fiação atual: 0/0 abriria o braço no boot
+  desenergizar_pistao(); // sem rádio = nenhuma energia no atuador
 
   pinMode(MOTOR_LAMINA, OUTPUT);
   digitalWrite(MOTOR_LAMINA, LOW);
@@ -142,6 +142,7 @@ void logIbusMudancas() {
 // ─── MODO AGUARDANDO ────────────────────────────────────────────────────────
 
 void loopWaiting() {
+  desenergizar_pistao(); // garante 0V no atuador enquanto não há controle ativo
   xboxController.onLoop();
 
   // Verifica Xbox primeiro
@@ -184,7 +185,7 @@ void loopXbox() {
   if (!xboxController.isConnected()) {
     Serial.println("[!] Xbox desconectado — parando, voltando a aguardar");
     parar_motores();
-    parar_pistao();
+    desenergizar_pistao();
     digitalWrite(MOTOR_LAMINA, LOW);
     mode = WAITING;
     return;
@@ -232,9 +233,9 @@ void loopRadio() {
   // TRAVA DE FAILSAFE: com o rádio desligado o receptor continua enviando iBUS,
   // mas o CH9 (sem chave atribuída) salta de 1000 para 2000. Detecta e mata tudo.
   if (ch9 > 1600) {
-    Serial.println("[!] FAILSAFE — radio desligado! Parando tudo e desarmando.");
+    Serial.println("[!] FAILSAFE — radio desligado! Cortando energia de tudo.");
     parar_motores();
-    parar_pistao();
+    desenergizar_pistao();
     digitalWrite(MOTOR_LAMINA, LOW);
     ibus.lastPacketMs = 0;
     armed = false;
@@ -248,7 +249,7 @@ void loopRadio() {
     if (armed) Serial.println("[!] Sinal perdido — sistema desarmado");
     Serial.println("[!] Sinal de rádio perdido — parando, voltando a aguardar");
     parar_motores();
-    parar_pistao();
+    desenergizar_pistao();
     digitalWrite(MOTOR_LAMINA, LOW);
     ibus.lastPacketMs = 0;
     armed = false;
@@ -375,6 +376,13 @@ void acionarPistao(int v) {
 }
 
 void parar_pistao() {
-  // Fiação atual: 0/0 ABRE o braço — o estado "parado" é RPWM alto
+  // Estado "segurar parado" usado SÓ durante operação com rádio conectado.
+  // Fiação atual: 0/0 ABRE o braço — segurar parado exige RPWM alto.
   ledcWrite(PISTON_RPWM, PISTON_PWM); ledcWrite(PISTON_LPWM, 0);
+}
+
+void desenergizar_pistao() {
+  // Corta TODA a energia do atuador (0/0). Usado sempre que não há
+  // comunicação com o rádio — nenhuma tensão sai para o braço.
+  ledcWrite(PISTON_RPWM, 0); ledcWrite(PISTON_LPWM, 0);
 }

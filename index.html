@@ -766,7 +766,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
           <span style="color:#86efac">■</span> <b>CH2</b> = 0% (stick no centro) → tração para<br>
           <span style="color:#fbbf24">■</span> <b>CH6</b> = 0% (SwC no meio) → pistão para<br>
           <span style="color:#fde68a">■</span> <b>CH7</b> = −100% (chave em OFF) → lâmina desliga<br>
-          <span style="color:#a78bfa">■</span> <b>CH9</b> = +100% → sentinela: o código detecta CH9=2000 e <b>trava tudo</b> (para motores, pistão e lâmina, desarma e bloqueia rearme até o rádio voltar)<br>
+          <span style="color:#a78bfa">■</span> <b>CH9</b> = +100% → sentinela: o código detecta CH9=2000 e <b>trava tudo</b> (corta TODA a energia do braço, para motores, desliga a lâmina, desarma e bloqueia rearme até o rádio voltar)<br>
           <span style="color:#fca5a5"><b>⚠️ Atenção ao salvar o CH7:</b> a chave SwA precisa estar em <b>OFF</b> no momento de salvar — se salvar com ela em ON (+100%), desligar o rádio <b>LIGA a lâmina</b>!</span><br>
           <span style="color:#fca5a5">Teste: com o braço em movimento e a lâmina ligada, desligue o transmissor — tudo deve parar imediatamente e o Serial deve exibir <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[!] FAILSAFE — radio desligado!</code></span>
         </div>
@@ -914,7 +914,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
         <tr style="border-bottom:1px solid #1a2535;background:#0a1525;"><td style="padding:8px 14px;"><b>SwC baixo (CH6 &gt; 1800)</b></td><td style="padding:8px 14px;color:#fbbf24;">Pistão fecha o braço</td></tr>
         <tr style="border-bottom:1px solid #1a2535;background:#0a1525;"><td style="padding:8px 14px;"><b>SwA ON (CH7 &gt; 1500)</b></td><td style="padding:8px 14px;color:#fde68a;">Lâmina LIGADA</td></tr>
         <tr style="border-bottom:1px solid #1a2535;background:#0a1525;"><td style="padding:8px 14px;"><b>SwA OFF (CH7 ≤ 1500)</b></td><td style="padding:8px 14px;color:#fde68a;">Lâmina DESLIGADA</td></tr>
-        <tr style="background:#0a1525;"><td style="padding:8px 14px;"><b>Rádio desligado (CH9 = 2000)</b></td><td style="padding:8px 14px;color:#fca5a5;">TRAVA: para tudo, desarma e bloqueia rearme até o rádio voltar</td></tr>
+        <tr style="background:#0a1525;"><td style="padding:8px 14px;"><b>Rádio desligado (CH9 = 2000)</b></td><td style="padding:8px 14px;color:#fca5a5;">TRAVA: corta energia do braço, para tudo, desarma e bloqueia rearme até o rádio voltar</td></tr>
       </tbody>
     </table>
   </div>
@@ -980,7 +980,7 @@ HardwareSerial ibusSerial(<span class="num">1</span>);
   ledcAttach(<span class="nm">MOTOR_ESQ_RPWM</span>, <span class="num">5000</span>, <span class="num">8</span>); ledcAttach(<span class="nm">MOTOR_ESQ_LPWM</span>, <span class="num">5000</span>, <span class="num">8</span>);
   ledcAttach(<span class="nm">MOTOR_DIR_RPWM</span>, <span class="num">5000</span>, <span class="num">8</span>); ledcAttach(<span class="nm">MOTOR_DIR_LPWM</span>, <span class="num">5000</span>, <span class="num">8</span>);
   ledcAttach(<span class="nm">PISTON_RPWM</span>, <span class="num">5000</span>, <span class="num">8</span>); ledcAttach(<span class="nm">PISTON_LPWM</span>, <span class="num">5000</span>, <span class="num">8</span>);
-  <span class="fn">parar_pistao</span>(); <span class="cm">// fiação atual: 0/0 abriria o braço no boot</span>
+  <span class="fn">desenergizar_pistao</span>(); <span class="cm">// sem rádio = nenhuma energia no atuador</span>
   pinMode(<span class="nm">MOTOR_LAMINA</span>, OUTPUT); digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW);
   pinMode(<span class="nm">LED_PIN</span>, OUTPUT);
   ibusSerial.begin(<span class="num">115200</span>, SERIAL_8N1, <span class="nm">IBUS_RX</span>, -<span class="num">1</span>);
@@ -998,6 +998,7 @@ HardwareSerial ibusSerial(<span class="num">1</span>);
 }
 
 <span class="kw">void</span> <span class="fn">loopWaiting</span>() {
+  <span class="fn">desenergizar_pistao</span>(); <span class="cm">// garante 0V no atuador sem controle ativo</span>
   xboxController.onLoop();
   <span class="kw">if</span> (xboxController.isConnected()) { mode = XBOX; <span class="kw">return</span>; }
   ibus.update(ibusSerial);
@@ -1012,7 +1013,7 @@ HardwareSerial ibusSerial(<span class="num">1</span>);
 
 <span class="kw">void</span> <span class="fn">loopXbox</span>() {
   xboxController.onLoop();
-  <span class="kw">if</span> (!xboxController.isConnected()) { <span class="fn">parar_motores</span>(); <span class="fn">parar_pistao</span>(); digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW); mode = WAITING; <span class="kw">return</span>; }
+  <span class="kw">if</span> (!xboxController.isConnected()) { <span class="fn">parar_motores</span>(); <span class="fn">desenergizar_pistao</span>(); digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW); mode = WAITING; <span class="kw">return</span>; }
   <span class="kw">if</span> (xboxController.isWaitingForFirstNotification()) <span class="kw">return</span>;
   int32_t joyY = <span class="num">32768</span> - (int32_t)xboxController.xboxNotif.joyLVert;
   int32_t joyX = (int32_t)xboxController.xboxNotif.joyLHori - <span class="num">32768</span>;
@@ -1034,14 +1035,14 @@ HardwareSerial ibusSerial(<span class="num">1</span>);
   <span class="cm">// mas CH9 (sem chave) salta de 1000 para 2000. Detecta e mata tudo.</span>
   <span class="kw">if</span> (ch9 &gt; <span class="num">1600</span>) {
     Serial.println(<span class="str">"[!] FAILSAFE — radio desligado!"</span>);
-    <span class="fn">parar_motores</span>(); <span class="fn">parar_pistao</span>(); digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW);
+    <span class="fn">parar_motores</span>(); <span class="fn">desenergizar_pistao</span>(); digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW);
     ibus.lastPacketMs = <span class="num">0</span>; armed = <span class="kw">false</span>; armStartMs = <span class="num">0</span>; mode = WAITING;
     <span class="kw">return</span>;
   }
 
   <span class="kw">if</span> (ibus.signalLost() || ch1 &lt; <span class="num">900</span> || ch1 &gt; <span class="num">2100</span> || ch2 &lt; <span class="num">900</span> || ch2 &gt; <span class="num">2100</span>) {
     Serial.println(<span class="str">"[!] Sinal perdido — parando"</span>);
-    <span class="fn">parar_motores</span>(); <span class="fn">parar_pistao</span>(); digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW);
+    <span class="fn">parar_motores</span>(); <span class="fn">desenergizar_pistao</span>(); digitalWrite(<span class="nm">MOTOR_LAMINA</span>, LOW);
     ibus.lastPacketMs = <span class="num">0</span>; armed = <span class="kw">false</span>; armStartMs = <span class="num">0</span>; mode = WAITING;
     <span class="kw">return</span>;
   }
@@ -1101,8 +1102,13 @@ HardwareSerial ibusSerial(<span class="num">1</span>);
 }
 
 <span class="kw">void</span> <span class="fn">parar_pistao</span>() {
-  <span class="cm">// Fiação atual: 0/0 ABRE o braço — o estado "parado" é RPWM alto</span>
+  <span class="cm">// "Segurar parado" — usado SÓ com rádio conectado (fiação: 0/0 abre)</span>
   ledcWrite(<span class="nm">PISTON_RPWM</span>, <span class="nm">PISTON_PWM</span>); ledcWrite(<span class="nm">PISTON_LPWM</span>, <span class="num">0</span>);
+}
+
+<span class="kw">void</span> <span class="fn">desenergizar_pistao</span>() {
+  <span class="cm">// Corta TODA a energia do atuador — usado sempre que não há rádio</span>
+  ledcWrite(<span class="nm">PISTON_RPWM</span>, <span class="num">0</span>); ledcWrite(<span class="nm">PISTON_LPWM</span>, <span class="num">0</span>);
 }</pre>
   </div>
 
