@@ -216,8 +216,11 @@ void loopXbox() {
 
 // ─── MODO RÁDIO (FS-i6X + FS-iA6B via iBUS) ────────────────────────────────
 // Mapeamento de canais no transmissor FS-i6X:
-//   CH1  = Stick esquerdo horizontal  → Steering (virar)
-//   CH2  = Stick esquerdo vertical    → Throttle (frente/ré)
+//   CH1  = Stick direito horizontal (aileron)  → Steering (virar)
+//   CH2  = Stick direito vertical (elevator)   → Throttle (frente/ré)
+//          Em Mode 2 os dois eixos têm mola: soltar = 1500 = parado.
+//          Não use o stick de throttle (sem mola) para o CH2 — ao armar
+//          em 1050 a máquina sairia em ré total.
 //   CH6  = Chave SwC (3 posições)     → Pistão: cima=estica, meio=parado, baixo=fecha
 //   CH7  = Chave SwA                  → Lâmina ON/OFF (SwD é reservada à habilitação)
 //   CH10 = Chave SwD → HABILITAÇÃO: SwD ON (2000) libera a operação.

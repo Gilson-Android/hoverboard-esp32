@@ -725,7 +725,7 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
 
   <div class="two-col">
     <div>
-      <div class="alert warn" style="margin-bottom:12px;"><div class="alert-icon">⚠️</div><div>Antes de conectar, configure o protocolo <b>iBUS</b> no FS-i6X: <b>System → RX Setup → Protocol → iBUS</b>. Sem isso o receptor não envia dados válidos.</div></div>
+      <div class="alert warn" style="margin-bottom:12px;"><div class="alert-icon">⚠️</div><div>O FS-iA6B já envia iBUS pela porta i-BUS sem precisar escolher protocolo nenhum no rádio. O que <b>precisa</b> ser configurado é o <b>número de canais</b>: o FS-i6X sai de fábrica como rádio de <b>6 canais</b>, então o CH10 (habilitação) simplesmente não existe e o sistema nunca sai do modo aguardando. Veja <b>"Configuração do FS-i6X"</b> logo abaixo.</div></div>
 
       <div class="checklist-card">
         <div class="checklist-header">Alimentação do FS-iA6B</div>
@@ -743,19 +743,45 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
         <div class="checklist-header">Sinal iBUS</div>
         <div class="check-item" onclick="toggle(this)">
           <div class="wire-dot" style="background:#a855f7"></div><div class="checkbox"></div>
-          <div class="check-body"><div class="check-title">FS-iA6B porta i-BUS (SENS) → ESP32 GPIO 13</div><div class="check-desc">Fio roxo. Pino Signal da porta SENS do conector i-BUS. GPIO 13 = UART1 RX.</div></div>
+          <div class="check-body"><div class="check-title">FS-iA6B porta i-BUS <b>SERVO</b> → ESP32 GPIO 13</div><div class="check-desc">Fio roxo. Pino <b>Signal</b> da porta <b>SERVO</b> — grupo da <b>direita</b> na fileira de cima. É a saída de canais do iBUS (a SENS, à esquerda, é para sensores de telemetria). GPIO 13 = UART1 RX. Se não chegar sinal nenhum, teste a outra porta antes de suspeitar do resto — as duas já foram vistas funcionando em campo.<br><b style="color:#fca5a5">Não confunda com os canais CH1–CH6 do bloco de baixo:</b> eles saem em PWM analógico e o parser iBUS descarta tudo.</div></div>
         </div>
       </div>
 
       <div class="checklist-card" style="margin-top:10px;">
         <div class="checklist-header">Mapeamento de canais (configurar no FS-i6X)</div>
         <div style="padding:10px 12px;font-size:12px;line-height:1.8;color:var(--text);">
-          <span style="color:#93c5fd">■</span> <b>CH1</b> — Stick esq. horizontal → <b>Virar (steering)</b><br>
-          <span style="color:#86efac">■</span> <b>CH2</b> — Stick esq. vertical → <b>Frente / Ré (throttle)</b><br>
+          <span style="color:#93c5fd">■</span> <b>CH1</b> — Stick <b>direito</b> horizontal (aileron) → <b>Virar (steering)</b><br>
+          <span style="color:#86efac">■</span> <b>CH2</b> — Stick <b>direito</b> vertical (elevator) → <b>Frente / Ré (throttle)</b><br>
           <span style="color:#fbbf24">■</span> <b>CH6</b> — Chave SwC (3 posições) → <b>Pistão da lâmina</b>: cima=abre, meio=parado, baixo=fecha<br>
           <span style="color:#fde68a">■</span> <b>CH7</b> — Chave SwA (ponta esquerda) → <b>Lâmina ON/OFF</b><br>
           <span style="color:#a78bfa">■</span> <b>CH10</b> — Chave SwD → <b>HABILITAÇÃO + EMERGÊNCIA</b> — opere com SwD em ON (2000); SwD em OFF ou rádio desligado = trava tudo<br>
-          <span style="color:var(--muted)">Atribua em <b>Menu → Functions → Aux. channels</b>: Channel 6 = SwC, Channel 7 = SwA, Channel 10 = SwD — e <b>salve segurando o Cancel</b> (toque curto sai sem salvar!). Verifique no Serial Monitor: cada chave deve mexer só no seu canal. (CH9 espelha a SwA neste rádio — ignore, não é usado. Canal None não grava failsafe — por isso o CH10 usa a SwD.)</span>
+          <span style="color:var(--muted)">CH1 e CH2 precisam ser eixos <b>com mola</b> (auto-centrantes). Em <b>Mode 2</b> os dois caem no stick direito, que é o que se quer: soltar o stick = 1500 = parado. Se o CH2 cair no stick de throttle (sem mola, com catraca), no instante em que o sistema armar em 1050 ele já sai em <b>ré total</b>.<br>
+          Passo a passo das atribuições no bloco abaixo. (CH9 espelha a SwA neste rádio — ignore, não é usado. Canal em <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">None</code> não grava failsafe — por isso o CH10 usa a SwD.)</span>
+        </div>
+      </div>
+
+      <div class="checklist-card" style="margin-top:10px;">
+        <div class="checklist-header">🔧 Configuração do FS-i6X — obrigatória (rádio novo ou resetado)</div>
+        <div style="padding:10px 12px;font-size:12px;line-height:1.8;color:var(--text);">
+          <b style="color:#fca5a5">Sintoma de rádio não configurado:</b> LED do ESP32 <b>pisca lento para sempre</b>, o Serial não mostra nenhuma linha <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[AGUARD]</code>, e no monitor do rádio só os canais 1–4 têm valor.<br><br>
+
+          <b style="color:#e2e8f0">1. Desligue o receptor primeiro.</b> Ao entrar nos menus que afetam o link, o rádio exibe <i>"For your safety please turn off the receiver first"</i>. Corte a alimentação do FS-iA6B (basta desligar o ESP32) até o LED dele apagar, e aperte OK.<br><br>
+
+          <b style="color:#e2e8f0">2. Libere os 10 canais</b> — este é o passo que quase sempre falta.<br>
+          <span style="color:var(--muted)">Segure <b>OK</b> 2s → <b>System setup</b> → último item <b>Aux switches</b>: ative <b>SwA, SwB, SwC e SwD = On</b> e mude o campo <b>Ch de 6 para 10</b>. Segure <b>Cancel</b> para salvar.</span><br>
+          <span style="color:#fca5a5">De fábrica o i6X é um rádio de 6 canais: o menu Aux. channels só lista CH5 e CH6, e o CH10 nunca chega a 1700 — a trava de segurança do código mantém tudo desligado.</span><br><br>
+
+          <b style="color:#e2e8f0">3. Atribua as chaves</b> — <b>Functions setup → Aux. channels</b> (agora lista CH5 até CH10):<br>
+          <span style="color:#fbbf24">■</span> <b>CH6 = SwC</b> &nbsp;&nbsp; <span style="color:#fde68a">■</span> <b>CH7 = SwA</b> &nbsp;&nbsp; <span style="color:#a78bfa">■</span> <b>CH10 = SwD</b><br>
+          <span style="color:var(--muted)">Salve <b>segurando o Cancel</b> — toque curto sai sem gravar. Se as chaves não aparecerem como opção (só VrA/VrB), o passo 2 não gravou.</span><br><br>
+
+          <b style="color:#e2e8f0">4. Confira antes de energizar os motores</b> — <b>Functions setup → Display</b>:<br>
+          <span style="color:var(--muted)">SwD ligada → CH10 em <b>+100%</b> (se for para −100%, inverta em <b>Functions setup → Reverse</b>, canal 10). SwC nas 3 posições → CH6 em −100% / 0% / +100%. Stick direito solto → CH1 e CH2 em 0%. Deixe <b>End points em 100%</b> nesses canais: com curso reduzido o CH10 pode parar em ~1600 e não passar do limite de 1700.</span><br><br>
+
+          <b style="color:#e2e8f0">5. Type select = Airplane · Stick mode = Mode 2</b> (<b>System setup</b>).<br>
+          <span style="color:var(--muted)">Heli ativa mixagens de swash que bagunçam CH1/CH2/CH6.</span><br><br>
+
+          <span style="color:#fca5a5"><b>Se o CH10 aparecer no display do rádio mas não chegar no ESP32:</b> refaça o <b>bind</b> (System setup → RX setup, com o receptor desligado antes de entrar). Mudar a contagem de canais altera o que o transmissor negocia com o receptor, e em algumas unidades ele só passa a enviar os 10 canais depois de um novo bind.</span>
         </div>
       </div>
 
@@ -777,10 +803,30 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
       <div class="wire-summary" style="margin-top:12px;">
         <div class="wire-row"><div class="wire-line" style="background:#ea580c"></div><span class="wire-from">MP1584 OUT+ 5V</span><span class="wire-arrow">→</span><span class="wire-to">FS-iA6B B/VCC pino + (ramal paralelo)</span></div>
         <div class="wire-row"><div class="wire-line" style="background:#374151"></div><span class="wire-from">ESP32 GND</span><span class="wire-arrow">→</span><span class="wire-to">FS-iA6B B/VCC pino −</span></div>
-        <div class="wire-row"><div class="wire-line" style="background:#a855f7"></div><span class="wire-from">FS-iA6B i-BUS SENS Signal</span><span class="wire-arrow">→</span><span class="wire-to">ESP32 GPIO 13</span></div>
+        <div class="wire-row"><div class="wire-line" style="background:#a855f7"></div><span class="wire-from">FS-iA6B i-BUS SERVO Signal</span><span class="wire-arrow">→</span><span class="wire-to">ESP32 GPIO 13</span></div>
       </div>
 
-      <div class="alert ok" style="margin-top:12px;"><div class="alert-icon">✅</div><div><b>Teste:</b> Ligue o FS-i6X → energize o ESP32 → LED <b>pisca rápido</b> (desarmado) → Serial exibe <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[MODO] Rádio FS-i6X conectado!</code> → empurre o stick de throttle para o <b>mínimo</b> e segure 1s → LED muda para <b>duplo pisca</b> (armado)</div></div>
+      <div class="alert ok" style="margin-top:12px;"><div class="alert-icon">✅</div><div><b>Teste:</b> Ligue o FS-i6X → <b>SwD em ON</b> → energize o ESP32 → LED <b>pisca rápido</b> (desarmado) → Serial exibe <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[MODO] Rádio FS-i6X conectado!</code> → empurre o <b>stick direito</b> (CH2) até o <b>mínimo</b> e segure 1s → LED muda para <b>duplo pisca</b> (armado)</div></div>
+
+      <div class="checklist-card" style="margin-top:12px;">
+        <div class="checklist-header">🔍 Diagnóstico — o rádio não conecta (LED pisca lento)</div>
+        <div style="padding:10px 12px;font-size:12px;line-height:1.8;color:var(--text);">
+          LED piscando lento significa <b>modo aguardando</b>: o código não recebeu nenhum pacote iBUS válido, ou recebeu mas o CH10 está abaixo de 1700. Para separar as duas causas, abra o <b>Serial Monitor a 115200</b> com o rádio ligado e procure a linha <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[AGUARD] CH01: ...</code>:<br><br>
+
+          <span style="color:#86efac">■</span> <b>A linha [AGUARD] aparece</b> → a fiação está boa, o link está fechado. O problema é só o <b>CH10</b>: volte à <b>Configuração do FS-i6X</b> acima (canais em 10 + CH10 = SwD + SwD ligada).<br>
+          <span style="color:#fca5a5">■</span> <b>Nada aparece além das 4 linhas do boot</b> → não chega byte nenhum no GPIO 13. É fiação ou bind.<br><br>
+
+          <b style="color:#e2e8f0">Para o segundo caso, grave o <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">teste_ibus.ino</code></b> (neste repositório). Ele não aciona motor nenhum — só lê o GPIO 13 e diz em qual dos três estados você está:<br>
+          <span style="color:#fca5a5">■</span> <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[X] ZERO bytes no GPIO13</code> → fio de sinal ausente, GND não comum, receptor sem 5V ou sem bind<br>
+          <span style="color:#fbbf24">■</span> <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[?] Chegam bytes mas nenhum pacote iBUS válido</code> → fio no conector errado (canal PWM ou SENS em vez de i-BUS SERVO)<br>
+          <span style="color:#86efac">■</span> <code style="background:#0a0f1a;padding:1px 5px;border-radius:3px;font-size:11px;">[OK] pacotes=... CH1=1500 CH2=1500 ...</code> → link fechado; confira aqui se o CH10 mexe com a SwD<br><br>
+
+          <b style="color:#e2e8f0">Checagens físicas rápidas:</b><br>
+          <span style="color:var(--muted)">■ <b>LED do receptor aceso fixo</b> = bindado e recebendo. Piscando = sem bind — nenhuma mudança de fiação resolve antes disso.<br>
+          ■ <b>Conte os fios:</b> são <b>três</b> ligações (Signal → GPIO 13, + → 5V, − → GND). Só alimentação ligada é o erro mais comum: o receptor acende, parece vivo, e o GPIO 13 nunca recebe nada.<br>
+          ■ <b>Qual dos 3 pinos é o Signal:</b> com o multímetro em continuidade e tudo desligado, o pino do i-BUS que apita contra a linha <b>−</b> dos canais é o GND; o que apita contra a linha <b>+</b> é o VCC; o que não apita com nenhuma das duas é o <b>Signal</b>. Nunca chute — inverter + e Signal manda 5V direto no GPIO.</span>
+        </div>
+      </div>
     </div>
 
     <div class="img-card">
@@ -795,8 +841,9 @@ pre{padding:16px;font-size:12px;line-height:1.7;overflow-x:auto;color:#a5f3fc;fo
         <div style="padding:10px 12px;font-size:11px;color:var(--muted);background:var(--surface2);">
           <b style="color:#e2e8f0">Pinout FS-iA6B:</b><br>
           <span style="color:#ea580c">■</span> <b>B/VCC</b> — canto direito: +5V e GND<br>
-          <span style="color:#a855f7">■</span> <b>i-BUS SENS</b> — porta superior esquerda: Signal iBUS<br>
-          <span style="color:#64748b">■</span> <b>CH1–CH6</b> — canais PWM individuais (não usados)
+          <span style="color:#a855f7">■</span> <b>i-BUS SERVO</b> — fileira de cima, grupo da <b>direita</b>: Signal iBUS<br>
+          <span style="color:#64748b">■</span> <b>i-BUS SENS</b> — fileira de cima, grupo da esquerda: sensores de telemetria<br>
+          <span style="color:#64748b">■</span> <b>CH1–CH6</b> — bloco de baixo, PWM analógico (não usados)
         </div>
       </div>
       <div id="t5b" class="img-panel">
